@@ -5,7 +5,7 @@ Yii::setPathOfAlias('lib', realpath(dirname(__FILE__).'/../../lib'));
 $params = require('params.php');
 return array(
 	'basePath'=>dirname(__FILE__).DIRECTORY_SEPARATOR.'..',
-	'name'=>'My Console Application',
+	'name'=>'Myarusel',
 
 	// preloading 'log' component
 	'preload'=>array('log'),
