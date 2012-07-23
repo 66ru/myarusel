@@ -26,14 +26,16 @@
 	</div><!-- header -->
 
 	<div id="mainmenu">
+		{% block mainMenu %}
 		{{ widget('zii.widgets.CMenu',{
 	        'items':[
 	            {'label':'Главная', 'url':['/site/index']},
 	            {'label':'Войти', 'url':['/site/login'], 'visible':App.user.isGuest},
-	            {'label':'Админ', 'url':['/admin/index'], 'visible':App.user.checkAccess('adminActions')},
+	            {'label':'Админ', 'url':['/admin/admin'], 'visible':App.user.checkAccess('adminActions')},
 	            {'label':'Выйти ('~App.user.name~')', 'url':['/site/logout'], 'visible':not App.user.isGuest}
 	        ]
 	    }) }}
+		{% endblock %}
 	</div><!-- mainmenu -->
 
 	{% block pageContents %}

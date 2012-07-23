@@ -28,10 +28,14 @@ return array(
 		),
 		'urlManager'=>array(
 			'urlFormat'=>'path',
+			'urlSuffix' => '/',
 			'showScriptName' => false,
 			'rules'=>array(
 				'/' => 'site/index',
-				'<action:\w+>' => 'site/<action>'
+				'admin/' => 'admin/admin',
+				'admin/<controller:\w+>/' => 'admin/admin<controller>',
+				'admin/<controller:\w+>/<action:\w+>' => 'admin/admin<controller>/<action>',
+				'<action:\w+>' => 'site/<action>',
 //				'<controller:\w+>/<id:\d+>'=>'<controller>/view',
 //				'<controller:\w+>/<action:\w+>/<id:\d+>'=>'<controller>/<action>',
 //				'<controller:\w+>/<action:\w+>'=>'<controller>/<action>',

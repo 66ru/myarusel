@@ -1,6 +1,6 @@
 <?php
 
-class AdminController extends CController
+class AdminController extends Controller
 {
 	public function filters()
 	{
@@ -22,6 +22,14 @@ class AdminController extends CController
 	}
 
 	public function actionIndex() {
-		echo '5';
+		$this->render('application.views.admin.index');
+	}
+
+	public function actionList() {
+		$this->render('application.views.admin.list');
+	}
+
+	public function actionAdd() {
+		$this->render('application.views.admin.add');
 	}
 }
