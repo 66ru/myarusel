@@ -7,10 +7,14 @@ return array(
 	'basePath'=>dirname(__FILE__).DIRECTORY_SEPARATOR.'..',
 	'name'=>'Myarusel',
 
-	// preloading 'log' component
-	'preload'=>array('log'),
+//	'preload'=>array('log'),
 
-	// application components
+	'import'=>array(
+		'application.models.*',
+		'application.models.forms.*',
+		'application.components.*',
+	),
+
 	'components'=>array(
 		'db'=>array(
 			'connectionString' => 'mysql:host='.$params['dbHost'].';dbname='.$params['dbName'],
@@ -19,7 +23,11 @@ return array(
 			'password' => $params['dbPassword'],
 			'charset' => 'utf8',
 		),
-		'log'=>array(
+		'authManager'=>array(
+			'class'=>'CDbAuthManager',
+			'connectionID'=>'db',
+		),
+		/*'log'=>array(
 			'class'=>'CLogRouter',
 			'routes'=>array(
 				array(
@@ -27,8 +35,10 @@ return array(
 					'levels'=>'error, warning',
 				),
 			),
-		),
+		),*/
 	),
 
-	'params'=> $params,
+	'params'=> array_merge($params, array(
+		'md5Salt' => 'ThisIsMymd5Salt(*&^%$#',
+	)),
 );

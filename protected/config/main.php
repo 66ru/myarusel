@@ -8,32 +8,22 @@ return array(
 	'name'=>'Myarusel',
 	'language' => 'ru',
 
-	// preloading 'log' component
-	'preload'=>array('log'),
+//	'preload'=>array('log'),
 
-	// autoloading model and component classes
 	'import'=>array(
 		'application.models.*',
+		'application.models.forms.*',
 		'application.components.*',
 	),
 
-	'modules'=>array(
-		// uncomment the following to enable the Gii tool
-		/*
-		'gii'=>array(
-			'class'=>'system.gii.GiiModule',
-			'password'=>'Enter Your Password Here',
-			// If removed, Gii defaults to localhost only. Edit carefully to taste.
-			'ipFilters'=>array('127.0.0.1','::1'),
-		),
-		*/
-	),
+//	'modules'=>array(
+//	),
 
-	// application components
 	'components'=>array(
 		'user'=>array(
 			// enable cookie-based authentication
 			'allowAutoLogin'=>true,
+			'loginUrl'=>array('site/login'),
 		),
 		'urlManager'=>array(
 			'urlFormat'=>'path',
@@ -53,11 +43,15 @@ return array(
 			'password' => $params['dbPassword'],
 			'charset' => 'utf8',
 		),
-		'errorHandler'=>array(
+		'authManager'=>array(
+			'class'=>'CDbAuthManager',
+			'connectionID'=>'db',
+		),
+		/*'errorHandler'=>array(
 			// use 'site/error' action to display errors
 			'errorAction'=>'site/error',
-		),
-		'log'=>array(
+		),*/
+		/*'log'=>array(
 			'class'=>'CLogRouter',
 			'routes'=>array(
 				array(
@@ -65,14 +59,15 @@ return array(
 					'levels'=>'error, warning',
 				),
 				// uncomment the following to show log messages on web pages
-				/*
 				array(
 					'class'=>'CWebLogRoute',
 				),
-				*/
+
 			),
-		),
+		),*/
 	),
 
-	'params'=> $params,
+	'params'=> array_merge($params, array(
+		'md5Salt' => 'ThisIsMymd5Salt(*&^%$#',
+	)),
 );
