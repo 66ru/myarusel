@@ -1,0 +1,17 @@
+{% extents 'main.twig' %}
+
+{% block pageContents %}
+<div class="span-19">
+	{{ parent() }}
+</div>
+<div class="span-5 last">
+	<div id="sidebar">
+		{{ this.beginWidget('zii.widgets.CPortlet', {'title': 'Действия'}) }}
+		{{ widget('zii.widgets.CMenu', {
+			'items': this.menu,
+			'htmlOptions': {'class':'operations'}
+		}) }}
+		{{ void(this.endWidget()) }}
+	</div><!-- sidebar -->
+</div>
+{% endblock %}

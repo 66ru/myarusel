@@ -14,6 +14,7 @@ return array(
 		'application.models.*',
 		'application.models.forms.*',
 		'application.components.*',
+		'application.helpers.*',
 	),
 
 //	'modules'=>array(
@@ -47,10 +48,20 @@ return array(
 			'class'=>'CDbAuthManager',
 			'connectionID'=>'db',
 		),
-		/*'errorHandler'=>array(
+		'viewRenderer'=>array(
+			'class'=>'ext.ETwigViewRenderer',
+			'twigPathAlias' => 'lib.twig.lib.Twig',
+			'options' => array(
+				'autoescape' => true,
+			),
+			'functions' => array(
+				'widget' => 'TwigFunctions::widget',
+			),
+		),
+		'errorHandler'=>array(
 			// use 'site/error' action to display errors
-			'errorAction'=>'site/error',
-		),*/
+			//'errorAction'=>'site/error',
+		),
 		/*'log'=>array(
 			'class'=>'CLogRouter',
 			'routes'=>array(
