@@ -55,7 +55,10 @@ return array(
 				'autoescape' => true,
 			),
 			'functions' => array(
-				'widget' => 'TwigFunctions::widget',
+				'widget' => array(
+					0 => 'TwigFunctions::widget',
+					1 => array('is_safe' => array('html')),
+				),
 			),
 		),
 		'errorHandler'=>array(
