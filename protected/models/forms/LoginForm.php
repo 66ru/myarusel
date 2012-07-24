@@ -2,7 +2,7 @@
 
 class LoginForm extends CFormModel
 {
-	public $email;
+	public $name;
 	public $password;
 	public $rememberMe;
 
@@ -19,8 +19,7 @@ class LoginForm extends CFormModel
 	public function rules()
 	{
 		return array(
-			array('email, password', 'required'),
-			array('email', 'email'),
+			array('name, password', 'required'),
 			array('rememberMe', 'boolean'),
 			array('password', 'authenticate'),
 		);
@@ -29,7 +28,7 @@ class LoginForm extends CFormModel
 	public function attributeLabels()
 	{
 		return array(
-			'email'=>'E-mail',
+			'name'=>'Имя',
 			'password'=>'Пароль',
 			'rememberMe'=>'Запомнить меня',
 		);
@@ -43,7 +42,7 @@ class LoginForm extends CFormModel
 	{
 		if(!$this->hasErrors())
 		{
-			$this->_identity=new UserIdentity($this->email,$this->password);
+			$this->_identity=new UserIdentity($this->name,$this->password);
 			if(!$this->_identity->authenticate())
 				$this->addError('password','Неверная комбинация email/пароль.');
 		}
@@ -57,7 +56,7 @@ class LoginForm extends CFormModel
 	{
 		if($this->_identity===null)
 		{
-			$this->_identity=new UserIdentity($this->email,$this->password);
+			$this->_identity=new UserIdentity($this->name,$this->password);
 			$this->_identity->authenticate();
 		}
 		if($this->_identity->errorCode===UserIdentity::ERROR_NONE)

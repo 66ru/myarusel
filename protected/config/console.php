@@ -7,7 +7,7 @@ return array(
 	'basePath'=>dirname(__FILE__).DIRECTORY_SEPARATOR.'..',
 	'name'=>'Myarusel',
 
-//	'preload'=>array('log'),
+	'preload'=>array('log'),
 
 	'import'=>array(
 		'application.models.*',
@@ -28,15 +28,15 @@ return array(
 			'class'=>'CDbAuthManager',
 			'connectionID'=>'db',
 		),
-		/*'log'=>array(
+		'log'=>array(
 			'class'=>'CLogRouter',
-			'routes'=>array(
+			/*'routes'=>array(
 				array(
 					'class'=>'CFileLogRoute',
 					'levels'=>'error, warning',
 				),
-			),
-		),*/
+			),*/
+		),
 	),
 
 	'params'=> array_merge($params, array(

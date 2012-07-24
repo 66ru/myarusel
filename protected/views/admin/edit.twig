@@ -1,0 +1,34 @@
+{% extends 'views/layouts/admin.twig' %}
+
+{% block content %}
+<h1>{% block contentTitle %}Редактирование {{ this.modelHumanTitle[1] }}{% endblock %}</h1>
+<p>Поля с символом <span class="required">*</span> обязательны для заполнения.</p>
+
+{% set form = this.beginWidget('bootstrap.widgets.BootActiveForm', {
+	'type' : 'horizontal',
+	'enableClientValidation': true,
+	'clientOptions': {'validateOnSubmit': true},
+}) %}
+
+{% for attributeName, element in editFormElements %}
+	{{ attribute(form, element['type']~'Row', [model, attributeName])|raw }}
+{% endfor %}
+
+<div class="form-actions">
+	{{ widget('bootstrap.widgets.BootButton', {
+		'type' : 'primary',
+		'buttonType' : 'submit',
+		'icon' : 'ok white',
+		'label' : model.isNewRecord ? 'Создать '~this.modelHumanTitle[0] : 'Сохранить '~this.modelHumanTitle[0],
+	}) }}
+
+	{{ widget('bootstrap.widgets.BootButton', {
+		'icon' : 'remove',
+		'label' : model.isNewRecord ? 'Не создавать' : 'Отменить изменения',
+		'url' : ['/'~this.getId()]
+	}) }}
+</div>
+
+{{ void(this.endWidget()) }}
+
+{% endblock %}

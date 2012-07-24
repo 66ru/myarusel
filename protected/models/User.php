@@ -2,6 +2,7 @@
 
 /**
  * @property int id
+ * @property string name
  * @property string email
  * @property string password
  */
@@ -17,23 +18,40 @@ class User extends CActiveRecord
 		return parent::model($className);
 	}
 
-	/**
-	 * @param array $attributes
-	 * @param string $condition
-	 * @param array $params
-	 * @return User|CActiveRecord
-	 */
-	public function findByAttributes($attributes, $condition = '', $params = array())
+	public function init()
 	{
-		return parent::findByAttributes($attributes, $condition, $params);
+		$this->scenario = 'save';
 	}
 
 	public function rules()
 	{
 		return array(
-			array('email', 'email', 'allowEmpty'=>false),
-			array('email', 'unique'),
-			array('password', 'length', 'is'=>32, 'allowEmpty'=>false),
+			array('email', 'email'),
+			array('name, email', 'unique'),
+			array('name, password', 'required'),
+			array('password', 'length', 'is'=>32, 'allowEmpty'=>false, 'on'=>'save'),
+			array('password', 'length', 'max'=>31, 'allowEmpty'=>false, 'on'=>'edit'),
 		);
+	}
+
+	public function attributeLabels()
+	{
+		return array(
+			'name' => 'Имя',
+			'email' => 'E-mail',
+			'password' => 'Пароль',
+		);
+	}
+
+	public function search()
+	{
+		$criteria=new CDbCriteria;
+
+		$criteria->compare('name', $this->name, true);
+		$criteria->compare('email', $this->email, true);
+
+		return new CActiveDataProvider($this, array(
+			'criteria' => $criteria,
+		));
 	}
 }

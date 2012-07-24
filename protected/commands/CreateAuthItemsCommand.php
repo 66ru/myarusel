@@ -2,7 +2,7 @@
 
 class CreateAuthItemsCommand extends CConsoleCommand
 {
-	public function actionIndex($email, $password) {
+	public function actionIndex($name, $password) {
 		/** @var $auth CAuthManager */
 		$auth=Yii::app()->authManager;
 		$existingOperations = $auth->getOperations();
@@ -21,10 +21,10 @@ class CreateAuthItemsCommand extends CConsoleCommand
 			$role->addChild('adminActions');
 		}
 
-		$newAdmin = User::model()->findByAttributes(array('email'=>$email));
+		$newAdmin = User::model()->findByAttributes(array('name'=>$name));
 		if (empty($newAdmin))
 			$newAdmin = new User();
-		$newAdmin->email = $email;
+		$newAdmin->name = $name;
 		$newAdmin->password = md5($password.Yii::app()->params['md5Salt']);
 		if (!$newAdmin->save())
 			throw new CException(print_r($newAdmin->getErrors(), true));

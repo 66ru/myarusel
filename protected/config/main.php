@@ -8,7 +8,7 @@ return array(
 	'name'=>'Myarusel',
 	'language' => 'ru',
 
-//	'preload'=>array('log'),
+	'preload'=>array('log', 'bootstrap'),
 
 	'import'=>array(
 		'application.models.*',
@@ -65,13 +65,16 @@ return array(
 				),
 			),
 		),
-		'errorHandler'=>array(
-			// use 'site/error' action to display errors
-			//'errorAction'=>'site/error',
+		'bootstrap'=>array(
+			'class'=>'ext.bootstrap.components.Bootstrap', // assuming you extracted bootstrap under extensions
+			'responsiveCss' => true,
 		),
-		/*'log'=>array(
+		'errorHandler'=>array(
+			'errorAction'=>'site/error',
+		),
+		'log'=>array(
 			'class'=>'CLogRouter',
-			'routes'=>array(
+			/*'routes'=>array(
 				array(
 					'class'=>'CFileLogRoute',
 					'levels'=>'error, warning',
@@ -81,8 +84,8 @@ return array(
 					'class'=>'CWebLogRoute',
 				),
 
-			),
-		),*/
+			),*/
+		),
 	),
 
 	'params'=> array_merge($params, array(
