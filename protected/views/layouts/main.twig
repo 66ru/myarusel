@@ -28,6 +28,7 @@
 			{'label':'Войти', 'url':['/site/login'], 'visible':App.user.isGuest},
 			{'label':'Админ зона', 'url':'#', 'visible':App.user.checkAccess('adminActions'), 'items': [
 				{'label':'Пользователи', 'url':['/admin/adminUsers'], 'active' : this.id == 'admin/adminUsers' },
+				{'label':'Клиенты', 'url':['/admin/adminClients'], 'active' : this.id == 'admin/adminClients' },
 			]},
 			{'label':'Выйти ('~App.user.name~')', 'url':['/site/logout'], 'visible':not App.user.isGuest}
 		]

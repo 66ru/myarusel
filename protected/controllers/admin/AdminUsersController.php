@@ -22,12 +22,18 @@ class AdminUsersController extends AdminController
 		);
 	}
 
+	/**
+	 * @param User $model
+	 */
 	public function beforeSave($model)
 	{
 		$model->password = md5($model->password.Yii::app()->params['md5Salt']);;
 		parent::beforeSave($model);
 	}
 
+	/**
+	 * @param User $model
+	 */
 	public function beforeEdit($model)
 	{
 		$model->password = '';

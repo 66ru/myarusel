@@ -54,6 +54,9 @@ return array(
 			'class'=>'CDbAuthManager',
 			'connectionID'=>'db',
 		),
+		'fs' => array(
+			'class' => 'FileSystem'
+		),
 		'viewRenderer'=>array(
 			'class'=>'ext.ETwigViewRenderer',
 			'twigPathAlias' => 'lib.twig.lib.Twig',

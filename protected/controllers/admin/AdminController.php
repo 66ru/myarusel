@@ -53,14 +53,16 @@ class AdminController extends Controller
 			$model->attributes=$_POST[$this->modelName];
 			$model->scenario = 'save';
 			$this->beforeSave($model);
-			if($model->save())
+			if($model->save()) {
+				$this->afterSave($model);
 				$this->redirect(array($this->getId()));
+			}
 		}
 
 		$this->beforeEdit($model);
 		$this->render('application.views.admin.'.($createNew ? 'add' : 'edit'), array(
 			'model' => $model,
-			'editFormElements' => $this->getEditFormElements(),
+			'editFormElements' => $this->getEditFormElements($model),
 		));
 	}
 
@@ -105,18 +107,26 @@ class AdminController extends Controller
 		$model = CActiveRecord::model($this->modelName);
 		$attributes = $model->getAttributes();
 		unset($attributes[ $model->metaData->tableSchema->primaryKey ]);
-		$attributes = array_keys($attributes);
+		$columns = array_keys($attributes);
 
-		$attributes[] = array(
+		$columns[] = $this->getButtonsColumn();
+
+		return $columns;
+	}
+
+	public function getButtonsColumn() {
+		return array(
 			'class' => 'bootstrap.widgets.BootButtonColumn',
 			'template' => '{update}&nbsp;&nbsp;&nbsp;{delete}',
 			'updateButtonUrl' => 'Yii::app()->controller->createUrl("edit",array("id"=>$data->primaryKey))'
 		);
-
-		return $attributes;
 	}
 
-	public function getEditFormElements() {
+	/**
+	 * @param CActiveRecord $model
+	 * @return array
+	 */
+	public function getEditFormElements($model) {
 		$elements['buttons'] = array(
 			'send'=> array(
 				'type' => 'submit',
@@ -129,6 +139,16 @@ class AdminController extends Controller
 		return $elements;
 	}
 
+	/**
+	 * @param CActiveRecord $model
+	 */
 	public function beforeSave($model) {}
+	/**
+	 * @param CActiveRecord $model
+	 */
+	public function afterSave($model) {}
+	/**
+	 * @param CActiveRecord $model
+	 */
 	public function beforeEdit($model) {}
 }

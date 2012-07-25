@@ -31,6 +31,8 @@ class User extends CActiveRecord
 			array('name, password', 'required'),
 			array('password', 'length', 'is'=>32, 'allowEmpty'=>false, 'on'=>'save'),
 			array('password', 'length', 'max'=>31, 'allowEmpty'=>false, 'on'=>'edit'),
+
+			array('name, email', 'safe', 'on'=>'search'),
 		);
 	}
 
