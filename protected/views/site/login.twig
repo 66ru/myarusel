@@ -16,8 +16,9 @@
 {{ form.passwordFieldRow(model, 'password')|raw }}
 {{ form.checkboxRow(model, 'rememberMe')|raw }}
 {{ widget('bootstrap.widgets.BootButton', {
+	'type': 'primary',
 	'buttonType' : 'submit',
-	'icon' : 'ok',
+	'icon' : 'ok white',
 	'label' : 'Войти',
 }) }}
 

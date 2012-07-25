@@ -22,6 +22,7 @@
 				'class' : 'bootstrap.widgets.BootMenu',
 				'items' : [
 					{'label':'Главная', 'url':['/site/index']},
+					{'label':'Создать карусельку', 'url':['/carousel/index'], 'visible':App.user.checkAccess('adminActions'), 'active' : this.id == 'carousel'},
 				]
 			},{
 				'class' : 'bootstrap.widgets.BootMenu',
