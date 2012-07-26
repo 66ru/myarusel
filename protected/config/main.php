@@ -55,7 +55,8 @@ return array(
 			'connectionID'=>'db',
 		),
 		'fs' => array(
-			'class' => 'FileSystem'
+			'class' => 'FileSystem',
+			'nestedFolders' => 1,
 		),
 		'viewRenderer'=>array(
 			'class'=>'ext.ETwigViewRenderer',
@@ -71,11 +72,15 @@ return array(
 			),
 		),
 		'bootstrap'=>array(
-			'class'=>'ext.bootstrap.components.Bootstrap', // assuming you extracted bootstrap under extensions
+			'class'=>'lib.bootstrap.components.Bootstrap', // assuming you extracted bootstrap under extensions
 			'responsiveCss' => true,
 		),
 		'errorHandler'=>array(
 			'errorAction'=>'site/error',
+		),
+		'image' => array(
+			'class' => 'ext.image.CImageComponent',
+			'driver' => $params['imageDriver'],
 		),
 		'log'=>array(
 			'class'=>'CLogRouter',

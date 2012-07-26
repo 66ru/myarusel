@@ -1,6 +1,7 @@
 <?php
 
 Yii::import('application.controllers.admin.*');
+Yii::app()->getComponent('image');
 
 class AdminClientsController extends AdminController
 {
@@ -24,6 +25,7 @@ class AdminClientsController extends AdminController
 				'options' => array(
 					'uploadedFileFieldName' => '_logo',
 					'removeImageFieldName' => '_removeLogoFlag',
+					'thumbnailImageUrl' => $model->getResizedLogoUrl(120, 120),
 				),
 			),
 			'caption' => array(
@@ -41,6 +43,7 @@ class AdminClientsController extends AdminController
 			array(
 				'class' => 'ext.BootImageColumn',
 				'name' => 'logoUrl',
+				'thumbnailUrl' => '$data->getResizedLogoUrl(120, 120)',
 			),
 			'name',
 			'feedUrl',
@@ -63,7 +66,10 @@ class AdminClientsController extends AdminController
 		}
 		$model->_logo = CUploadedFile::getInstance($model, '_logo');
 		if ($model->validate() && !empty($model->_logo)) {
+			if (!empty($model->logoUid))
+				$fs->removeFile($model->logoUid);
 			$model->logoUid = $fs->publishFile($model->_logo->tempName, $model->_logo->name);
+			$fs->resizeImage($model->logoUid, array(120,120));
 		}
 
 		parent::beforeSave($model);

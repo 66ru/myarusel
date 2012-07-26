@@ -13,8 +13,8 @@ class ImageFileRowWidget extends CWidget
 
 	/** @var string refers to CUploadedFile instance */
 	public $uploadedFileFieldName = '_image';
-	/** @var string refers to checkbox field */
 
+	/** @var string refers to checkbox field */
 	public $removeImageFieldName = '_removeImageFlag';
 
 	/** @var int */

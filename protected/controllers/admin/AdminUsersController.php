@@ -11,7 +11,6 @@ class AdminUsersController extends AdminController
 		return array(
 			'name' => array(
 				'type' => 'textField',
-				'htmlOptions' => array('hint'=>'In addition to freeform text, any HTML5 text-based input appears like so.'),
 			),
 			'email' => array(
 				'type' => 'textField'
@@ -20,6 +19,17 @@ class AdminUsersController extends AdminController
 				'type' => 'passwordField'
 			),
 		);
+	}
+
+	public function getTableColumns()
+	{
+		$attributes = array(
+			'name',
+			'email',
+			$this->getButtonsColumn(),
+		);
+
+		return $attributes;
 	}
 
 	/**

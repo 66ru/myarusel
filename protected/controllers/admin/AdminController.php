@@ -1,21 +1,16 @@
 <?php
 
+Yii::app()->getComponent('bootstrap');
+
 class AdminController extends Controller
 {
-	public $menu = array(
-		array('label' => 'Добавить', 'url' => array('add'))
-	);
-
-	public $modelName;
+	public $modelName = null;
 	/**
 	 * @var array Склонение должно соответствовать словам соответственно: (добавить .., редактирование .., список ..)
 	 */
 	public $modelHumanTitle = array('модель','модели','моделей');
 
 	public $defaultAction = 'list';
-	public $listTitle = 'Список';
-	public $addTitle = 'Добавить';
-	public $editTitle = 'Редактирование';
 
 	public function filters()
 	{
@@ -53,14 +48,12 @@ class AdminController extends Controller
 			$model->attributes=$_POST[$this->modelName];
 			$model->scenario = 'save';
 			$this->beforeSave($model);
-			if($model->save()) {
-				$this->afterSave($model);
+			if($model->save())
 				$this->redirect(array($this->getId()));
-			}
 		}
 
 		$this->beforeEdit($model);
-		$this->render('application.views.admin.'.($createNew ? 'add' : 'edit'), array(
+		$this->render('//admin/crud/'.($createNew ? 'add' : 'edit'), array(
 			'model' => $model,
 			'editFormElements' => $this->getEditFormElements($model),
 		));
@@ -75,6 +68,10 @@ class AdminController extends Controller
 		return $model;
 	}
 
+	public function actionIndex() {
+		$this->render('//admin/index');
+	}
+
 	public function actionList() {
 		/** @var $model CActiveRecord */
 		$model=new $this->modelName('search');
@@ -82,7 +79,7 @@ class AdminController extends Controller
 		if(isset($_GET[$this->modelName]))
 			$model->attributes=$_GET[$this->modelName];
 
-		$this->render('application.views.admin.list', array(
+		$this->render('//admin/crud/list', array(
 			'model' => $model,
 			'columns' => $this->getTableColumns(),
 		));
@@ -127,16 +124,7 @@ class AdminController extends Controller
 	 * @return array
 	 */
 	public function getEditFormElements($model) {
-		$elements['buttons'] = array(
-			'send'=> array(
-				'type' => 'submit',
-				'label'=> 'Сохранить',
-			),
-		);
-		if (!isset($elements['enctype']))
-			$elements['enctype'] = 'multipart/form-data';
-
-		return $elements;
+		return array();
 	}
 
 	/**

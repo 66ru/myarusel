@@ -4,6 +4,6 @@
 [submodule "lib/twig"]
 	path = lib/twig
 	url = git://github.com/fabpot/Twig.git
-[submodule "protected/extensions/bootstrap"]
-	path = protected/extensions/bootstrap
+[submodule "lib/bootstrap"]
+	path = lib/bootstrap
 	url = git://github.com/mediasite/yii-bootstrap.git

@@ -75,6 +75,16 @@ class Client extends CActiveRecord
 		}
 	}
 
+	public function getResizedLogoUrl($width, $height, $master = NULL) {
+		if (!empty($this->logoUid)) {
+			/** @var $fs FileSystem */
+			$fs = Yii::app()->fs;
+			return $fs->getResizedImageUrl($this->logoUid, array($width, $height, $master));
+		} else {
+			return '';
+		}
+	}
+
 	protected function afterDelete()
 	{
 		/** @var $fs FileSystem */

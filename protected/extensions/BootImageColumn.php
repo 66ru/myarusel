@@ -8,11 +8,17 @@ class BootImageColumn extends BootDataColumn
 
 	public $htmlOptions = array('style'=>'width:120px');
 
+	public $imageStyle = 'max-width:120px';
+
+	public $thumbnailUrl = null;
+
 	public function init()
 	{
+		if (empty($this->thumbnailUrl))
+			$this->thumbnailUrl = '$data->'.$this->name;
 		$this->value = '
 			CHtml::link(
-				CHtml::image($data->'.$this->name.'),
+				CHtml::image('.$this->thumbnailUrl.',"", array("style"=>"'.$this->imageStyle.'")),
 				$data->'.$this->name.',
 				array("target" => "_blank")
 			);';
