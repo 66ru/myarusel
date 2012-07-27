@@ -43,8 +43,15 @@ class AdminController extends Controller
 		}
 		$model->scenario = 'edit';
 
-		if(isset($_POST[$this->modelName]))
-		{
+		if(isset($_POST[$this->modelName])) {
+			foreach ($_POST[$this->modelName] as &$postValue) {
+				if (is_string($postValue)) {
+					$postValue = trim($postValue);
+					if ($postValue === '')
+						$postValue = null;
+				}
+			}
+
 			$model->attributes=$_POST[$this->modelName];
 			$model->scenario = 'save';
 			$this->beforeSave($model);
@@ -120,6 +127,30 @@ class AdminController extends Controller
 	}
 
 	/**
+	 * Example:
+	 * <code>
+	 *  return array(
+	 *      'name' => array(
+	 *          'type' => 'textField',
+	 *      ),
+	 *      'clientId' => array(
+	 *          'type' => 'dropDownList',
+	 *          'data' => CHtml::listData(Client::model()->findAll(), 'id', 'name'),
+	 *          'htmlOptions' => array(
+	 *              'empty' => 'Empty',
+	 *          ),
+	 *      ),
+	 *      'logoUrl' => array(
+	 *          'class' => 'ext.ImageFileRowWidget',
+	 *          'options' => array(
+	 *              'uploadedFileFieldName' => '_logo',
+	 *              'removeImageFieldName' => '_removeLogoFlag',
+	 *              'thumbnailImageUrl' => $model->getResizedLogoUrl(120, 120),
+	 *          ),
+	 *      ),
+	 *  );
+	 * </code>
+	 *
 	 * @param CActiveRecord $model
 	 * @return array
 	 */

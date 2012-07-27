@@ -85,6 +85,23 @@ class Client extends CActiveRecord
 		}
 	}
 
+	public function getCategories() {
+		return TreeHelper::getTreeForDropDownBox( YMLHelper::getCategories($this->getFeedFile()), true );
+	}
+
+	public function getFeedFile($forceDownload = false) {
+		$feedFile = Yii::app()->cache->get('feedFile'.$this->feedUrl);
+		if ($feedFile === false || !file_exists($feedFile) || $forceDownload) {
+			if (file_exists($feedFile))
+				unlink(($feedFile));
+			$feedFile = tempnam(Yii::app()->getRuntimePath(), 'yml');
+			CurlHelper::downloadToFile($this->feedUrl, $feedFile);
+			Yii::app()->cache->set('feedFile'.$this->feedUrl, $feedFile, 3600*24);
+		}
+
+		return $feedFile;
+	}
+
 	protected function afterDelete()
 	{
 		/** @var $fs FileSystem */

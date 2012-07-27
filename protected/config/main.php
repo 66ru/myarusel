@@ -32,8 +32,6 @@ return array(
 			'showScriptName' => false,
 			'rules'=>array(
 				'/' => 'site/index',
-				'carousel/' => 'carousel/index',
-				'carousel/<action:\w+>' => 'carousel/<action>',
 				'admin/' => 'admin/admin',
 				'admin/<controller:\w+>/' => 'admin/admin<controller>',
 				'admin/<controller:\w+>/<action:\w+>/' => 'admin/admin<controller>/<action>',
@@ -81,6 +79,9 @@ return array(
 		'image' => array(
 			'class' => 'ext.image.CImageComponent',
 			'driver' => $params['imageDriver'],
+		),
+		'cache' => array(
+			'class' => 'CFileCache',
 		),
 		'log'=>array(
 			'class'=>'CLogRouter',

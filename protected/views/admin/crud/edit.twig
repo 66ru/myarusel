@@ -13,9 +13,15 @@
 
 {% for attributeName, element in editFormElements %}
 	{% if element['class'] %}
-		{{ widget(element['class'], element['options']|merge({'model':model, 'attributeName':attributeName, 'form':form}) ) }}
+		{{ widget(element['class'], element['options']|default({})|merge({'model':model, 'attributeName':element['name'], 'form':form}) ) }}
+	{% elseif element['type'] %}
+		{% if element['data'] %}
+			{{ attribute(form, element['type']~'Row', [ model, attributeName, element['data'], element['htmlOptions'] ? element['htmlOptions'] : [] ])|raw }}
+		{% else %}
+			{{ attribute(form, element['type']~'Row', [ model, attributeName, element['htmlOptions'] ? element['htmlOptions'] : [] ])|raw }}
+		{% endif %}
 	{% else %}
-		{{ attribute(form, element['type']~'Row', [ model, attributeName, element['htmlOptions'] ? element['htmlOptions'] : [] ])|raw }}
+		{{ element|raw }}
 	{% endif %}
 {% endfor %}
 

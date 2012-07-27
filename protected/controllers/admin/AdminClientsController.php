@@ -20,8 +20,9 @@ class AdminClientsController extends AdminController
 			'feedUrl' => array(
 				'type' => 'textField'
 			),
-			'logoUrl' => array(
+			array(
 				'class' => 'ext.ImageFileRowWidget',
+				'name' => 'logoUrl',
 				'options' => array(
 					'uploadedFileFieldName' => '_logo',
 					'removeImageFieldName' => '_removeLogoFlag',
