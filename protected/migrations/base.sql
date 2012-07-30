@@ -31,7 +31,8 @@ CREATE TABLE `Carousel` (
   `clientId` int(10) unsigned NOT NULL,
   `categories` text NOT NULL,
   `onlyCheap` int(1) NOT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `clientId` (`clientId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `Client` (
@@ -52,7 +53,8 @@ CREATE TABLE `Item` (
   `url` varchar(255) NOT NULL DEFAULT '',
   `imageUid` varchar(100) NOT NULL DEFAULT '',
   `carouselId` int(11) unsigned NOT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `carouselId` (`carouselId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=uf8;
 
 CREATE TABLE `User` (
