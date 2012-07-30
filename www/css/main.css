@@ -12,3 +12,12 @@ body {
 h1, h2, h3, h4, h5, h6 {
 	margin-bottom: 0.6em;
 }
+
+#ajaxLoader {
+	width: 32px;
+	height: 32px;
+	position: absolute;
+	top: 50px;
+	background: url('../images/ajaxLoader.gif');
+	display: none;
+}

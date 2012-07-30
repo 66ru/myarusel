@@ -28,7 +28,11 @@ class UpdateCarouselsCommand extends CConsoleCommand
 			}
 			unset($itemAttributes); // remove link
 
-			Item::model()->deleteAllByAttributes(array('carouselId' => $carousel->id));
+			/** @var $item Item */
+			foreach($carousel->items as $item) {
+				$item->delete();
+			}
+
 			foreach ($items as $itemAttributes) {
 				$item = new Item();
 				$item->setAttributes($itemAttributes);

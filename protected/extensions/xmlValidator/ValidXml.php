@@ -5,6 +5,23 @@
  */
 class ValidXml extends CValidator
 {
+	public $useCache = true;
+
+	private static $filesCache = array();
+
+	function __construct()
+	{
+		Yii::app()->attachEventHandler('onEndRequest', array('ValidXml', 'removeTemporaryFiles'));
+	}
+
+	public static function removeTemporaryFiles(){
+		foreach(self::$filesCache as $file) {
+			if (file_exists($file)) {
+				unlink($file);
+			}
+		}
+	}
+
 	/**
 	 * Validates a single attribute.
 	 * This method should be overridden by child classes.
@@ -16,14 +33,18 @@ class ValidXml extends CValidator
 		$value = $object->$attribute;
 
 		$xml = false;
-		$xmlFile = tempnam(Yii::app()->getRuntimePath(), 'xml');
-		try {
-			CurlHelper::downloadToFile($value, $xmlFile);
-		} catch (Exception $e) {}
+		if ($this->useCache && !empty(self::$filesCache[$value])) {
+			$xmlFile = self::$filesCache[$value];
+		} else {
+			$xmlFile = tempnam(Yii::app()->getRuntimePath(), 'xml');
+			try {
+				CurlHelper::downloadToFile($value, $xmlFile);
+				self::$filesCache[$value] = $xmlFile;
+			} catch (Exception $e) {}
+		}
 
 		if (file_exists($xmlFile)) {
 			$xml = @simplexml_load_file($xmlFile);
-			unlink($xmlFile);
 		}
 
 		if ($xml === false) {
