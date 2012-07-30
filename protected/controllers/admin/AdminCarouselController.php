@@ -30,6 +30,9 @@ class AdminCarouselController extends AdminController
 					'empty' => 'Не выбран',
 				),
 			),
+			'onlyCheap' => array(
+				'type' => 'checkBox',
+			),
 			'categories' => array(
 				'type' => 'dropDownList',
 				'data' => $categoriesList,
@@ -80,6 +83,12 @@ class AdminCarouselController extends AdminController
 				'sortable' => false,
 			),
 			array(
+				'name' => 'onlyCheap',
+				'type' => 'boolean',
+				'header' => 'Только дешевые',
+				'filter' => Yii::app()->format->booleanFormat,
+			),
+			array(
 				'type' => 'raw',
 				'value' => 'CHtml::link("Обновить кеш", array("/admin/adminCarousel/ajaxRefreshCache", "id"=>$data->id), array("class"=>"updateCache"))',
 				'htmlOptions' => array(
@@ -92,7 +101,7 @@ class AdminCarouselController extends AdminController
 		/** @var $cs CClientScript */
 		$cs = Yii::app()->clientScript;
 		$cs->registerScript($this->getId(), "
-$('.updateCache').click(function() {
+$('.updateCache').live('click', function() {
 	$.get($(this).attr('href'), function (data) {
 		if (data.errorCode != 0)
 			alert(data.output);

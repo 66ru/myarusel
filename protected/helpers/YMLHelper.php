@@ -47,9 +47,10 @@ class YMLHelper
 	 * @static
 	 * @param string $ymlFile
 	 * @param array $categoryIds
+	 * @param bool $onlyCheap
 	 * @return array array with Items attributes
 	 */
-	public static function getItems($ymlFile, $categoryIds) {
+	public static function getItems($ymlFile, $categoryIds, $onlyCheap) {
 		$currencies = array(
 			'RUR' => '{price} руб.',
 			'USD' => '${price}',
@@ -76,24 +77,50 @@ class YMLHelper
 				$price = number_format((float)$offer->price, 2, ',', ' ');
 				$price = str_replace('{price}', $price, $currencies[(string)$offer->currencyId]);
 
+				$newItem = array(
+					'url' => !empty($offer->url) ? (string)$offer->url : '',
+					'price' => $price,
+					'priceNumeric' => (string)$offer->price,
+					'picture' => !empty($offer->picture) ? (string)$offer->picture : '',
+					'categoryId' => (string)$offer->categoryId,
+				);
 				if (!empty($attributes['type']) && $attributes['type']=='vendor.model') {
-					$itemsArray[] = array(
-						'url' => !empty($offer->url) ? (string)$offer->url : '',
-						'price' => $price,
-						'picture' => !empty($offer->picture) ? (string)$offer->picture : '',
-						'title' => ($offer->typePrefix ? $offer->typePrefix.' ' : '').$offer->vendor.' '.$offer->model,
-					);
+					$newItem['title'] = ($offer->typePrefix ? $offer->typePrefix.' ' : '').$offer->vendor.' '.$offer->model;
 				} elseif (empty($attributes['type'])) {
-					$itemsArray[] = array(
-						'url' => !empty($offer->url) ? (string)$offer->url : '',
-						'price' => $price,
-						'picture' => !empty($offer->picture) ? (string)$offer->picture : '',
-						'title' => (string)$offer->name,
-					);
+					$newItem['title'] = (string)$offer->name;
 				}
+				$itemsArray[] = $newItem;
 			}
 		}
 		unset($xml);
+
+		if ($onlyCheap) {
+			uasort($itemsArray, function ($a, $b){
+				if ($a['categoryId'] == $b['categoryId'] &&
+						$a['priceNumeric'] == $b['priceNumeric'])
+					return 0;
+				if ($a['categoryId'] < $b['categoryId'])
+					return -1;
+				if ($a['categoryId'] > $b['categoryId'])
+					return 1;
+				return $a['priceNumeric'] < $b['priceNumeric'] ? -1 : 1;
+			});
+
+			$lastCategoryId = null;
+			foreach ($itemsArray as $id=>$item) {
+				if ($itemsArray[$id]['categoryId'] == $lastCategoryId) {
+					$lastCategoryId = $itemsArray[$id]['categoryId'];
+					unset($itemsArray[$id]);
+				} else {
+					$lastCategoryId = $itemsArray[$id]['categoryId'];
+				}
+			}
+		}
+
+		foreach ($itemsArray as &$item) {
+			unset($item['priceNumeric']);
+			unset($item['categoryId']);
+		}
 
 		return $itemsArray;
 	}

@@ -5,6 +5,7 @@
  * @property string name
  * @property int clientId
  * @property string categories
+ * @property bool onlyCheap
  *
  * @property Client $client
  * @property array $items
@@ -43,6 +44,7 @@ class Carousel extends CActiveRecord
 		return array(
 			array('name', 'unique'),
 			array('name, clientId', 'required'),
+			array('onlyCheap', 'boolean'),
 			array('clientId', 'in', 'range'=>CHtml::listData(Client::model()->findAll(array('select'=>'id')), 'id', 'id')),
 			array('categories', 'safe'),
 
@@ -64,6 +66,7 @@ class Carousel extends CActiveRecord
 			'name' => 'Имя',
 			'clientId' => 'Клиент',
 			'categories' => 'Категории',
+			'onlyCheap' => 'Показывать только дешевые товары, по одному из каждой рубрики',
 		);
 	}
 
@@ -72,6 +75,7 @@ class Carousel extends CActiveRecord
 		$criteria=new CDbCriteria;
 
 		$criteria->compare('name', $this->name, true);
+		$criteria->compare('onlyCheap', $this->onlyCheap);
 		$criteria->compare('clientId', $this->clientId);
 
 		return new CActiveDataProvider($this, array(

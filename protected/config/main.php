@@ -85,6 +85,9 @@ return array(
 		'cache' => array(
 			'class' => 'CFileCache',
 		),
+		'format' => array(
+			'booleanFormat' => array('Нет', 'Да'),
+		),
 		'log'=>array(
 			'class'=>'CLogRouter',
 			/*'routes'=>array(
