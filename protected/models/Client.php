@@ -131,7 +131,7 @@ class Client extends CActiveRecord
 		$criteria=new CDbCriteria;
 
 		$criteria->compare('name',$this->name,true);
-		$criteria->compare('url',$this->feedUrl,true);
+		$criteria->compare('url',$this->url,true);
 		$criteria->compare('feedUrl',$this->feedUrl,true);
 		$criteria->compare('caption',$this->caption,true);
 
