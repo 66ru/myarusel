@@ -85,5 +85,12 @@ class Carousel extends CActiveRecord
 	{
 		parent::afterDelete();
 		Item::model()->deleteAllByAttributes(array('carouselId' => $this->id));
+		Yii::app()->setGlobalState('invalidateCarousel'.$this->id, null);
+	}
+
+	protected function afterSave()
+	{
+		parent::afterSave();
+		Yii::app()->setGlobalState('invalidateCarousel'.$this->id, time());
 	}
 }
