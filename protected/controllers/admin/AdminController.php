@@ -2,7 +2,7 @@
 
 Yii::app()->getComponent('bootstrap');
 
-class AdminController extends Controller
+abstract class AdminController extends Controller
 {
 	public $modelName = null;
 	/**

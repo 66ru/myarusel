@@ -8,7 +8,7 @@ return array(
 	'name'=>'Myarusel',
 	'language' => 'ru',
 
-	'preload'=>array('log', 'bootstrap'),
+	'preload'=>array('log'),
 
 	'import'=>array(
 		'application.models.*',
@@ -32,10 +32,12 @@ return array(
 			'showScriptName' => false,
 			'rules'=>array(
 				'/' => 'site/index',
-				'admin/' => 'admin/admin',
+//				'admin/' => 'admin/admin',
 				'admin/<controller:\w+>/' => 'admin/admin<controller>',
 				'admin/<controller:\w+>/<action:\w+>/' => 'admin/admin<controller>/<action>',
-				'<action:\w+>' => 'site/<action>/',
+				'carousel/<id:\d+>' => 'carousel/show',
+//				'<action:\w+>/<id:\d+>' => 'site/<action>',
+				'<action:\w+>' => 'site/<action>',
 //				'<controller:\w+>/<id:\d+>'=>'<controller>/view',
 //				'<controller:\w+>/<action:\w+>/<id:\d+>'=>'<controller>/<action>',
 //				'<controller:\w+>/<action:\w+>'=>'<controller>/<action>',

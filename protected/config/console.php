@@ -28,6 +28,13 @@ return array(
 			'class'=>'CDbAuthManager',
 			'connectionID'=>'db',
 		),
+		'fs' => array(
+			'class' => 'FileSystem',
+			'nestedFolders' => 1,
+		),
+		'cache' => array(
+			'class' => 'CFileCache',
+		),
 		'log'=>array(
 			'class'=>'CLogRouter',
 			/*'routes'=>array(

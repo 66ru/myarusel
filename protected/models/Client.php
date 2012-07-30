@@ -7,6 +7,7 @@
  * @property string $id
  * @property string $name
  * @property string $feedUrl
+ * @property string $url
  * @property string $logoUid
  * @property string $caption
  * @property string $color
@@ -32,9 +33,11 @@ class Client extends CActiveRecord
 	public function rules()
 	{
 		return array(
-			array('name', 'required'),
+			array('name, feedUrl', 'required'),
 			array('name', 'unique'),
+			array('url', 'url'),
 			array('feedUrl', 'url'),
+			array('feedUrl', 'ext.xmlValidator.ValidXml'),
 			array('name, feedUrl, caption, logoUid', 'length', 'max'=>255),
 			array('_logo', 'file', 'types'=>'jpg, gif, png', 'allowEmpty' => true),
 			array('_removeLogoFlag', 'safe'),
@@ -56,6 +59,7 @@ class Client extends CActiveRecord
 	{
 		return array(
 			'name' => 'Название',
+			'url' => 'Ссылка на магазин',
 			'feedUrl' => 'URL фида для Яндекс.Маркета',
 			'_logo' => 'Логотип',
 			'_removeLogoFlag' => 'Удалить логотип',
@@ -106,7 +110,10 @@ class Client extends CActiveRecord
 	{
 		/** @var $fs FileSystem */
 		$fs = Yii::app()->fs;
-		$fs->removeFile($this->logoUid);
+		if (!empty($this->logoUid))
+			$fs->removeFile($this->logoUid);
+
+		Carousel::model()->deleteAllByAttributes(array('clientId'=>$this->id));
 	}
 
 	public function search()
@@ -114,6 +121,7 @@ class Client extends CActiveRecord
 		$criteria=new CDbCriteria;
 
 		$criteria->compare('name',$this->name,true);
+		$criteria->compare('url',$this->feedUrl,true);
 		$criteria->compare('feedUrl',$this->feedUrl,true);
 		$criteria->compare('caption',$this->caption,true);
 

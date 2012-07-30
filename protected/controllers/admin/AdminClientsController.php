@@ -17,6 +17,9 @@ class AdminClientsController extends AdminController
 			'name' => array(
 				'type' => 'textField',
 			),
+			'url' => array(
+				'type' => 'textField'
+			),
 			'feedUrl' => array(
 				'type' => 'textField'
 			),
@@ -27,6 +30,7 @@ class AdminClientsController extends AdminController
 					'uploadedFileFieldName' => '_logo',
 					'removeImageFieldName' => '_removeLogoFlag',
 					'thumbnailImageUrl' => $model->getResizedLogoUrl(120, 120),
+					'hint' => 'Максимальный размер: 120×120px',
 				),
 			),
 			'caption' => array(
@@ -47,8 +51,17 @@ class AdminClientsController extends AdminController
 				'thumbnailUrl' => '$data->getResizedLogoUrl(120, 120)',
 			),
 			'name',
-			'feedUrl',
-			$this->getButtonsColumn(),
+			array(
+				'name' => 'url',
+				'type' => 'url',
+			),
+			array(
+				'name' => 'feedUrl',
+				'type' => 'url',
+			),
+			array_merge($this->getButtonsColumn(), array(
+				'deleteConfirmation' => "Вы точно желаете удалить данного клиента?\n\nВсе его карусельки также будут удалены!",
+			)),
 		);
 
 		return $attributes;

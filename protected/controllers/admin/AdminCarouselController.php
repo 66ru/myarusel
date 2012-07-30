@@ -25,7 +25,7 @@ class AdminCarouselController extends AdminController
 			),
 			'clientId' => array(
 				'type' => 'dropDownList',
-				'data' => CHtml::listData(Client::model()->findAll(), 'id', 'name'),
+				'data' => CHtml::listData(Client::model()->findAll(array('select'=>'id,name')), 'id', 'name'),
 				'htmlOptions' => array(
 					'empty' => 'Не выбран',
 				),
@@ -68,11 +68,15 @@ class AdminCarouselController extends AdminController
 	public function getTableColumns()
 	{
 		$attributes = array(
-			'name',
+			array(
+				'name' => 'name',
+				'type' => 'raw',
+				'value' => 'CHtml::link($data->name, $data->getUrl())',
+			),
 			array(
 				'name' => 'clientId',
 				'value' => '$data->client->name',
-				'filter' => CHtml::listData(Client::model()->findAll(), 'id', 'name'),
+				'filter' => CHtml::listData(Client::model()->findAll(array('select'=>'id,name')), 'id', 'name'),
 				'sortable' => false,
 			),
 			$this->getButtonsColumn(),

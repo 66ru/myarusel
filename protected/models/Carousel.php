@@ -7,6 +7,7 @@
  * @property string categories
  *
  * @property Client $client
+ * @property array $items
  */
 class Carousel extends CActiveRecord
 {
@@ -40,7 +41,7 @@ class Carousel extends CActiveRecord
 		return array(
 			array('name', 'unique'),
 			array('name', 'required'),
-			array('clientId', 'in', 'range'=>CHtml::listData(Client::model()->findAll(array('select'=>'id')), 'id', 'id')),
+			array('clientId', 'in', 'allowEmpty' => false, 'range'=>CHtml::listData(Client::model()->findAll(array('select'=>'id')), 'id', 'id')),
 			array('categories', 'safe'),
 
 			array('name, clientId', 'safe', 'on'=>'search'),
@@ -51,6 +52,7 @@ class Carousel extends CActiveRecord
 	{
 		return array(
 			'client' => array(self::BELONGS_TO, 'Client', 'clientId'),
+			'items' => array(self::HAS_MANY, 'Item', 'carouselId'),
 		);
 	}
 
@@ -73,5 +75,15 @@ class Carousel extends CActiveRecord
 		return new CActiveDataProvider($this, array(
 			'criteria' => $criteria,
 		));
+	}
+
+	public function getUrl(){
+		return Yii::app()->getBaseUrl(true).CHtml::normalizeUrl(array('/carousel/show', 'id' => $this->id));
+	}
+
+	protected function afterDelete()
+	{
+		parent::afterDelete();
+		Item::model()->deleteAllByAttributes(array('carouselId' => $this->id));
 	}
 }

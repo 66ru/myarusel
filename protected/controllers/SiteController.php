@@ -1,5 +1,7 @@
 <?php
 
+Yii::app()->getComponent('bootstrap');
+
 class SiteController extends Controller
 {
 	public function actionIndex()
