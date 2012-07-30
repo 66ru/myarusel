@@ -11,6 +11,8 @@
  */
 class Carousel extends CActiveRecord
 {
+	const INVALIDATE_KEY = 'invalidateCarousel';
+
 	/**
 	 * @static
 	 * @param string $className
@@ -40,8 +42,8 @@ class Carousel extends CActiveRecord
 	{
 		return array(
 			array('name', 'unique'),
-			array('name', 'required'),
-			array('clientId', 'in', 'allowEmpty' => false, 'range'=>CHtml::listData(Client::model()->findAll(array('select'=>'id')), 'id', 'id')),
+			array('name, clientId', 'required'),
+			array('clientId', 'in', 'range'=>CHtml::listData(Client::model()->findAll(array('select'=>'id')), 'id', 'id')),
 			array('categories', 'safe'),
 
 			array('name, clientId', 'safe', 'on'=>'search'),
@@ -77,6 +79,14 @@ class Carousel extends CActiveRecord
 		));
 	}
 
+	public function getInvalidateKey(){
+		return self::INVALIDATE_KEY.$this->id;
+	}
+
+	public function invalidate(){
+		Yii::app()->setGlobalState($this->getInvalidateKey(), time());
+	}
+
 	public function getUrl(){
 		return Yii::app()->getBaseUrl(true).CHtml::normalizeUrl(array('/carousel/show', 'id' => $this->id));
 	}
@@ -84,13 +94,19 @@ class Carousel extends CActiveRecord
 	protected function afterDelete()
 	{
 		parent::afterDelete();
-		Item::model()->deleteAllByAttributes(array('carouselId' => $this->id));
-		Yii::app()->setGlobalState('invalidateCarousel'.$this->id, null);
+		/** @var $item Item */
+		foreach($this->items as $item) {
+			$item->delete();
+		}
+
+		Yii::app()->setGlobalState($this->getInvalidateKey(), null);
 	}
 
 	protected function afterSave()
 	{
 		parent::afterSave();
-		Yii::app()->setGlobalState('invalidateCarousel'.$this->id, time());
+
+		$this->invalidate();
 	}
+
 }

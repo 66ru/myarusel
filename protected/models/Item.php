@@ -54,6 +54,16 @@ class Item extends CActiveRecord
 		);
 	}
 
+	public function getImageUrl(){
+		if (!empty($this->imageUid)) {
+			/** @var $fs FileSystem */
+			$fs = Yii::app()->fs;
+			return $fs->getFileUrl($this->imageUid);
+		} else {
+			return '';
+		}
+
+	}
 //	public function relations()
 //	{
 //		return array(

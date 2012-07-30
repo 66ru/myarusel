@@ -2,14 +2,20 @@
 
 class UpdateCarouselsCommand extends CConsoleCommand
 {
-	public function run() {
+	public function actionIndex($id = null) {
 		/** @var $fs FileSystem */
 		$fs = Yii::app()->fs;
 
-		$carousels = Carousel::model()->with('client')->findAll();
+		if ($id === null)
+			$carousels = Carousel::model()->findAll();
+		else
+			$carousels = array(Carousel::model()->findByPk($id));
 
 		/** @var $carousel Carousel */
 		foreach($carousels as $carousel) {
+			if (!($carousel instanceof Carousel))
+				throw new CException('Can\'t find carousel');
+
 			$feedFile = $carousel->client->getFeedFile(true);
 			$items = YMLHelper::getItems($feedFile, $carousel->categories);
 			foreach ($items as &$itemAttributes) {
@@ -29,7 +35,7 @@ class UpdateCarouselsCommand extends CConsoleCommand
 				if (!$item->save())
 					throw new CException("Can't save Item:\n".print_r($item->getErrors(), true).print_r($item->getAttributes(), true));
 			}
-			Yii::app()->setGlobalState('invalidateCarousel'.$carousel->id, time());
+			$carousel->invalidate();
 		}
 	}
 }

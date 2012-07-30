@@ -11,6 +11,8 @@
  * @property string $logoUid
  * @property string $caption
  * @property string $color
+ *
+ * @property array carousels
  */
 class Client extends CActiveRecord
 {
@@ -52,6 +54,7 @@ class Client extends CActiveRecord
 	public function relations()
 	{
 		return array(
+			'carousels' => array(self::HAS_MANY, 'Carousel', 'clientId'),
 		);
 	}
 
@@ -113,7 +116,14 @@ class Client extends CActiveRecord
 		if (!empty($this->logoUid))
 			$fs->removeFile($this->logoUid);
 
-		Carousel::model()->deleteAllByAttributes(array('clientId'=>$this->id));
+		$feedFile = $this->getFeedFile();
+		if (file_exists($feedFile))
+			unlink($feedFile);
+
+		/** @var $carousel Carousel */
+		foreach ($this->carousels as $carousel) {
+			$carousel->delete();
+		}
 	}
 
 	public function search()
@@ -128,5 +138,14 @@ class Client extends CActiveRecord
 		return new CActiveDataProvider('Client', array(
 			'criteria'=>$criteria,
 		));
+	}
+
+	protected function afterSave()
+	{
+		parent::afterSave();
+		/** @var $carousel Carousel */
+		foreach ($this->carousels as $carousel) {
+			$carousel->invalidate();
+		}
 	}
 }

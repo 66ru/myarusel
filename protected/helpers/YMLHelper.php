@@ -72,16 +72,25 @@ class YMLHelper
 		/** @var $offer SimpleXMLElement */
 		foreach ($xml->shop->offers->offer as $offer) {
 			$attributes = $offer->attributes();
-			if (!empty($attributes['type']) && $attributes['type']=='vendor.model' &&
-					in_array((string)$offer->categoryId, $fullCategoryIds)) {
+			if (in_array((string)$offer->categoryId, $fullCategoryIds)) {
 				$price = number_format((float)$offer->price, 2, ',', ' ');
 				$price = str_replace('{price}', $price, $currencies[(string)$offer->currencyId]);
-				$itemsArray[] = array(
-					'url' => !empty($offer->url) ? (string)$offer->url : '',
-					'price' => $price,
-					'picture' => !empty($offer->picture) ? (string)$offer->picture : '',
-					'title' => ($offer->typePrefix ? $offer->typePrefix.' ' : '').$offer->vendor.' '.$offer->model,
-				);
+
+				if (!empty($attributes['type']) && $attributes['type']=='vendor.model') {
+					$itemsArray[] = array(
+						'url' => !empty($offer->url) ? (string)$offer->url : '',
+						'price' => $price,
+						'picture' => !empty($offer->picture) ? (string)$offer->picture : '',
+						'title' => ($offer->typePrefix ? $offer->typePrefix.' ' : '').$offer->vendor.' '.$offer->model,
+					);
+				} elseif (empty($attributes['type'])) {
+					$itemsArray[] = array(
+						'url' => !empty($offer->url) ? (string)$offer->url : '',
+						'price' => $price,
+						'picture' => !empty($offer->picture) ? (string)$offer->picture : '',
+						'title' => (string)$offer->name,
+					);
+				}
 			}
 		}
 		unset($xml);

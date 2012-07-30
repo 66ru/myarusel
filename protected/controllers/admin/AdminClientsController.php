@@ -53,11 +53,13 @@ class AdminClientsController extends AdminController
 			'name',
 			array(
 				'name' => 'url',
-				'type' => 'url',
+				'type' => 'raw',
+				'value' => 'CHtml::link($data->url, $data->url, array("target"=>"_blank"))',
 			),
 			array(
 				'name' => 'feedUrl',
-				'type' => 'url',
+				'type' => 'raw',
+				'value' => 'CHtml::link($data->feedUrl, $data->feedUrl, array("target"=>"_blank"))',
 			),
 			array_merge($this->getButtonsColumn(), array(
 				'deleteConfirmation' => "Вы точно желаете удалить данного клиента?\n\nВсе его карусельки также будут удалены!",

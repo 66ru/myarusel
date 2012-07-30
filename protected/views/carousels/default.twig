@@ -41,7 +41,7 @@
 								</div>
 								<div class="b-popular__item-price-wrapper">
 									<div class="b-popular__item-price">
-										<div class="b-popular__item-price-content">{{item.price|replace(' ', '&nbsp;')}}</div>
+										<div class="b-popular__item-price-content">{{item.price|replace({' ':'&nbsp;'})|raw}}</div>
 									</div>
 								</div>
 							</div>
