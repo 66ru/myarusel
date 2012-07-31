@@ -44,8 +44,8 @@ class Client extends CActiveRecord
 			array('_logo', 'file', 'types'=>'jpg, gif, png', 'allowEmpty' => true),
 			array('_removeLogoFlag', 'safe'),
 
-			array('color', 'numerical', 'integerOnly'=>true, 'on'=>'save'),
-			array('color', 'length', 'max'=>6, 'on'=>'edit'),
+			array('color', 'ext.hexValidator.FHexValidator'),
+			array('color', 'length', 'max'=>6),
 
 			array('id, name, feedUrl, logoUid, caption, color', 'safe', 'on'=>'search'),
 		);
@@ -107,6 +107,41 @@ class Client extends CActiveRecord
 		}
 
 		return $feedFile;
+	}
+
+	public function getGradient()
+	{
+		$topColor = 0xf99f32;
+		$bottomColor = 0xf47513;
+		$topColorRgb = $bottomColorRgb = $currentColorRgb = array();
+		foreach(array('r'=>8*2,'g'=>8,'b'=>0) as $component=>$shift) {
+			$topColorRgb[$component] = $topColor >> $shift & 0xFF;
+			$bottomColorRgb[$component] = $bottomColor >> $shift & 0xFF;
+			if (!empty($this->color))
+				$currentColorRgb[$component] = hexdec($this->color) >> $shift & 0xFF;
+		}
+
+		$outRange = 0;
+		if (!empty($this->color)) {
+			foreach(array('r','g','b') as $component) {
+				$delta = ($topColorRgb[$component]-$bottomColorRgb[$component])/2;
+				if ($currentColorRgb[$component]+$delta > 0xFF &&
+						$currentColorRgb[$component]+$delta - 0xFF > abs($outRange))
+					$outRange = 0xFF - $currentColorRgb[$component]+$delta;
+				if ($currentColorRgb[$component]-$delta < 0 &&
+						abs($currentColorRgb[$component]-$delta) > abs($outRange))
+					$outRange = -($currentColorRgb[$component]-$delta);
+			}
+			foreach(array('r','g','b') as $component) {
+				$delta = ($topColorRgb[$component]-$bottomColorRgb[$component])/2;
+				$topColorRgb[$component] = round($currentColorRgb[$component]+$delta+$outRange);
+				$bottomColorRgb[$component] = round($currentColorRgb[$component]-$delta+$outRange);
+			}
+		}
+		$topColorRgb['hex'] = dechex($topColorRgb['r']*0x010000 + $topColorRgb['g']*0x000100 + $topColorRgb['b']);
+		$bottomColorRgb['hex'] = dechex($bottomColorRgb['r']*0x010000 + $bottomColorRgb['g']*0x000100 + $bottomColorRgb['b']);
+
+		return array($topColorRgb, $bottomColorRgb);
 	}
 
 	protected function afterDelete()

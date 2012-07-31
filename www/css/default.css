@@ -226,7 +226,8 @@ html[xmlns] .g-line {
 
 .b-popular__item-price-content
 {
-	background-image: linear-gradient(top, rgb(249,159,50) 45%, rgb(244,117,19) 73%);
+	/* REDEFINED IN TEMPLATE */
+/*	background-image: linear-gradient(top, rgb(249,159,50) 45%, rgb(244,117,19) 73%);
 	background-image: -o-linear-gradient(top, rgb(249,159,50) 45%, rgb(244,117,19) 73%);
 	background-image: -moz-linear-gradient(top, rgb(249,159,50) 45%, rgb(244,117,19) 73%);
 	background-image: -ms-linear-gradient(top, rgb(249,159,50) 45%, rgb(244,117,19) 73%);
@@ -240,7 +241,7 @@ html[xmlns] .g-line {
 		color-stop(0.73, rgb(244,117,19))
 	);
 	/* For Internet Explorer 8 */
-	-ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr=#f99f32, endColorstr=#f47513)";
+	/*-ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr=#f99f32, endColorstr=#f47513)";*/
 	background-color: #CCC;
 
 	font: bold 14px Arial;

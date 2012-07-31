@@ -6,6 +6,30 @@
 
 	<link rel="stylesheet" href="/css/default.css" />
 
+	{% set gradientColors = client.getGradient() %}
+	{% set topColor = gradientColors[0] %}
+	{% set bottomColor = gradientColors[1] %}
+	<style type="text/css">
+		.b-popular__item-price-content
+		{
+			background-image: linear-gradient(top, rgb({{topColor.r}},{{topColor.g}},{{topColor.b}}) 45%, rgb({{bottomColor.r}},{{bottomColor.g}},{{bottomColor.b}}) 73%);
+			background-image: -o-linear-gradient(top, rgb({{topColor.r}},{{topColor.g}},{{topColor.b}}) 45%, rgb({{bottomColor.r}},{{bottomColor.g}},{{bottomColor.b}}) 73%);
+			background-image: -moz-linear-gradient(top, rgb({{topColor.r}},{{topColor.g}},{{topColor.b}}) 45%, rgb({{bottomColor.r}},{{bottomColor.g}},{{bottomColor.b}}) 73%);
+			background-image: -ms-linear-gradient(top, rgb({{topColor.r}},{{topColor.g}},{{topColor.b}}) 45%, rgb({{bottomColor.r}},{{bottomColor.g}},{{bottomColor.b}}) 73%);
+			background-image: -webkit-linear-gradient(top, rgb({{topColor.r}},{{topColor.g}},{{topColor.b}}) 45%, rgb({{bottomColor.r}},{{bottomColor.g}},{{bottomColor.b}}) 73%);
+
+			background-image: -webkit-gradient(
+				linear,
+				left top,
+				left bottom,
+				color-stop(0.45, rgb({{topColor.r}},{{topColor.g}},{{topColor.b}})),
+				color-stop(0.73, rgb({{bottomColor.r}},{{bottomColor.g}},{{bottomColor.b}}))
+			);
+			/* For Internet Explorer 8 */
+			-ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr=#{{topColor.hex}}, endColorstr=#{{bottomColor.hex}})";
+		}
+	</style>
+
 	<script type="text/javascript" src="/js/jquery.js"></script>
 	<script type="text/javascript" src="/js/b-popular.js"></script>
 </head>
