@@ -49,7 +49,7 @@
 		'htmlOptions' : {'class':'pull-right'},
 		'items' : [
 			{'label':'Войти', 'url':['/site/login'], 'visible':App.user.isGuest},
-			{'label':'Админ зона', 'url':'#', 'visible':App.user.checkAccess('adminActions'), 'items': [
+			{'label':'Админ зона', 'url':'#', 'visible':App.user.checkAccess('admin'), 'items': [
 				{'label':'Пользователи', 'url':['/admin/adminUsers'], 'active' : this.id == 'admin/adminUsers' },
 				{'label':'Клиенты', 'url':['/admin/adminClients'], 'active' : this.id == 'admin/adminClients' },
 				{'label':'Карусельки', 'url':['/admin/adminCarousel'], 'active' : this.id == 'admin/adminCarousel' },

@@ -5,20 +5,17 @@ class CreateAuthItemsCommand extends CConsoleCommand
 	public function actionIndex($name, $password) {
 		/** @var $auth CAuthManager */
 		$auth=Yii::app()->authManager;
-		$existingOperations = $auth->getOperations();
-		if (!array_key_exists('adminActions', $existingOperations))
-			$auth->createOperation('adminActions');
-		if (!array_key_exists('userActions', $existingOperations))
-			$auth->createOperation('userActions');
 
 		$existingRoles = $auth->getRoles();
 		if (!array_key_exists('user', $existingRoles)) {
-			$role = $auth->createRole('user');
-			$role->addChild('userActions');
+			$auth->createRole('user');
 		}
 		if (!array_key_exists('admin', $existingRoles)) {
-			$role = $auth->createRole('admin');
-			$role->addChild('adminActions');
+			$auth->createRole('admin');
+		}
+		if (!array_key_exists('superadmin', $existingRoles)) {
+			$role = $auth->createRole('superadmin');
+			$role->addChild('admin');
 		}
 
 		$newAdmin = User::model()->findByAttributes(array('name'=>$name));
@@ -30,7 +27,7 @@ class CreateAuthItemsCommand extends CConsoleCommand
 			throw new CException(print_r($newAdmin->getErrors(), true));
 
 		$userRoles = $auth->getRoles($newAdmin->id);
-		if (!array_key_exists('admin', $userRoles))
-			$auth->assign('admin', $newAdmin->id);
+		if (!array_key_exists('superadmin', $userRoles))
+			$auth->assign('superadmin', $newAdmin->id);
 	}
 }

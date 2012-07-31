@@ -23,7 +23,7 @@ abstract class AdminController extends Controller
 	{
 		return array(
 			array('allow',
-				'roles'=>array('admin')
+				'roles'=>array('admin', 'superadmin')
 			),
 			array('deny',
 				'users'=>array('*')
