@@ -55,7 +55,7 @@ CREATE TABLE `Item` (
   `carouselId` int(11) unsigned NOT NULL,
   PRIMARY KEY (`id`),
   KEY `carouselId` (`carouselId`)
-) ENGINE=InnoDB DEFAULT CHARSET=uf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `User` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
