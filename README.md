@@ -11,6 +11,7 @@
 * ПРОФИТ!
 
 ## Раскатка проекта.
+* **Требуется:** curl
 * `git clone git://github.com/mediasite/myarusel.git`
 * `git submodules init`
 * `git submodules update`
