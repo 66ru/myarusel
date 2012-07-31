@@ -11,7 +11,7 @@
 * ПРОФИТ!
 
 ## Раскатка проекта.
-* **Требуется:** curl
+* **Требуется:** php-модули curl, gd
 * `git clone git://github.com/mediasite/myarusel.git`
 * `git submodules init`
 * `git submodules update`
