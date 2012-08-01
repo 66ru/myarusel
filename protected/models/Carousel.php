@@ -6,9 +6,11 @@
  * @property int clientId
  * @property string categories
  * @property bool onlyCheap
+ * @property int ownerId
  *
  * @property Client $client
  * @property array $items
+ * @property User $owner
  */
 class Carousel extends CActiveRecord
 {
@@ -34,11 +36,6 @@ class Carousel extends CActiveRecord
 		);
 	}
 
-	public function init()
-	{
-		$this->scenario = 'save';
-	}
-
 	public function rules()
 	{
 		return array(
@@ -46,9 +43,10 @@ class Carousel extends CActiveRecord
 			array('name, clientId', 'required'),
 			array('onlyCheap', 'boolean'),
 			array('clientId', 'in', 'range'=>CHtml::listData(Client::model()->findAll(array('select'=>'id')), 'id', 'id')),
+			array('ownerId', 'in', 'range'=>CHtml::listData(User::model()->findAll(array('select'=>'id')), 'id', 'id')),
 			array('categories', 'safe'),
 
-			array('name, clientId', 'safe', 'on'=>'search'),
+			array('name, clientId, ownerId', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -57,6 +55,7 @@ class Carousel extends CActiveRecord
 		return array(
 			'client' => array(self::BELONGS_TO, 'Client', 'clientId'),
 			'items' => array(self::HAS_MANY, 'Item', 'carouselId'),
+			'owner' => array(self::BELONGS_TO, 'User', 'ownerId'),
 		);
 	}
 
@@ -65,6 +64,7 @@ class Carousel extends CActiveRecord
 		return array(
 			'name' => 'Имя',
 			'clientId' => 'Клиент',
+			'ownerId' => 'Владелец',
 			'categories' => 'Категории',
 			'onlyCheap' => 'Показывать только дешевые товары, по одному из каждой рубрики',
 		);
@@ -77,6 +77,7 @@ class Carousel extends CActiveRecord
 		$criteria->compare('name', $this->name, true);
 		$criteria->compare('onlyCheap', $this->onlyCheap);
 		$criteria->compare('clientId', $this->clientId);
+		$criteria->compare('ownerId', $this->ownerId);
 
 		return new CActiveDataProvider($this, array(
 			'criteria' => $criteria,

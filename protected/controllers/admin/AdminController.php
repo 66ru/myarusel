@@ -57,8 +57,8 @@ abstract class AdminController extends Controller
 				if (isset($_POST[$this->modelName][$relationName]))
 					$model->$relationName = $_POST[$this->modelName][$relationName];
 			}
-			$model->scenario = 'save';
 			$this->beforeSave($model);
+			$model->scenario = 'save';
 			if($model->save()) {
 				$this->afterSave($model);
 				$this->redirect(array($this->getId()));
@@ -88,7 +88,8 @@ abstract class AdminController extends Controller
 	public function actionList() {
 		/** @var $model CActiveRecord */
 		$model=new $this->modelName('search');
-		$model->unsetAttributes();  // clear any default values
+
+		$this->beforeList($model, $_GET[$this->modelName]);
 		if(isset($_GET[$this->modelName]))
 			$model->attributes=$_GET[$this->modelName];
 
@@ -169,6 +170,12 @@ abstract class AdminController extends Controller
 	 * @param array $attributes
 	 */
 	public function beforeSetAttributes($model, &$attributes) {}
+
+	/**
+	 * @param CActiveRecord $model
+	 * @param array $attributes
+	 */
+	public function beforeList($model, &$attributes) {}
 
 	/**
 	 * @param CActiveRecord $model

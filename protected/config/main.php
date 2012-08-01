@@ -31,7 +31,7 @@ return array(
 			'urlSuffix' => '/',
 			'showScriptName' => false,
 			'rules'=>array(
-				'/' => 'site/index',
+				'/' => '/admin/adminCarousel',
 //				'admin/' => 'admin/admin',
 				'admin/<controller:\w+>/' => 'admin/admin<controller>',
 				'admin/<controller:\w+>/<action:\w+>/' => 'admin/admin<controller>/<action>',

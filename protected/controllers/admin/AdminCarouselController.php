@@ -19,7 +19,7 @@ class AdminCarouselController extends AdminController
 			$categoriesDisabled = false;
 		}
 
-		return array(
+		$formElements =  array(
 			'name' => array(
 				'type' => 'textField',
 			),
@@ -52,6 +52,12 @@ class AdminCarouselController extends AdminController
 				),
 			)
 		);
+		if (Yii::app()->user->checkAccess('admin'))
+			$formElements['ownerId'] = array(
+				'type' => 'dropDownList',
+				'data' => CHtml::listData(User::model()->findAll(array('select'=>'id,name')), 'id', 'name'),
+			);
+		return $formElements;
 	}
 
 	public function actionAjaxGetClientCategories() {
@@ -88,6 +94,17 @@ class AdminCarouselController extends AdminController
 				'header' => 'Только дешевые',
 				'filter' => Yii::app()->format->booleanFormat,
 			),
+		);
+
+		if (Yii::app()->user->checkAccess('admin'))
+			$attributes[] = array(
+				'name' => 'ownerId',
+				'value' => '$data->owner->name',
+				'filter' => CHtml::listData(User::model()->findAll(array('select'=>'id,name')), 'id', 'name'),
+				'sortable' => false,
+			);
+
+		$attributes = array_merge($attributes, array(
 			array(
 				'type' => 'raw',
 				'value' => 'CHtml::link("Обновить кеш", array("/admin/adminCarousel/ajaxRefreshCache", "id"=>$data->id), array("class"=>"updateCache"))',
@@ -96,7 +113,7 @@ class AdminCarouselController extends AdminController
 				)
 			),
 			$this->getButtonsColumn(),
-		);
+		));
 
 		/** @var $cs CClientScript */
 		$cs = Yii::app()->clientScript;
@@ -129,5 +146,43 @@ $('.updateCache').live('click', function() {
 			'errorCode'=>$returnVal,
 			'output' => implode("\n", $output),
 		));
+	}
+
+	/**
+	 * @param Carousel $model
+	 */
+	public function beforeSave($model)
+	{
+		parent::beforeSave($model);
+
+		if ($model->scenario == 'insert')
+			$model->ownerId = Yii::app()->user->getId();
+	}
+
+	/**
+	 * @param Carousel $model
+	 * @throws CHttpException
+	 */
+	public function beforeEdit($model)
+	{
+		parent::beforeEdit($model);
+
+		$admin = Yii::app()->user->checkAccess('admin');
+
+		if (!$admin && !$model->isNewRecord && $model->ownerId != Yii::app()->user->getId())
+			throw new CHttpException(403);
+	}
+
+	/**
+	 * @param Carousel $model
+	 * @param array $attributes
+	 */
+	public function beforeList($model, &$attributes)
+	{
+		parent::beforeList($model, $attributes);
+
+		$admin = Yii::app()->user->checkAccess('admin');
+		if (!$admin)
+			$model->ownerId = Yii::app()->user->getId();
 	}
 }

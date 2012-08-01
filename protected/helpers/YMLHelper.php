@@ -64,6 +64,8 @@ class YMLHelper
 		$xml = self::loadXmlFile($ymlFile);
 
 		$fullCategoryIds = array();
+		if (!is_array($categoryIds))
+			$categoryIds = array();
 		foreach ($categoryIds as $categoryId) {
 			$fullCategoryIds[] = $categoryId;
 			$fullCategoryIds = array_merge($fullCategoryIds, self::internalGetChildIds($tree[null], $categoryId));
