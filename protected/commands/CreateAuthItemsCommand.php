@@ -12,9 +12,9 @@ class CreateAuthItemsCommand extends CConsoleCommand
 		}
 
 		$newAdmin = User::model()->findByAttributes(array('name'=>$name));
-		$newAdmin->scenario = 'save';
 		if (empty($newAdmin))
 			$newAdmin = new User();
+		$newAdmin->scenario = 'save';
 		$newAdmin->name = $name;
 		$newAdmin->password = md5($password.Yii::app()->params['md5Salt']);
 		if (!$newAdmin->save())
