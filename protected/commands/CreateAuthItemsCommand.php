@@ -7,15 +7,8 @@ class CreateAuthItemsCommand extends CConsoleCommand
 		$auth=Yii::app()->authManager;
 
 		$existingRoles = $auth->getRoles();
-		if (!array_key_exists('user', $existingRoles)) {
-			$auth->createRole('user');
-		}
 		if (!array_key_exists('admin', $existingRoles)) {
 			$auth->createRole('admin');
-		}
-		if (!array_key_exists('superadmin', $existingRoles)) {
-			$role = $auth->createRole('superadmin');
-			$role->addChild('admin');
 		}
 
 		$newAdmin = User::model()->findByAttributes(array('name'=>$name));
@@ -27,7 +20,7 @@ class CreateAuthItemsCommand extends CConsoleCommand
 			throw new CException(print_r($newAdmin->getErrors(), true));
 
 		$userRoles = $auth->getRoles($newAdmin->id);
-		if (!array_key_exists('superadmin', $userRoles))
-			$auth->assign('superadmin', $newAdmin->id);
+		if (!array_key_exists('admin', $userRoles))
+			$auth->assign('admin', $newAdmin->id);
 	}
 }

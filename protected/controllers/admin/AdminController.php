@@ -23,7 +23,7 @@ abstract class AdminController extends Controller
 	{
 		return array(
 			array('allow',
-				'roles'=>array('admin', 'superadmin')
+				'users'=>array('@')
 			),
 			array('deny',
 				'users'=>array('*')
@@ -41,7 +41,6 @@ abstract class AdminController extends Controller
 		} else {
 			$model = $this->loadModel();
 		}
-		$model->scenario = 'edit';
 
 		if(isset($_POST[$this->modelName])) {
 			foreach ($_POST[$this->modelName] as &$postValue) {
@@ -52,11 +51,18 @@ abstract class AdminController extends Controller
 				}
 			}
 
-			$model->attributes=$_POST[$this->modelName];
+			$this->beforeSetAttributes($model, $_POST[$this->modelName]);
+			$model->setAttributes($_POST[$this->modelName]);
+			foreach($model->relations() as $relationName => $relationAttributes) {
+				if (isset($_POST[$this->modelName][$relationName]))
+					$model->$relationName = $_POST[$this->modelName][$relationName];
+			}
 			$model->scenario = 'save';
 			$this->beforeSave($model);
-			if($model->save())
+			if($model->save()) {
+				$this->afterSave($model);
 				$this->redirect(array($this->getId()));
+			}
 		}
 
 		$this->beforeEdit($model);
@@ -104,7 +110,7 @@ abstract class AdminController extends Controller
 				$this->redirect(array($this->getId()));
 		}
 		else
-			throw new CHttpException(400,'Invalid request. Please do not repeat this request again.');
+			throw new CHttpException(400);
 	}
 
 	public function getTableColumns() {
@@ -157,6 +163,12 @@ abstract class AdminController extends Controller
 	public function getEditFormElements($model) {
 		return array();
 	}
+
+	/**
+	 * @param CActiveRecord $model
+	 * @param array $attributes
+	 */
+	public function beforeSetAttributes($model, &$attributes) {}
 
 	/**
 	 * @param CActiveRecord $model
