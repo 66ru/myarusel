@@ -191,6 +191,8 @@ html[xmlns] .g-line {
 {
 	position: absolute;
 	bottom: 0;
+	max-width: 90px;
+	max-height: 90px;
 }
 
 .b-popular__item-title-wrapper
