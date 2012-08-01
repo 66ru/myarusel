@@ -12,6 +12,7 @@ class CreateAuthItemsCommand extends CConsoleCommand
 		}
 
 		$newAdmin = User::model()->findByAttributes(array('name'=>$name));
+		$newAdmin->scenario = 'save';
 		if (empty($newAdmin))
 			$newAdmin = new User();
 		$newAdmin->name = $name;
