@@ -25,7 +25,7 @@ class AdminCarouselController extends AdminController
 			),
 			'clientId' => array(
 				'type' => 'dropDownList',
-				'data' => CHtml::listData(Client::model()->findAll(array('select'=>'id,name')), 'id', 'name'),
+				'data' => CHtml::listData(Client::model()->mine()->findAll(array('select'=>'id,name')), 'id', 'name'),
 				'htmlOptions' => array(
 					'empty' => 'Не выбран',
 				),

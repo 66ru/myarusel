@@ -11,8 +11,10 @@
  * @property string $logoUid
  * @property string $caption
  * @property string $color
+ * @property int ownerId
  *
  * @property array carousels
+ * @property User $owner
  */
 class Client extends CActiveRecord
 {
@@ -43,11 +45,12 @@ class Client extends CActiveRecord
 			array('name, feedUrl, caption, logoUid', 'length', 'max'=>255),
 			array('_logo', 'file', 'types'=>'jpg, gif, png', 'allowEmpty' => true),
 			array('_removeLogoFlag', 'safe'),
+			array('ownerId', 'in', 'allowEmpty' => false, 'range'=>CHtml::listData(User::model()->findAll(array('select'=>'id')), 'id', 'id')),
 
 			array('color', 'ext.hexValidator.FHexValidator'),
 			array('color', 'length', 'max'=>6),
 
-			array('id, name, feedUrl, logoUid, caption, color', 'safe', 'on'=>'search'),
+			array('id, name, feedUrl, logoUid, caption, color, ownerId', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -55,6 +58,7 @@ class Client extends CActiveRecord
 	{
 		return array(
 			'carousels' => array(self::HAS_MANY, 'Carousel', 'clientId'),
+			'owner' => array(self::BELONGS_TO, 'User', 'ownerId'),
 		);
 	}
 
@@ -68,6 +72,7 @@ class Client extends CActiveRecord
 			'_removeLogoFlag' => 'Удалить логотип',
 			'logoUrl' => 'Логотип',
 			'caption' => 'Подпись',
+			'ownerId' => 'Владелец',
 			'color' => 'Цвет',
 		);
 	}
@@ -169,6 +174,7 @@ class Client extends CActiveRecord
 		$criteria->compare('url',$this->url,true);
 		$criteria->compare('feedUrl',$this->feedUrl,true);
 		$criteria->compare('caption',$this->caption,true);
+		$criteria->compare('ownerId', $this->ownerId);
 
 		return new CActiveDataProvider('Client', array(
 			'criteria'=>$criteria,
@@ -182,5 +188,16 @@ class Client extends CActiveRecord
 		foreach ($this->carousels as $carousel) {
 			$carousel->invalidate();
 		}
+	}
+
+	public function mine(){
+		$this->getDbCriteria()->mergeWith(array(
+			'condition' => 'ownerId = :ownerId',
+			'params' => array(
+				':ownerId' => Yii::app()->user->getId(),
+			),
+		));
+
+		return $this;
 	}
 }

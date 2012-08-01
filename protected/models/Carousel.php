@@ -43,7 +43,7 @@ class Carousel extends CActiveRecord
 			array('name, clientId', 'required'),
 			array('onlyCheap', 'boolean'),
 			array('clientId', 'in', 'range'=>CHtml::listData(Client::model()->findAll(array('select'=>'id')), 'id', 'id')),
-			array('ownerId', 'in', 'range'=>CHtml::listData(User::model()->findAll(array('select'=>'id')), 'id', 'id')),
+			array('ownerId', 'in', 'allowEmpty' => false, 'range'=>CHtml::listData(User::model()->findAll(array('select'=>'id')), 'id', 'id')),
 			array('categories', 'safe'),
 
 			array('name, clientId, ownerId', 'safe', 'on'=>'search'),

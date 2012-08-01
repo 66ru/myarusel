@@ -43,6 +43,7 @@
 		'class' : 'bootstrap.widgets.BootMenu',
 		'items' : [
             {'label':'Карусельки', 'url':['/admin/adminCarousel'], 'active' : this.id == 'admin/adminCarousel' },
+            {'label':'Клиенты', 'url':['/admin/adminClients'], 'active' : this.id == 'admin/adminClients' },
 		]
 	},{
 		'class' : 'bootstrap.widgets.BootMenu',
@@ -51,7 +52,6 @@
 			{'label':'Войти', 'url':['/site/login'], 'visible':App.user.isGuest},
 			{'label':'Админ зона', 'url':'#', 'visible':App.user.checkAccess('admin'), 'items': [
 				{'label':'Пользователи', 'url':['/admin/adminUsers'], 'active' : this.id == 'admin/adminUsers' },
-				{'label':'Клиенты', 'url':['/admin/adminClients'], 'active' : this.id == 'admin/adminClients' },
 			]},
 			{'label':'Выйти ('~App.user.name~')', 'url':['/site/logout'], 'visible':not App.user.isGuest}
 		]
