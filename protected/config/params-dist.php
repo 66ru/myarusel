@@ -2,7 +2,7 @@
 
 return array(
 	'yiiDebug' => true,
-	'imageDriver' => 'GD', // or ImageMagick
+	'imageDriver' => 'ImageMagick', // or GD
 
 	'dbHost' => '127.0.0.1',
 	'dbName' => '',
