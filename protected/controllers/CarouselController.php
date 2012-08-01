@@ -31,10 +31,12 @@ class CarouselController extends Controller
 
 		if (empty($carousel) || empty($carousel->items))
 			throw new CHttpException(404);
-$carousel->client->getGradient();
+
+		$items = $carousel->items;
+		shuffle($items);
 		$this->render('//carousels/default', array(
 			'client' => $carousel->client,
-			'items' => $carousel->items,
+			'items' => $items,
 		));
 	}
 }
