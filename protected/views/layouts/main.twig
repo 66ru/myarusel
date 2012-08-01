@@ -42,8 +42,8 @@
 	{
 		'class' : 'bootstrap.widgets.BootMenu',
 		'items' : [
-            {'label':'Карусельки', 'url':['/admin/adminCarousel'], 'active' : this.id == 'admin/adminCarousel' },
-            {'label':'Клиенты', 'url':['/admin/adminClients'], 'active' : this.id == 'admin/adminClients' },
+            {'label':'Карусельки', 'url':['/admin/adminCarousel'], 'active' : this.id == 'admin/adminCarousel', 'visible':not App.user.isGuest },
+            {'label':'Клиенты', 'url':['/admin/adminClients'], 'active' : this.id == 'admin/adminClients', 'visible':not App.user.isGuest },
 		]
 	},{
 		'class' : 'bootstrap.widgets.BootMenu',
