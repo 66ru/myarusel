@@ -37,7 +37,7 @@
 
 <div class="ekabu-goods-feed">
 	<div class="ekabu-goods-feed-card">
-		<a href="{{client.url}}"><img class="ekabu-goods-feed__img" src="{{client.getResizedLogoUrl(120, 120)}}" alt="{{client.name}}"/></a>
+		<a href="{{client.url}}" target="blank"><img class="ekabu-goods-feed__img" src="{{client.getResizedLogoUrl(120, 120)}}" alt="{{client.name}}"/></a>
 	</div>
 
 	<div class="ekabu-goods-feed__descr">{{client.caption}}</div>
@@ -58,7 +58,7 @@
 						<li class="b-popular__items-item">
 							<div class="b-popular__item">
 								<div class="b-popular__item-title-wrapper">
-									<a href="{{item.url}}" class="b-popular__item-title">
+									<a href="{{item.url}}" class="b-popular__item-title" target="blank">
 										<span class="b-popular__item-image-wrapper"><img class="b-popular__item-image" src="{{item.imageUrl}}" alt="{{item.title}}" /></span>
 										{{item.title}}
 									</a>
