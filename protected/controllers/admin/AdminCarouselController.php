@@ -19,13 +19,18 @@ class AdminCarouselController extends AdminController
 			$categoriesDisabled = false;
 		}
 
+		$clients = Client::model();
+		if (!Yii::app()->user->checkAccess('admin'))
+			$clients = $clients->mine();
+		$clients = CHtml::listData($clients->findAll(array('select'=>'id,name')), 'id', 'name');
+
 		$formElements =  array(
 			'name' => array(
 				'type' => 'textField',
 			),
 			'clientId' => array(
 				'type' => 'dropDownList',
-				'data' => CHtml::listData(Client::model()->mine()->findAll(array('select'=>'id,name')), 'id', 'name'),
+				'data' => $clients,
 				'htmlOptions' => array(
 					'empty' => 'Не выбран',
 				),
@@ -93,6 +98,7 @@ class AdminCarouselController extends AdminController
 				'type' => 'boolean',
 				'header' => 'Только дешевые',
 				'filter' => Yii::app()->format->booleanFormat,
+				'sortable' => false,
 			),
 		);
 
