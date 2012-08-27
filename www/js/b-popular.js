@@ -1,14 +1,23 @@
 ;(function($){
 	$(function(){
-		var wrapperWidth = $('.b-popular__items-wrapper').innerWidth();
-		var elementWidth = wrapperWidth / window.onPage;
-		$('.b-popular__items-item').width(elementWidth);
+		var elementWidth;
+		var wrapperWidth;
+		var items_wrapper = $('.b-popular__items');
+		var position = 0; // Базовая позиция = 0, но можно задать
+
+		function resize() {
+			wrapperWidth = $('.b-popular__items-wrapper').innerWidth();
+			elementWidth = wrapperWidth / window.onPage;
+			$('.b-popular__items-item').width(elementWidth);
+			items_wrapper.animate({'margin-left': "-" + position * elementWidth},0);
+		}
+		resize();
+		$(window).resize(resize);
+
 		$('.b-popular__control_prev').hover(function(){$(this).addClass('b-popular__control_prev_hover')}, function(){$(this).removeClass('b-popular__control_prev_hover')});
 		$('.b-popular__control_next').hover(function(){$(this).addClass('b-popular__control_next_hover')}, function(){$(this).removeClass('b-popular__control_next_hover')});
 		
-		var items_wrapper = $('.b-popular__items');
-		var position = 0; // Базовая позиция = 0, но можно задать
-		
+
 		var prev_control = $('.b-popular__control_prev');
 		var next_control = $('.b-popular__control_next');
 		
