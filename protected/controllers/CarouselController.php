@@ -12,7 +12,7 @@ class CarouselController extends Controller
 				return array(
 					array(
 						'COutputCache',
-						'duration'=>0,
+						'duration'=>3600,
 						'varyByParam'=>array('id'),
 						'dependency' => new CGlobalStateCacheDependency($carousel->getInvalidateKey()),
 					),
