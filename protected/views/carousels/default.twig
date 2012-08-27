@@ -34,7 +34,9 @@
 	<script type="text/javascript" src="/js/b-popular.js"></script>
 </head>
 <body>
-
+<script type="text/javascript">
+	window.onPage = {{onPage}};
+</script>
 <div class="ekabu-goods-feed">
 	<div class="ekabu-goods-feed-card">
 		<a href="{{client.url}}" target="blank"><img class="ekabu-goods-feed__img" src="{{client.getResizedLogoUrl(120, 120)}}" alt="{{client.name}}"/></a>

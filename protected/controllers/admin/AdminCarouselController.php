@@ -38,6 +38,9 @@ class AdminCarouselController extends AdminController
 			'onlyCheap' => array(
 				'type' => 'checkBox',
 			),
+			'onPage' => array(
+				'type' => 'textField'
+			),
 			'categories' => array(
 				'type' => 'dropDownList',
 				'data' => $categoriesList,
