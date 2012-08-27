@@ -106,12 +106,13 @@
 	height: 90px;
 	width: 90px;
 	margin-bottom: 8px;
+	vertical-align: middle;
 }
 
 .b-popular__item-image
 {
 	max-width: 90px;
-	height: 90px;
+	max-height: 90px;
 }
 
 .b-popular__item-title-wrapper
