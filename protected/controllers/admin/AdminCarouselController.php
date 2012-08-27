@@ -35,8 +35,9 @@ class AdminCarouselController extends AdminController
 					'empty' => 'Не выбран',
 				),
 			),
-			'onlyCheap' => array(
-				'type' => 'checkBox',
+			'viewType' => array(
+				'type' => 'dropDownList',
+				'data' => Carousel::getViewTypes(),
 			),
 			'isVertical' => array(
 				'type' => 'checkBox',
@@ -100,13 +101,6 @@ class AdminCarouselController extends AdminController
 				'name' => 'clientId',
 				'value' => '$data->client->name',
 				'filter' => CHtml::listData(Client::model()->findAll(array('select'=>'id,name')), 'id', 'name'),
-				'sortable' => false,
-			),
-			array(
-				'name' => 'onlyCheap',
-				'type' => 'boolean',
-				'header' => 'Только дешевые',
-				'filter' => Yii::app()->format->booleanFormat,
 				'sortable' => false,
 			),
 		);
