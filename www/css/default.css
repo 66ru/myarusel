@@ -47,7 +47,10 @@ blockquote, q {
 
 
 html {font-size: 100.01%}
-body {font-size: 62.5%;}
+body {
+	font-size: 62.5%;
+	font-family: Arial,sans-serif;
+}
 
 
 
