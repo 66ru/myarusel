@@ -52,7 +52,7 @@ class YMLHelper
 	 */
 	public static function getItems($ymlFile, $categoryIds, $viewType) {
 		$currencies = array(
-			'RUR' => '{price} руб.',
+			'RUR' => '{price} р.',
 			'USD' => '${price}',
 			'UAH' => '{price} грн.',
 			'KZT' => '{price} тңг',
@@ -79,7 +79,7 @@ class YMLHelper
 		foreach ($xml->shop->offers->offer as $offer) {
 			$attributes = $offer->attributes();
 			if (in_array((string)$offer->categoryId, $fullCategoryIds)) {
-				$price = number_format((float)$offer->price, 2, ',', ' ');
+				$price = number_format((float)$offer->price, 0, ',', ' ');
 				$price = str_replace('{price}', $price, $currencies[(string)$offer->currencyId]);
 
 				$newItem = array(

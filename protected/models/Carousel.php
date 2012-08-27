@@ -6,6 +6,7 @@
  * @property int clientId
  * @property int onPage
  * @property string categories
+ * @property string urlPrefix
  * @property int viewType
  * @property bool isVertical
  * @property int ownerId
@@ -56,6 +57,7 @@ class Carousel extends CActiveRecord
 			array('name', 'unique'),
 			array('name, clientId', 'required'),
 			array('isVertical', 'boolean'),
+			array('urlPrefix', 'url'),
 			array('viewType', 'in', 'range'=>array_keys(self::getViewTypes())),
 			array('clientId', 'in', 'range'=>EHtml::listData(Client::model())),
 			array('ownerId', 'in', 'allowEmpty' => false, 'range'=>EHtml::listData(User::model())),
@@ -81,6 +83,7 @@ class Carousel extends CActiveRecord
 			'clientId' => 'Клиент',
 			'ownerId' => 'Владелец',
 			'categories' => 'Категории',
+			'urlPrefix' => 'Префикс ссылки',
 			'viewType' => 'Формат отображения',
 			'isVertical' => 'Вертикальное отображение',
 			'onPage' => 'Позиций в блоке',

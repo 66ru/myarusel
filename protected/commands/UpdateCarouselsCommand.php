@@ -36,25 +36,6 @@ class UpdateCarouselsCommand extends CConsoleCommand
 			foreach ($items as $itemAttributes) {
 				$item = new Item();
 				$item->setAttributes($itemAttributes);
-				$item->price = preg_filter('#,\p{Nd}{2}#u','',$item->price);
-				$item->price = preg_filter('#\P{Nd}#u','',$item->price);
-				$item->price = strrev(preg_replace('#(\p{Nd}{3})#u','$1 ',strrev($item->price)));
-
-				if(empty($itemAttributes['currencyId'])) $itemAttributes['currencyId'] = 'RUR';
-				switch($itemAttributes['currencyId']) {
-					case 'USD':
-						$item->price .= '$';
-						break;
-					case 'UAH':
-						$item->price .= ' гр.';
-						break;
-					case 'KZT':
-						$item->price .= ' тг.';
-						break;
-					default:
-						$item->price .= ' р.';
-						break;
-				}
 				if (!$item->save())
 					throw new CException("Can't save Item:\n".print_r($item->getErrors(), true).print_r($item->getAttributes(), true));
 			}
