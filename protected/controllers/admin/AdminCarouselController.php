@@ -48,6 +48,12 @@ class AdminCarouselController extends AdminController
 					'hint' => 'Количество одновременно показываемых позиций на экране',
 				),
 			),
+			'urlPrefix' => array(
+				'type' => 'textField',
+				'htmlOptions' => array(
+					'hint' => 'Например: http://domain.com/go/',
+				),
+			),
 			'categories' => array(
 				'type' => 'dropDownList',
 				'data' => $categoriesList,

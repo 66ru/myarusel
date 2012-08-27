@@ -39,6 +39,7 @@ class CarouselController extends Controller
 			'client' => $carousel->client,
 			'items' => $items,
 			'onPage' => $carousel->onPage,
+		    'urlPrefix' => $carousel->urlPrefix,
 		));
 	}
 }
