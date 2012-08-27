@@ -51,8 +51,8 @@ class AdminCarouselController extends AdminController
 			array(
 				'class' => 'ext.DependInputScriptWidget',
 				'options' => array(
-					'masterElementId' => ExtendedHtml::resolveId($model, "clientId"),
-					'dependedElementId' => ExtendedHtml::resolveId($model, "categories"),
+					'masterElementId' => EHtml::resolveId($model, "clientId"),
+					'dependedElementId' => EHtml::resolveId($model, "categories"),
 					'getDataUrl' => CHtml::normalizeUrl(array('/admin/adminCarousel/ajaxGetClientCategories', 'id' => '')),
 				),
 			)
