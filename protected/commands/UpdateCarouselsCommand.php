@@ -17,7 +17,7 @@ class UpdateCarouselsCommand extends CConsoleCommand
 				throw new CException('Can\'t find carousel');
 
 			$feedFile = $carousel->client->getFeedFile(true);
-			$items = YMLHelper::getItems($feedFile, $carousel->categories, $carousel->onlyCheap);
+			$items = YMLHelper::getItems($feedFile, $carousel->categories, $carousel->viewType);
 			foreach ($items as &$itemAttributes) {
 				$tempFile = tempnam(sys_get_temp_dir(), 'myarusel-image');
 				CurlHelper::downloadToFile($itemAttributes['picture'], $tempFile);
