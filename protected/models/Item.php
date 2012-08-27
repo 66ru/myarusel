@@ -31,7 +31,7 @@ class Item extends CActiveRecord
 			array('title', 'length', 'max'=>255, 'allowEmpty' => false),
 			array('url', 'url', 'allowEmpty' => false),
 			array('imageUid, price', 'length', 'max'=>100, 'allowEmpty' => false),
-			array('carouselId', 'in', 'allowEmpty' => false, 'range'=>CHtml::listData(Carousel::model()->findAll(array('select'=>'id')), 'id', 'id')),
+			array('carouselId', 'in', 'allowEmpty' => false, 'range'=>EHtml::listData(Carousel::model())),
 
 //			array('name, clientId', 'safe', 'on'=>'search'),
 		);

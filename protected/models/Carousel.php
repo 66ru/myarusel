@@ -5,7 +5,7 @@
  * @property string name
  * @property int clientId
  * @property string categories
- * @property bool onlyCheap
+ * @property int viewType
  * @property int ownerId
  *
  * @property Client $client
@@ -15,6 +15,18 @@
 class Carousel extends CActiveRecord
 {
 	const INVALIDATE_KEY = 'invalidateCarousel';
+
+	const VIEW_ALL = 0;
+	const VIEW_ONLY_CHEAP = 1;
+	const VIEW_USE_GROUPS = 2;
+
+	public static function getViewTypes(){
+		return array(
+			self::VIEW_ALL => 'Показывать все товары',
+			self::VIEW_ONLY_CHEAP => 'Показывать только дешевые товары, по одному из каждой рубрики',
+			self::VIEW_USE_GROUPS => 'Группировать товары по рубрикам',
+		);
+	}
 
 	/**
 	 * @static
@@ -41,9 +53,9 @@ class Carousel extends CActiveRecord
 		return array(
 			array('name', 'unique'),
 			array('name, clientId', 'required'),
-			array('onlyCheap', 'boolean'),
-			array('clientId', 'in', 'range'=>CHtml::listData(Client::model()->findAll(array('select'=>'id')), 'id', 'id')),
-			array('ownerId', 'in', 'allowEmpty' => false, 'range'=>CHtml::listData(User::model()->findAll(array('select'=>'id')), 'id', 'id')),
+			array('viewType', 'in', 'range'=>array_keys(self::getViewTypes())),
+			array('clientId', 'in', 'range'=>EHtml::listData(Client::model())),
+			array('ownerId', 'in', 'allowEmpty' => false, 'range'=>EHtml::listData(User::model())),
 			array('categories', 'safe'),
 
 			array('name, clientId, ownerId', 'safe', 'on'=>'search'),
@@ -66,7 +78,7 @@ class Carousel extends CActiveRecord
 			'clientId' => 'Клиент',
 			'ownerId' => 'Владелец',
 			'categories' => 'Категории',
-			'onlyCheap' => 'Показывать только дешевые товары, по одному из каждой рубрики',
+			'viewType' => 'Формат отображения',
 		);
 	}
 
@@ -75,7 +87,6 @@ class Carousel extends CActiveRecord
 		$criteria=new CDbCriteria;
 
 		$criteria->compare('name', $this->name, true);
-		$criteria->compare('onlyCheap', $this->onlyCheap);
 		$criteria->compare('clientId', $this->clientId);
 		$criteria->compare('ownerId', $this->ownerId);
 

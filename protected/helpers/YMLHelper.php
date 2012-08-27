@@ -23,7 +23,7 @@ class YMLHelper
 			);
 			if (!empty($attributes['parentId']))
 				$newCategory['parentId'] = (string)$attributes['parentId'];
-			$categories[] = $newCategory;
+			$categories[$newCategory['id']] = $newCategory;
 		}
 		unset($xml);
 
@@ -47,10 +47,10 @@ class YMLHelper
 	 * @static
 	 * @param string $ymlFile
 	 * @param array $categoryIds
-	 * @param bool $onlyCheap
+	 * @param int $viewType
 	 * @return array array with Items attributes
 	 */
-	public static function getItems($ymlFile, $categoryIds, $onlyCheap) {
+	public static function getItems($ymlFile, $categoryIds, $viewType) {
 		$currencies = array(
 			'RUR' => '{price} руб.',
 			'USD' => '${price}',
@@ -59,6 +59,9 @@ class YMLHelper
 		);
 
 		$categories = self::getCategories($ymlFile);
+		foreach ($categories as &$category)
+			$category['count'] = 0;
+		unset($category);
 		$tree = TreeHelper::makeTree(null, CHtml::listData($categories, 'id', 'parentId'));
 
 		$xml = self::loadXmlFile($ymlFile);
@@ -91,12 +94,13 @@ class YMLHelper
 				} elseif (empty($attributes['type'])) {
 					$newItem['title'] = (string)$offer->name;
 				}
+				$categories[$newItem['categoryId']]['count']++;
 				$itemsArray[] = $newItem;
 			}
 		}
 		unset($xml);
 
-		if ($onlyCheap) {
+		if ($viewType == Carousel::VIEW_ONLY_CHEAP || $viewType == Carousel::VIEW_USE_GROUPS) {
 			uasort($itemsArray, function ($a, $b){
 				if ($a['categoryId'] == $b['categoryId'] &&
 						$a['priceNumeric'] == $b['priceNumeric'])
@@ -118,11 +122,18 @@ class YMLHelper
 				}
 			}
 		}
+		if ($viewType == Carousel::VIEW_USE_GROUPS) {
+			foreach ($itemsArray as &$item) {
+				$item['title'] = $categories[$item['categoryId']]['name'];
+				$item['price'] = "от {$item['price']} ({$categories[$item['categoryId']]['count']})";
+			}
+		}
 
 		foreach ($itemsArray as &$item) {
 			unset($item['priceNumeric']);
 			unset($item['categoryId']);
 		}
+		unset($item);
 
 		return $itemsArray;
 	}

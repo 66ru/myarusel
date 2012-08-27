@@ -45,7 +45,7 @@ class Client extends CActiveRecord
 			array('name, feedUrl, caption, logoUid', 'length', 'max'=>255),
 			array('_logo', 'file', 'types'=>'jpg, gif, png', 'allowEmpty' => true),
 			array('_removeLogoFlag', 'safe'),
-			array('ownerId', 'in', 'allowEmpty' => false, 'range'=>CHtml::listData(User::model()->findAll(array('select'=>'id')), 'id', 'id')),
+			array('ownerId', 'in', 'allowEmpty' => false, 'range'=>EHtml::listData(User::model())),
 
 			array('color', 'ext.hexValidator.FHexValidator'),
 			array('color', 'length', 'max'=>6),
