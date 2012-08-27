@@ -34,9 +34,11 @@ class CarouselController extends Controller
 
 		$items = $carousel->items;
 		shuffle($items);
-		$this->render('//carousels/default', array(
+		$view = ($carousel->isVertical) ? '//carousels/default' : '//carousels/vertical';
+		$this->render($view, array(
 			'client' => $carousel->client,
 			'items' => $items,
+			'onPage' => $carousel->onPage,
 		));
 	}
 }

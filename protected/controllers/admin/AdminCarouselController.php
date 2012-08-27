@@ -38,6 +38,12 @@ class AdminCarouselController extends AdminController
 			'onlyCheap' => array(
 				'type' => 'checkBox',
 			),
+			'isVertical' => array(
+				'type' => 'checkBox',
+			),
+			'onPage' => array(
+				'type' => 'textField'
+			),
 			'categories' => array(
 				'type' => 'dropDownList',
 				'data' => $categoriesList,
@@ -97,6 +103,13 @@ class AdminCarouselController extends AdminController
 				'name' => 'onlyCheap',
 				'type' => 'boolean',
 				'header' => 'Только дешевые',
+				'filter' => Yii::app()->format->booleanFormat,
+				'sortable' => false,
+			),
+			array(
+				'name' => 'isVertical',
+				'type' => 'boolean',
+				'header' => 'Вертикально',
 				'filter' => Yii::app()->format->booleanFormat,
 				'sortable' => false,
 			),
