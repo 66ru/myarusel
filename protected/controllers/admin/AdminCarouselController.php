@@ -42,7 +42,10 @@ class AdminCarouselController extends AdminController
 				'type' => 'checkBox',
 			),
 			'onPage' => array(
-				'type' => 'textField'
+				'type' => 'textField',
+				'htmlOptions' => array(
+					'hint' => 'Количество одновременно показываемых позиций на экране',
+				),
 			),
 			'categories' => array(
 				'type' => 'dropDownList',
@@ -103,13 +106,6 @@ class AdminCarouselController extends AdminController
 				'name' => 'onlyCheap',
 				'type' => 'boolean',
 				'header' => 'Только дешевые',
-				'filter' => Yii::app()->format->booleanFormat,
-				'sortable' => false,
-			),
-			array(
-				'name' => 'isVertical',
-				'type' => 'boolean',
-				'header' => 'Вертикально',
 				'filter' => Yii::app()->format->booleanFormat,
 				'sortable' => false,
 			),

@@ -49,7 +49,7 @@ class Carousel extends CActiveRecord
 			array('ownerId', 'in', 'allowEmpty' => false, 'range'=>CHtml::listData(User::model()->findAll(array('select'=>'id')), 'id', 'id')),
 			array('categories', 'safe'),
 
-			array('name, clientId, isVertical, ownerId', 'safe', 'on'=>'search'),
+			array('name, clientId, ownerId', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -71,7 +71,7 @@ class Carousel extends CActiveRecord
 			'categories' => 'Категории',
 			'onlyCheap' => 'Показывать только дешевые товары, по одному из каждой рубрики',
 			'isVertical' => 'Вертикальное отображение',
-			'onPage' => 'Количество одновременно показываемых позиций на экране',
+			'onPage' => 'Позиций в блоке',
 		);
 	}
 
