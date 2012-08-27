@@ -12,7 +12,7 @@ class CarouselController extends Controller
 				return array(
 					array(
 						'COutputCache',
-						'duration'=>3600,
+						'duration'=>0,
 						'varyByParam'=>array('id'),
 						'dependency' => new CGlobalStateCacheDependency($carousel->getInvalidateKey()),
 					),
@@ -34,7 +34,8 @@ class CarouselController extends Controller
 
 		$items = $carousel->items;
 		shuffle($items);
-		$this->render('//carousels/default', array(
+		$view = ($carousel->isVertical === 0) ? '//carousels/default' : '//carousels/vertical';
+		$this->render($view, array(
 			'client' => $carousel->client,
 			'items' => $items,
 			'onPage' => $carousel->onPage,

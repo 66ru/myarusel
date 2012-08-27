@@ -5,7 +5,7 @@
 	<title>{{client.name}}</title>
 
 	<link rel="stylesheet" href="/css/default.css" />
-	<link rel="stylesheet" href="/css/horizontal.css" />
+	<link rel="stylesheet" href="/css/vertical.css" />
 
 	{% set gradientColors = client.getGradient() %}
 	{% set topColor = gradientColors[0] %}
@@ -30,14 +30,8 @@
 			-ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr=#{{topColor.hex}}, endColorstr=#{{bottomColor.hex}})";
 		}
 	</style>
-
-	<script type="text/javascript" src="/js/jquery.js"></script>
-	<script type="text/javascript" src="/js/b-popular.js"></script>
 </head>
 <body>
-<script type="text/javascript">
-	window.onPage = {{onPage}};
-</script>
 <div class="ekabu-goods-feed">
 	<div class="ekabu-goods-feed-card">
 		<a href="{{client.url}}" target="blank"><img class="ekabu-goods-feed__img" src="{{client.getResizedLogoUrl(120, 120)}}" alt="{{client.name}}"/></a>
@@ -53,18 +47,17 @@
 			<ins class="b-popular-rbcnr"></ins>
 
 			<div class="b-popular__global-wrapper">
-				<i class="b-popular__control b-popular__control_prev"></i>
 				<div class="b-popular__items-wrapper">
 					<!-- Максимум 100 элементов! -->
 					<ul class="b-popular__items">
-						{% for item in items if loop.index0 < 100 %}
+						{% for item in items if (loop.index0 < 100 and loop.index0 < onPage) %}
 						<li class="b-popular__items-item">
 							<div class="b-popular__item">
 								<div class="b-popular__item-title-wrapper">
 									<a href="{{item.url}}" class="b-popular__item-title" target="blank">
 										<span class="b-popular__item-image-wrapper"><img class="b-popular__item-image" src="{{item.imageUrl}}" alt="{{item.title}}" /></span>
 										<div class="b-popular__item-title-text">
-										{{item.title}}
+											{{item.title}}
 										</div>
 									</a>
 								</div>
@@ -78,7 +71,6 @@
 						{% endfor %}
 					</ul>
 				</div>
-				<i class="b-popular__control b-popular__control_next"></i>
 			</div>
 		</div>
 	</div>

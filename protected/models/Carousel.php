@@ -7,6 +7,7 @@
  * @property int onPage
  * @property string categories
  * @property bool onlyCheap
+ * @property bool isVertical
  * @property int ownerId
  *
  * @property Client $client
@@ -42,13 +43,13 @@ class Carousel extends CActiveRecord
 		return array(
 			array('name', 'unique'),
 			array('name, clientId', 'required'),
-			array('onlyCheap', 'boolean'),
+			array('onlyCheap, isVertical', 'boolean'),
 			array('onPage', 'numerical'),
 			array('clientId', 'in', 'range'=>CHtml::listData(Client::model()->findAll(array('select'=>'id')), 'id', 'id')),
 			array('ownerId', 'in', 'allowEmpty' => false, 'range'=>CHtml::listData(User::model()->findAll(array('select'=>'id')), 'id', 'id')),
 			array('categories', 'safe'),
 
-			array('name, clientId, ownerId', 'safe', 'on'=>'search'),
+			array('name, clientId, isVertical, ownerId', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -69,6 +70,7 @@ class Carousel extends CActiveRecord
 			'ownerId' => 'Владелец',
 			'categories' => 'Категории',
 			'onlyCheap' => 'Показывать только дешевые товары, по одному из каждой рубрики',
+			'isVertical' => 'Вертикальное отображение',
 			'onPage' => 'Количество одновременно показываемых позиций на экране',
 		);
 	}
@@ -79,6 +81,7 @@ class Carousel extends CActiveRecord
 
 		$criteria->compare('name', $this->name, true);
 		$criteria->compare('onlyCheap', $this->onlyCheap);
+		$criteria->compare('isVertical', $this->isVertical);
 		$criteria->compare('clientId', $this->clientId);
 		$criteria->compare('ownerId', $this->ownerId);
 
