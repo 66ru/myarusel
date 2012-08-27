@@ -37,6 +37,7 @@ class CarouselController extends Controller
 		$this->render('//carousels/default', array(
 			'client' => $carousel->client,
 			'items' => $items,
+			'onPage' => $carousel->onPage,
 		));
 	}
 }

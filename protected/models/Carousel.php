@@ -4,6 +4,7 @@
  * @property int id
  * @property string name
  * @property int clientId
+ * @property int onPage
  * @property string categories
  * @property bool onlyCheap
  * @property int ownerId
@@ -42,6 +43,7 @@ class Carousel extends CActiveRecord
 			array('name', 'unique'),
 			array('name, clientId', 'required'),
 			array('onlyCheap', 'boolean'),
+			array('onPage', 'numerical'),
 			array('clientId', 'in', 'range'=>CHtml::listData(Client::model()->findAll(array('select'=>'id')), 'id', 'id')),
 			array('ownerId', 'in', 'allowEmpty' => false, 'range'=>CHtml::listData(User::model()->findAll(array('select'=>'id')), 'id', 'id')),
 			array('categories', 'safe'),
@@ -67,6 +69,7 @@ class Carousel extends CActiveRecord
 			'ownerId' => 'Владелец',
 			'categories' => 'Категории',
 			'onlyCheap' => 'Показывать только дешевые товары, по одному из каждой рубрики',
+			'onPage' => 'Количество одновременно показываемых позиций на экране',
 		);
 	}
 
