@@ -11,5 +11,4 @@ class m120827_064400_carousel_vertical extends CDbMigration
 	{
 		$this->dropColumn('carousel','isVertical');
 	}
-
 }
