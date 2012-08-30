@@ -18,6 +18,8 @@ class UpdateCarouselsCommand extends CConsoleCommand
 
 			$feedFile = $carousel->client->getFeedFile(true);
 			$items = YMLHelper::getItems($feedFile, $carousel->categories, $carousel->viewType);
+			shuffle($items);
+			$items = array_slice($items, 0, 300);
 			foreach ($items as &$itemAttributes) {
 				$tempFile = tempnam(sys_get_temp_dir(), 'myarusel-image');
 				CurlHelper::downloadToFile($itemAttributes['picture'], $tempFile);
