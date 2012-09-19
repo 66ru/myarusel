@@ -57,6 +57,7 @@ class Carousel extends CActiveRecord
 			array('name', 'unique'),
 			array('name, clientId', 'required'),
 			array('isVertical', 'boolean'),
+			array('onPage', 'numerical', 'integerOnly'=>true, 'min'=>0),
 			array('urlPrefix', 'url'),
 			array('viewType', 'in', 'range'=>array_keys(self::getViewTypes())),
 			array('clientId', 'in', 'range'=>EHtml::listData(Client::model())),
