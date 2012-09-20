@@ -41,8 +41,8 @@
 }
 
 .horizontal-goods__img img {
-	max-width: 86px;
-	max-height: 86px;
+	width: 86px;
+	height: 86px;
 }
 
 .horizontal-goods__cost {

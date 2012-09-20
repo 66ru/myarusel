@@ -30,7 +30,7 @@ class AdminClientsController extends AdminController
 				'options' => array(
 					'uploadedFileFieldName' => '_logo',
 					'removeImageFieldName' => '_removeLogoFlag',
-					'thumbnailImageUrl' => $model->getResizedLogoUrl(120, 120),
+					'thumbnailImageUrl' => $model->getResizedLogoUrl(array(120, 120)),
 					'hint' => 'Максимальный размер: 120×120px',
 				),
 			),
@@ -56,7 +56,7 @@ class AdminClientsController extends AdminController
 			array(
 				'class' => 'ext.BootImageColumn',
 				'name' => 'logoUrl',
-				'thumbnailUrl' => '$data->getResizedLogoUrl(120, 120)',
+				'thumbnailUrl' => '$data->getResizedLogoUrl(array(120, 120))',
 			),
 			'name',
 			array(

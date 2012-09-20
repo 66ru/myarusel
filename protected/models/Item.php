@@ -20,11 +20,6 @@ class Item extends CActiveRecord
 		return parent::model($className);
 	}
 
-//	public function init()
-//	{
-//		$this->scenario = 'save';
-//	}
-
 	public function rules()
 	{
 		return array(
@@ -32,8 +27,6 @@ class Item extends CActiveRecord
 			array('url', 'url', 'allowEmpty' => false),
 			array('imageUid, price', 'length', 'max'=>100, 'allowEmpty' => false),
 			array('carouselId', 'in', 'allowEmpty' => false, 'range'=>EHtml::listData(Carousel::model())),
-
-//			array('name, clientId', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -64,31 +57,21 @@ class Item extends CActiveRecord
 		}
 
 	}
-//	public function relations()
-//	{
-//		return array(
-//			'client' => array(self::BELONGS_TO, 'Client', 'clientId'),
-//		);
-//	}
 
-//	public function attributeLabels()
-//	{
-//		return array(
-//			'name' => 'Имя',
-//			'clientId' => 'Клиент',
-//			'categories' => 'Категории',
-//		);
-//	}
-
-//	public function search()
-//	{
-//		$criteria=new CDbCriteria;
-//
-//		$criteria->compare('name', $this->name, true);
-//		$criteria->compare('clientId', $this->clientId);
-//
-//		return new CActiveDataProvider($this, array(
-//			'criteria' => $criteria,
-//		));
-//	}
+	/**
+	 * @param array $sizes array(width, height)
+	 * @param null $master Image::NONE, Image::AUTO, Image::WIDTH, Image::HEIGHT
+	 * @return string
+	 */
+	public function getResizedImageUrl($sizes, $master = null) {
+		$width = $sizes[0];
+		$height = $sizes[1];
+		if (!empty($this->imageUid)) {
+			/** @var $fs FileSystem */
+			$fs = Yii::app()->fs;
+			return $fs->getResizedImageUrl($this->imageUid, array($width, $height, $master));
+		} else {
+			return '';
+		}
+	}
 }

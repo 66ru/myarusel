@@ -7,9 +7,6 @@
 	<link rel="stylesheet" href="/css/default.css" />
 	<link rel="stylesheet" href="/css/vertical.css" />
 
-	{% set gradientColors = client.getGradient() %}
-	{% set topColor = gradientColors[0] %}
-	{% set bottomColor = gradientColors[1] %}
 	<style type="text/css">
 		.horizontal-goods__cost
 		{
@@ -24,18 +21,20 @@
 <script type="text/javascript">
 	window.onPage = {{onPage}};
 </script>
-
+{% set empty1pxGif = 'data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==' %}
 <div style="width: 240px;">
 	<div class="horizontal-goods-container">
 		<div class="horizontal-goods-container__header">
-			<a href="{{urlPrefix}}{{client.url|url_encode}}"><img src="{{client.getResizedLogoUrl(120, 120)}}" alt="{{client.name}}"/></a>
+			<a href="{{urlPrefix}}{{client.url|url_encode}}"><img src="{{client.getResizedLogoUrl(logoSize)}}" alt="{{client.name}}"/></a>
 			<p>{{client.caption}}</p>
 		</div>
 		<ul class="horizontal-goods">
 			{% for item in items if loop.index0 < onPage %}
 			<li>
 				<a href="{{urlPrefix}}{{item.url|url_encode}}">
-					<span class="horizontal-goods__img"><img src="{{item.imageUrl}}" alt="{{item.title}}"/></span>
+					<span class="horizontal-goods__img">
+						<img style="background: url({{item.getResizedImageUrl(thumbSize)}}) center center no-repeat;" src="{{empty1pxGif}}" alt="{{item.title}}"/>
+					</span>
 					<span class="horizontal-goods__title">{{item.title}}</span>
 				</a>
 				<span class="horizontal-goods__cost">{{item.price|replace({' ':'&nbsp;'})|raw}}</span>
