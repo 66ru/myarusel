@@ -22,7 +22,7 @@ class AdminCarouselController extends AdminController
 		$clients = Client::model();
 		if (!Yii::app()->user->checkAccess('admin'))
 			$clients = $clients->mine();
-		$clients = CHtml::listData($clients->findAll(array('select'=>'id,name')), 'id', 'name');
+		$clients = EHtml::listData($clients, 'id', 'name');
 
 		$formElements =  array(
 			'name' => array(
@@ -39,8 +39,9 @@ class AdminCarouselController extends AdminController
 				'type' => 'dropDownList',
 				'data' => Carousel::getViewTypes(),
 			),
-			'isVertical' => array(
-				'type' => 'checkBox',
+			'template' => array(
+				'type' => 'dropDownList',
+				'data' => Carousel::getTemplates(),
 			),
 			'onPage' => array(
 				'type' => 'textField',
@@ -106,7 +107,7 @@ class AdminCarouselController extends AdminController
 			array(
 				'name' => 'clientId',
 				'value' => '$data->client->name',
-				'filter' => CHtml::listData(Client::model()->findAll(array('select'=>'id,name')), 'id', 'name'),
+				'filter' => EHtml::listData(Client::model(), 'id', 'name'),
 				'sortable' => false,
 			),
 		);
@@ -115,7 +116,7 @@ class AdminCarouselController extends AdminController
 			$attributes[] = array(
 				'name' => 'ownerId',
 				'value' => '$data->owner->name',
-				'filter' => CHtml::listData(User::model()->findAll(array('select'=>'id,name')), 'id', 'name'),
+				'filter' => EHtml::listData(User::model(), 'id', 'name'),
 				'sortable' => false,
 			);
 

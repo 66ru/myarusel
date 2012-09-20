@@ -8,7 +8,7 @@
  * @property string categories
  * @property string urlPrefix
  * @property int viewType
- * @property bool isVertical
+ * @property string template
  * @property int ownerId
  *
  * @property Client $client
@@ -23,11 +23,21 @@ class Carousel extends CActiveRecord
 	const VIEW_ONLY_CHEAP = 1;
 	const VIEW_USE_GROUPS = 2;
 
+	const TEMPLATE_VERTICAL = 'vertical';
+	const TEMPLATE_HORIZONTAL = 'horizontal';
+
 	public static function getViewTypes(){
 		return array(
 			self::VIEW_ALL => 'Показывать все товары',
 			self::VIEW_ONLY_CHEAP => 'Показывать только дешевые товары, по одному из каждой рубрики',
 			self::VIEW_USE_GROUPS => 'Группировать товары по рубрикам',
+		);
+	}
+
+	public static function getTemplates(){
+		return array(
+			self::TEMPLATE_HORIZONTAL => 'Горизонтальный',
+			self::TEMPLATE_VERTICAL => 'Вертикальный',
 		);
 	}
 
@@ -56,10 +66,10 @@ class Carousel extends CActiveRecord
 		return array(
 			array('name', 'unique'),
 			array('name, clientId', 'required'),
-			array('isVertical', 'boolean'),
 			array('onPage', 'numerical', 'integerOnly'=>true, 'min'=>0),
 			array('urlPrefix', 'url'),
 			array('viewType', 'in', 'range'=>array_keys(self::getViewTypes())),
+			array('template', 'in', 'range'=>array_keys(self::getTemplates())),
 			array('clientId', 'in', 'range'=>EHtml::listData(Client::model())),
 			array('ownerId', 'in', 'allowEmpty' => false, 'range'=>EHtml::listData(User::model())),
 			array('categories', 'safe'),
@@ -86,7 +96,7 @@ class Carousel extends CActiveRecord
 			'categories' => 'Категории',
 			'urlPrefix' => 'Префикс ссылки',
 			'viewType' => 'Формат отображения',
-			'isVertical' => 'Вертикальное отображение',
+			'template' => 'Шаблон',
 			'onPage' => 'Позиций в блоке',
 		);
 	}
@@ -96,7 +106,6 @@ class Carousel extends CActiveRecord
 		$criteria=new CDbCriteria;
 
 		$criteria->compare('name', $this->name, true);
-		$criteria->compare('isVertical', $this->isVertical);
 		$criteria->compare('clientId', $this->clientId);
 		$criteria->compare('ownerId', $this->ownerId);
 
