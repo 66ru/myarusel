@@ -16,6 +16,7 @@ class UpdateCarouselsCommand extends CConsoleCommand
 			if (!($carousel instanceof Carousel))
 				throw new CException('Can\'t find carousel');
 
+			$fs->resizeImage($carousel->client->logoUid, array($carousel->logoSize, $carousel->logoSize));
 			$feedFile = $carousel->client->getFeedFile(true);
 			$items = YMLHelper::getItems($feedFile, $carousel->categories, $carousel->viewType);
 			shuffle($items);
@@ -23,8 +24,10 @@ class UpdateCarouselsCommand extends CConsoleCommand
 			foreach ($items as &$itemAttributes) {
 				$tempFile = tempnam(sys_get_temp_dir(), 'myarusel-image');
 				CurlHelper::downloadToFile($itemAttributes['picture'], $tempFile);
-				if (ImageHelper::checkImageCorrect($tempFile))
+				if (ImageHelper::checkImageCorrect($tempFile)) {
 					$itemAttributes['imageUid'] = $fs->publishFile($tempFile, $itemAttributes['picture']);
+					$fs->resizeImage($itemAttributes['imageUid'], array($carousel->thumbSize, $carousel->thumbSize));
+				}
 				$itemAttributes['carouselId'] = $carousel->id;
 				unset($itemAttributes['picture']);
 			}

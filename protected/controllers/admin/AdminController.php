@@ -152,7 +152,7 @@ abstract class AdminController extends Controller
 	 *          'options' => array(
 	 *              'uploadedFileFieldName' => '_logo',
 	 *              'removeImageFieldName' => '_removeLogoFlag',
-	 *              'thumbnailImageUrl' => $model->getResizedLogoUrl(120, 120),
+	 *              'thumbnailImageUrl' => $model->getResizedLogoUrl(array(120, 120)),
 	 *          ),
 	 *      ),
 	 *  );

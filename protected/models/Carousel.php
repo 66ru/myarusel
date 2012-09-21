@@ -14,6 +14,8 @@
  * @property Client $client
  * @property array $items
  * @property User $owner
+ * @property array $thumbSize
+ * @property array $logoSize
  */
 class Carousel extends CActiveRecord
 {
@@ -25,6 +27,9 @@ class Carousel extends CActiveRecord
 
 	const TEMPLATE_VERTICAL = 'vertical';
 	const TEMPLATE_HORIZONTAL = 'horizontal';
+
+	const THUMB_SIZE_ATTR = 'thumbSize';
+	const LOGO_SIZE_ATTR = 'logoSize';
 
 	public static function getViewTypes(){
 		return array(
@@ -39,6 +44,29 @@ class Carousel extends CActiveRecord
 			self::TEMPLATE_HORIZONTAL => 'Горизонтальный',
 			self::TEMPLATE_VERTICAL => 'Вертикальный',
 		);
+	}
+
+	public static function getTemplateAttributes(){
+		return array(
+			self::TEMPLATE_HORIZONTAL => array(
+				self::THUMB_SIZE_ATTR => array(90, 90),
+				self::LOGO_SIZE_ATTR => array(120 ,120),
+			),
+			self::TEMPLATE_VERTICAL => array(
+				self::THUMB_SIZE_ATTR => array(86, 86),
+				self::LOGO_SIZE_ATTR => array(220, 150),
+			),
+		);
+	}
+
+	public function getThumbSize() {
+		$templateAttributes = self::getTemplateAttributes();
+		return $templateAttributes[$this->template][self::THUMB_SIZE_ATTR];
+	}
+
+	public function getLogoSize() {
+		$templateAttributes = self::getTemplateAttributes();
+		return $templateAttributes[$this->template][self::LOGO_SIZE_ATTR];
 	}
 
 	/**

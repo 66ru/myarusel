@@ -8,7 +8,7 @@ class CarouselController extends Controller
 			/** @var $carousel Carousel */
 			$carousel = Carousel::model()->findByPk($_GET['id']);
 
-			if (!empty($carousel))
+			if (!empty($carousel) && !YII_DEBUG)
 				return array(
 					array(
 						'COutputCache',
@@ -39,6 +39,8 @@ class CarouselController extends Controller
 			'items' => $items,
 			'onPage' => $carousel->onPage,
 			'urlPrefix' => $carousel->urlPrefix,
+			'logoSize' => $carousel->logoSize,
+			'thumbSize' => $carousel->thumbSize,
 		));
 	}
 }
