@@ -240,3 +240,7 @@
 {
 	background: #f5f5f5 url(../images/b-popular__control.png) -72px 50% no-repeat;
 }
+.b-popular__item-title-text {
+	height:26px;
+	overflow:hidden;
+}
