@@ -30,7 +30,7 @@
 		<ul class="horizontal-goods">
 			{% for item in items if loop.index0 < onPage %}
 			<li>
-				<a href="{{urlPrefix}}{{item.url|url_encode}}">
+				<a href="{{urlPrefix}}{{item.url|url_encode}}" target="_blank">
 					<span class="horizontal-goods__img">
 						<img style="background: url({{item.getResizedImageUrl(thumbSize)}}) center center no-repeat;" src="/images/empty.gif" alt="{{item.title}}"/>
 					</span>
