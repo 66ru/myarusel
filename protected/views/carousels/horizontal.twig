@@ -31,8 +31,9 @@
 		}
 	</style>
 
-	<script type="text/javascript" src="/js/jquery.js"></script>
+	<script type="text/javascript" src="/js/jquery-1.8.2.min.js"></script>
 	<script type="text/javascript" src="/js/b-popular.js"></script>
+	<script type="text/javascript" src="/js/jquery.lazyload.min.js"></script>
 </head>
 <body>
 <script type="text/javascript">
@@ -62,7 +63,7 @@
 							<div class="b-popular__item">
 								<div class="b-popular__item-title-wrapper">
 									<a href="{{urlPrefix}}{{item.url|url_encode}}" class="b-popular__item-title" target="_blank">
-										<span class="b-popular__item-image-wrapper"><img class="b-popular__item-image" src="{{item.getResizedImageUrl(thumbSize)}}" alt="{{item.title}}" /></span>
+										<span class="b-popular__item-image-wrapper"><img class="b-popular__item-image lazy" src="/images/empty.gif" data-original="{{item.getResizedImageUrl(thumbSize)}}" alt="{{item.title}}" /></span>
 										<div class="b-popular__item-title-text">
 										{{item.title}}
 										</div>
