@@ -16,7 +16,8 @@ class UpdateCarouselsCommand extends CConsoleCommand
 			if (!($carousel instanceof Carousel))
 				throw new CException('Can\'t find carousel');
 
-			$fs->resizeImage($carousel->client->logoUid, array($carousel->logoSize, $carousel->logoSize));
+			if (!empty($carousel->client->logoUid))
+				$fs->resizeImage($carousel->client->logoUid, array($carousel->logoSize, $carousel->logoSize));
 			$feedFile = $carousel->client->getFeedFile(true);
 			$items = YMLHelper::getItems($feedFile, $carousel->categories, $carousel->viewType);
 			shuffle($items);

@@ -114,6 +114,8 @@
 {
 	max-width: 90px;
 	max-height: 90px;
+	min-height: 1px;
+	min-width: 1px;
 }
 
 .b-popular__item-title-wrapper
