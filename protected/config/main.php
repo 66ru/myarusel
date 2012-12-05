@@ -14,8 +14,8 @@ return array(
 		'application.models.*',
 		'application.models.forms.*',
 		'application.components.*',
-		'application.helpers.*',
 		'application.helpers.CurlHelper.*',
+		'application.helpers.*',
 	),
 
 //	'modules'=>array(
