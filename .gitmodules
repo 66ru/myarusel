@@ -10,3 +10,6 @@
 [submodule "lib/ar-relation-behavior"]
 	path = lib/ar-relation-behavior
 	url = git@github.com:m8rge/activerecord-relation-behavior.git
+[submodule "protected/helpers/CurlHelper"]
+	path = protected/helpers/CurlHelper
+	url = git@github.com:mediasite/CurlHelper.git

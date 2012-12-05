@@ -15,6 +15,7 @@ return array(
 		'application.models.forms.*',
 		'application.components.*',
 		'application.helpers.*',
+		'application.helpers.CurlHelper.CurlHelper',
 	),
 
 //	'modules'=>array(
