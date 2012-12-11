@@ -62,7 +62,7 @@ class YMLHelper
 		foreach ($categories as &$category)
 			$category['count'] = 0;
 		unset($category);
-		$tree = TreeHelper::makeTree(null, CHtml::listData($categories, 'id', 'parentId'));
+		$categoriesTree = TreeHelper::makeTree(null, CHtml::listData($categories, 'id', 'parentId'));
 
 		$xml = self::loadXmlFile($ymlFile);
 
@@ -71,7 +71,7 @@ class YMLHelper
 			$categoryIds = array();
 		foreach ($categoryIds as $categoryId) {
 			$fullCategoryIds[] = $categoryId;
-			$fullCategoryIds = array_merge($fullCategoryIds, self::internalGetChildIds($tree[null], $categoryId));
+			$fullCategoryIds = array_merge($fullCategoryIds, self::internalGetChildIds($categoriesTree[null], $categoryId));
 		}
 
 		$itemsArray = array();
@@ -100,32 +100,42 @@ class YMLHelper
 		}
 		unset($xml);
 
-		if ($viewType == Carousel::VIEW_ONLY_CHEAP || $viewType == Carousel::VIEW_USE_GROUPS) {
-			uasort($itemsArray, function ($a, $b){
-				if ($a['categoryId'] == $b['categoryId'] &&
-						$a['priceNumeric'] == $b['priceNumeric'])
-					return 0;
-				if ($a['categoryId'] < $b['categoryId'])
-					return -1;
-				if ($a['categoryId'] > $b['categoryId'])
-					return 1;
-				return $a['priceNumeric'] < $b['priceNumeric'] ? -1 : 1;
-			});
-
-			$lastCategoryId = null;
-			foreach ($itemsArray as $id=>$item) {
-				if ($itemsArray[$id]['categoryId'] == $lastCategoryId) {
-					$lastCategoryId = $itemsArray[$id]['categoryId'];
-					unset($itemsArray[$id]);
-				} else {
-					$lastCategoryId = $itemsArray[$id]['categoryId'];
-				}
+		if ($viewType == Carousel::VIEW_ONLY_CHEAP || $viewType == Carousel::VIEW_USE_GROUPS)
+		{
+			// группировка позиций по категориям
+			$categoriesWithItems = array();
+			foreach ($itemsArray as $item) {
+				$categoriesWithItems[ $item['categoryId'] ][] = $item;
 			}
-		}
-		if ($viewType == Carousel::VIEW_USE_GROUPS) {
-			foreach ($itemsArray as &$item) {
-				$item['title'] = $categories[$item['categoryId']]['name'];
-				$item['price'] = "от {$item['price']} ({$categories[$item['categoryId']]['count']})";
+
+			// получение случайных картинок для групп товаров
+			if ($viewType == Carousel::VIEW_USE_GROUPS)
+				$categoryImages = self::getGroupsImages($categoriesWithItems);
+
+			// сортировка позиций по цене ASC
+			foreach ($categoriesWithItems as &$category)
+				$category = self::sortByPriceAsc($category);
+			unset($category);
+
+			// удаление всех позиций в категории кроме первой
+			foreach ($categoriesWithItems as &$category)
+				$category = reset($category);
+			unset($category);
+
+			// если у нас группировка по группам, тогда меняем название и картинку на случайную
+			if ($viewType == Carousel::VIEW_USE_GROUPS) {
+				foreach ($categoriesWithItems as $id => &$item) {
+					$item['title'] = $categories[$id]['name'];
+					$item['price'] = "от {$item['price']} ({$categories[$id]['count']})";
+					$item['picture'] = $categoryImages[$id];
+				}
+				unset($item);
+			}
+
+			// возврат товаров в plain массив
+			$itemsArray = array();
+			foreach ($categoriesWithItems as $item) {
+				$itemsArray[] = $item;
 			}
 		}
 
@@ -134,6 +144,45 @@ class YMLHelper
 			unset($item['categoryId']);
 		}
 		unset($item);
+
+		return $itemsArray;
+	}
+
+	/**
+	 * @param $imagesHelper
+	 * @return array
+	 */
+	private static function getGroupsImages($imagesHelper)
+	{
+		// clear items without pictures
+		foreach ($imagesHelper as &$category) {
+			foreach ($category as $id => $item) {
+				if (empty($item['picture']))
+					unset($category[$id]);
+			}
+		}
+		// randomize;
+		foreach ($imagesHelper as &$category) {
+			shuffle($category);
+			$category = reset($category);
+			$category = $category['picture'];
+		}
+
+		return $imagesHelper;
+	}
+
+	/**
+	 * @param array $itemsArray
+	 * @return mixed
+	 */
+	private static function sortByPriceAsc($itemsArray)
+	{
+		uasort($itemsArray, function ($a, $b) {
+			if ($a['priceNumeric'] == $b['priceNumeric'])
+				return 0;
+
+			return $a['priceNumeric'] < $b['priceNumeric'] ? -1 : 1;
+		});
 
 		return $itemsArray;
 	}
