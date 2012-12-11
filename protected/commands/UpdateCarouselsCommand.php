@@ -25,13 +25,17 @@ class UpdateCarouselsCommand extends CConsoleCommand
 			foreach ($items as $id => &$itemAttributes) {
 				$tempFile = tempnam(sys_get_temp_dir(), 'myarusel-image');
 				try {
-					CurlHelper::downloadToFile($itemAttributes['picture'], $tempFile);
-					if (ImageHelper::checkImageCorrect($tempFile)) {
-						$itemAttributes['imageUid'] = $fs->publishFile($tempFile, $itemAttributes['picture']);
-						$fs->resizeImage($itemAttributes['imageUid'], array($carousel->thumbSize, $carousel->thumbSize));
+					if (!empty($itemAttributes['picture'])) {
+						CurlHelper::downloadToFile($itemAttributes['picture'], $tempFile);
+						if (ImageHelper::checkImageCorrect($tempFile)) {
+							$itemAttributes['imageUid'] = $fs->publishFile($tempFile, $itemAttributes['picture']);
+							$fs->resizeImage($itemAttributes['imageUid'], array($carousel->thumbSize, $carousel->thumbSize));
+						}
+						$itemAttributes['carouselId'] = $carousel->id;
+						unset($itemAttributes['picture']);
+					} else {
+						unset($items[$id]);
 					}
-					$itemAttributes['carouselId'] = $carousel->id;
-					unset($itemAttributes['picture']);
 				} catch (CurlException $e) {
 					unset($items[$id]);
 				}
