@@ -161,6 +161,8 @@ class YMLHelper
 					unset($category[$id]);
 			}
 		}
+		unset($category);
+
 		// randomize;
 		foreach ($imagesHelper as &$category) {
 			shuffle($category);
