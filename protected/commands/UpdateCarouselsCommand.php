@@ -31,6 +31,7 @@ class UpdateCarouselsCommand extends CConsoleCommand
 							$itemAttributes['imageUid'] = $fs->publishFile($tempFile, $itemAttributes['picture']);
 							$fs->resizeImage($itemAttributes['imageUid'], array($carousel->thumbSize, $carousel->thumbSize));
 						}
+						unlink($tempFile);
 						$itemAttributes['carouselId'] = $carousel->id;
 						unset($itemAttributes['picture']);
 					} else {
