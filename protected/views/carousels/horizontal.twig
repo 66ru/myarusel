@@ -70,9 +70,11 @@
 									</a>
 								</div>
 								<div class="b-popular__item-price-wrapper">
-									<div class="b-popular__item-price">
-										<div class="b-popular__item-price-content">{{item.price|replace({' ':'&nbsp;'})|raw}}</div>
-									</div>
+									<a href="{{urlPrefix}}{{item.url}}" class="b-popular__item-title" target="_blank">
+										<div class="b-popular__item-price">
+											<div class="b-popular__item-price-content">{{item.price|replace({' ':'&nbsp;'})|raw}}</div>
+										</div>
+									</a>
 								</div>
 							</div>
 						</li>

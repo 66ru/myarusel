@@ -36,8 +36,8 @@
 						<img style="background: url({{item.getResizedImageUrl(thumbSize)}}) center center no-repeat;" src="/images/empty.gif" alt="{{item.title}}"/>
 					</span>
 					<span class="horizontal-goods__title">{{item.title}}</span>
+					<span class="horizontal-goods__cost">{{item.price|replace({' ':'&nbsp;'})|raw}}</span>
 				</a>
-				<span class="horizontal-goods__cost">{{item.price|replace({' ':'&nbsp;'})|raw}}</span>
 			</li>
 			{% endfor %}
 		</ul>
