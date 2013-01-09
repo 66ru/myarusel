@@ -20,6 +20,8 @@ class UpdateCarouselsCommand extends CConsoleCommand
 				$fs->resizeImage($carousel->client->logoUid, array($carousel->logoSize, $carousel->logoSize));
 			$feedFile = $carousel->client->getFeedFile(true);
 			$items = YMLHelper::getItems($feedFile, $carousel->categories, $carousel->viewType);
+			if (file_exists($feedFile))
+				unlink($feedFile);
 			shuffle($items);
 			$items = array_slice($items, 0, 300);
 			foreach ($items as $id => &$itemAttributes) {
