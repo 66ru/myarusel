@@ -1,15 +1,19 @@
 .horizontal-goods {
-	border-bottom: 1px solid #e0e0e0;
+	position:relative;
 }
+
+
 .horizontal-goods li {
-	padding: 10px;
 	position: relative;
 	border: 1px solid #e0e0e0;
+	border-left: none;
+	border-right: 0px;
 	border-bottom: none;
 	clear: both;
 	overflow: hidden;
 	font: 11px/13px Arial, Tahoma, Sans-Serif;
 	color: #464646;
+	height: 130px;
 }
 
 .horizontal-goods li:hover {
@@ -19,6 +23,11 @@
 .horizontal-goods li span,
 .horizontal-goods li a {
 	display: block;
+}
+
+.horizontal-goods li a {
+	overflow: hidden;
+	padding: 10px;
 }
 
 .horizontal-goods li a,
@@ -32,11 +41,10 @@
 
 .horizontal-goods__img {
 	float: left;
-	border: 1px solid #e0e0e0;
 	background: white;
 	margin-right: 20px;
-	width: 86px;
-	height: 86px;
+	width: 90px;
+	height: 90px;
 	text-align: center;
 }
 
@@ -46,16 +54,27 @@
 }
 
 .horizontal-goods__cost {
-	color: #e1472a;
+	color: #fff;
 	font: bold 14px/13px Arial, Tahoma, Sans-Serif;
 	margin-top: 6px;
+	position:absolute;
+	/*background: url(../images/vertical-caroosel-cost.png) 0 0 repeat-x;*/
+	height: 20px;
+	line-height: 20px;
+	text-align: center;
+	width: 90px;
+	top: 88px
+}
+
+a .horizontal-goods__cost {
+	color: #fff;
 }
 
 .horizontal-goods-container__header {
 	text-align: center;
 	border: 1px solid #dddddd;
 	border-bottom: none;
-	padding: 9px 0 18px 0;
+	padding: 9px 0 48px 0;
 }
 
 .horizontal-goods-container__header p {
@@ -65,3 +84,82 @@
 	font: 12px/14px Arial, Tahoma, Sans-Serif;
 	color: #464646;
 }
+
+
+.horizontal-goods-frame {
+	position:relative;
+	padding-bottom: 40px;
+	border: 1px solid #dddddd;
+	border-top: none
+}
+
+
+.horizontal-goods-frame__control {
+	height: 20px;
+	display: block;
+	background: #f2f2f2;
+}
+.horizontal-goods-frame__control-top {
+	background-image: url(../images/vertical-sprite.png);
+	background-position: center -1px;
+	background-repeat: no-repeat;
+}
+
+.horizontal-goods-frame__control-top_hover {
+	background-image: url(../images/vertical-sprite.png);
+	background-position: center -21px;
+	background-repeat: no-repeat;
+}
+
+.horizontal-goods-frame__control-bottom {
+	background-image: url(../images/vertical-sprite.png);
+	background-position: center -80px;
+	background-repeat: no-repeat;
+}
+
+.horizontal-goods-frame__control-bottom_hover {
+	background-image: url(../images/vertical-sprite.png);
+	background-position: center -60px;
+	background-repeat: no-repeat;
+}
+
+.horizontal-goods-screen {
+	height: 525px;
+	overflow: hidden;
+}
+
+.horizontal-goods-frame__control-frame {
+	display: block;
+	background: #fff;
+	height: 20px;
+	position:absolute;
+	width: 218px;
+	left: 10px;
+}
+
+.horizontal-goods-frame__control-frame-top {
+	top: -30px;
+	background-image: url(../images/vertical-sprite.png);
+	background-position: center -41px;
+	background-repeat: no-repeat;
+}
+
+.horizontal-goods-frame__control-frame-bottom {
+	bottom: 10px;
+	background-image: url(../images/vertical-sprite.png);
+	background-position: center -99px;
+	background-repeat: no-repeat;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
