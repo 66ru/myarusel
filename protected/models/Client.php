@@ -115,7 +115,7 @@ class Client extends CActiveRecord
 				unlink(($feedFile));
 			$feedFile = tempnam(Yii::app()->getRuntimePath(), 'yml');
 			CurlHelper::downloadToFile($this->feedUrl, $feedFile);
-			Yii::app()->cache->set('feedFile'.$this->feedUrl, $feedFile, 3600*24);
+			Yii::app()->cache->set('feedFile'.$this->feedUrl, $feedFile);
 		}
 
 		return $feedFile;
