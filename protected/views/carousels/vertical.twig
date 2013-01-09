@@ -7,10 +7,27 @@
 	<link rel="stylesheet" href="/css/default.css" />
 	<link rel="stylesheet" href="/css/vertical.css" />
 
+	{% set gradientColors = client.getGradient() %}
+	{% set topColor = gradientColors[0] %}
+	{% set bottomColor = gradientColors[1] %}
 	<style type="text/css">
 		.horizontal-goods__cost
 		{
-			color: #{{client.color}};
+			background-image: linear-gradient(top, rgb({{topColor.r}},{{topColor.g}},{{topColor.b}}) 45%, rgb({{bottomColor.r}},{{bottomColor.g}},{{bottomColor.b}}) 73%);
+			background-image: -o-linear-gradient(top, rgb({{topColor.r}},{{topColor.g}},{{topColor.b}}) 45%, rgb({{bottomColor.r}},{{bottomColor.g}},{{bottomColor.b}}) 73%);
+			background-image: -moz-linear-gradient(top, rgb({{topColor.r}},{{topColor.g}},{{topColor.b}}) 45%, rgb({{bottomColor.r}},{{bottomColor.g}},{{bottomColor.b}}) 73%);
+			background-image: -ms-linear-gradient(top, rgb({{topColor.r}},{{topColor.g}},{{topColor.b}}) 45%, rgb({{bottomColor.r}},{{bottomColor.g}},{{bottomColor.b}}) 73%);
+			background-image: -webkit-linear-gradient(top, rgb({{topColor.r}},{{topColor.g}},{{topColor.b}}) 45%, rgb({{bottomColor.r}},{{bottomColor.g}},{{bottomColor.b}}) 73%);
+
+			background-image: -webkit-gradient(
+				linear,
+				left top,
+				left bottom,
+				color-stop(0.45, rgb({{topColor.r}},{{topColor.g}},{{topColor.b}})),
+				color-stop(0.73, rgb({{bottomColor.r}},{{bottomColor.g}},{{bottomColor.b}}))
+			);
+			/* For Internet Explorer 8 */
+			-ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr=#{{topColor.hex}}, endColorstr=#{{bottomColor.hex}})";
 		}
 	</style>
 
@@ -19,28 +36,33 @@
 	<script type="text/javascript" src="/js/jquery.lazyload.min.js"></script>
 </head>
 <body>
-<script type="text/javascript">
-	window.onPage = {{onPage}};
-</script>
 <div style="width: 240px;">
 	<div class="horizontal-goods-container">
 		<div class="horizontal-goods-container__header">
 			<a href="{{urlPrefix}}{{client.url}}" target="_blank"><img src="{{client.getResizedLogoUrl(logoSize)}}" alt="{{client.name}}"/></a>
 			<p>{{client.caption}}</p>
 		</div>
-		<ul class="horizontal-goods">
-			{% for item in items if loop.index0 < onPage %}
-			<li>
-				<a href="{{urlPrefix}}{{item.url}}" target="_blank">
-					<span class="horizontal-goods__img">
-						<img style="background: url({{item.getResizedImageUrl(thumbSize)}}) center center no-repeat;" src="/images/empty.gif" alt="{{item.title}}"/>
-					</span>
-					<span class="horizontal-goods__title">{{item.title}}</span>
-					<span class="horizontal-goods__cost">{{item.price|replace({' ':'&nbsp;'})|raw}}</span>
-				</a>
-			</li>
-			{% endfor %}
-		</ul>
+		<div class="horizontal-goods-frame">
+
+			<div class="horizontal-goods-frame__control-frame horizontal-goods-frame__control-frame-top"><a href="#" class="horizontal-goods-frame__control horizontal-goods-frame__control-top"></a></div>
+			<div class="horizontal-goods-frame__control-frame horizontal-goods-frame__control-frame-bottom"><a href="#" class="horizontal-goods-frame__control horizontal-goods-frame__control-bottom"></a></div>
+
+			<div class="horizontal-goods-screen" style="height: {{onPage*131}}px">
+				<ul class="horizontal-goods">
+				{% for item in items %}
+				<li>
+					<a href="{{urlPrefix}}{{item.url}}" target="_blank">
+						<span class="horizontal-goods__img">
+							<img style="background: url({{item.getResizedImageUrl(thumbSize)}}) center center no-repeat;" src="/images/empty.gif" alt="{{item.title}}"/>
+						</span>
+						<span class="horizontal-goods__title">{{item.title}}</span>
+						<span class="horizontal-goods__cost">{{item.price|replace({' ':'&nbsp;'})|raw}}</span>
+					</a>
+				</li>
+				{% endfor %}
+				</ul>
+			</div>
+		</div>
 	</div>
 </div>
 </body>
