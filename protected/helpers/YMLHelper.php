@@ -126,7 +126,7 @@ class YMLHelper
 			if ($viewType == Carousel::VIEW_USE_GROUPS) {
 				foreach ($categoriesWithItems as $id => &$item) {
 					$item['title'] = $categories[$id]['name'];
-					$item['price'] = "от {$item['price']} ({$categories[$id]['count']})";
+					$item['price'] = "от {$item['price']}";
 					$item['picture'] = $categoryImages[$id];
 				}
 				unset($item);
