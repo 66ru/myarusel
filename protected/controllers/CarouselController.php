@@ -29,8 +29,11 @@ class CarouselController extends Controller
 			'items' => array('scopes'=>'onSite')
 		))->findByPk($id);
 
-		if (empty($carousel) || empty($carousel->items))
-			throw new CHttpException(404);
+		if (empty($carousel) || empty($carousel->items)) {
+            header("HTTP/1.0 404 Not Found");
+            echo " ";
+            Yii::app()->end(0);
+        }
 
 		$items = $carousel->items;
 		shuffle($items);
