@@ -27,7 +27,7 @@ class Carousel extends CActiveRecord
 
     const TEMPLATE_VERTICAL = 'vertical';
     const TEMPLATE_HORIZONTAL = 'horizontal';
-    const TEMPLATE_LANTAR= 'lantar';
+    const TEMPLATE_NARROWHORIZONTAL= 'narrowhorizontal';
 
     const THUMB_SIZE_ATTR = 'thumbSize';
     const LOGO_SIZE_ATTR = 'logoSize';
@@ -44,7 +44,7 @@ class Carousel extends CActiveRecord
         return array(
             self::TEMPLATE_HORIZONTAL => 'Горизонтальный',
             self::TEMPLATE_VERTICAL => 'Вертикальный',
-            self::TEMPLATE_LANTAR => 'Горизонтальный Лантар',
+            self::TEMPLATE_NARROWHORIZONTAL => 'Горизонтальный узкий',
         );
     }
 
@@ -58,7 +58,7 @@ class Carousel extends CActiveRecord
                 self::THUMB_SIZE_ATTR => array(86, 86),
                 self::LOGO_SIZE_ATTR => array(220, 150),
             ),
-            self::TEMPLATE_LANTAR => array(
+            self::TEMPLATE_NARROWHORIZONTAL => array(
                 self::THUMB_SIZE_ATTR => array(70, 70),
                 self::LOGO_SIZE_ATTR => array(125, 125),
             ),
