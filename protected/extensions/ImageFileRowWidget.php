@@ -18,7 +18,7 @@ class ImageFileRowWidget extends CWidget
 	public $removeImageFieldName = '_removeImageFlag';
 
 	/** @var int */
-	public $maxImageSize = 120;
+	public $maxImageSize = 125;
 
 	/** @var null|string URL to thumbnail image. If empty, used fullsize image */
 	public $thumbnailImageUrl = null;

@@ -30,8 +30,8 @@ class AdminClientsController extends AdminController
 				'options' => array(
 					'uploadedFileFieldName' => '_logo',
 					'removeImageFieldName' => '_removeLogoFlag',
-					'thumbnailImageUrl' => $model->getResizedLogoUrl(array(120, 120)),
-					'hint' => 'Максимальный размер: 120×120px',
+					'thumbnailImageUrl' => $model->getResizedLogoUrl(array(125, 125)),
+					'hint' => 'Максимальный размер: 125×125px',
 				),
 			),
 			'caption' => array(
@@ -56,7 +56,7 @@ class AdminClientsController extends AdminController
 			array(
 				'class' => 'ext.BootImageColumn',
 				'name' => 'logoUrl',
-				'thumbnailUrl' => '$data->getResizedLogoUrl(array(120, 120))',
+				'thumbnailUrl' => '$data->getResizedLogoUrl(array(125, 125))',
 			),
 			'name',
 			array(
@@ -102,7 +102,7 @@ class AdminClientsController extends AdminController
 			if (!empty($model->logoUid))
 				$fs->removeFile($model->logoUid);
 			$model->logoUid = $fs->publishFile($model->_logo->tempName, $model->_logo->name);
-			$fs->resizeImage($model->logoUid, array(120,120));
+			$fs->resizeImage($model->logoUid, array(125,125));
 		}
 
 		if ($model->scenario == 'insert')
