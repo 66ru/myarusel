@@ -6,9 +6,9 @@ class BootImageColumn extends BootDataColumn
 
 	public $filter = false;
 
-	public $htmlOptions = array('style'=>'width:120px');
+	public $htmlOptions = array('style'=>'width:125px');
 
-	public $imageStyle = 'max-width:120px';
+	public $imageStyle = 'max-width:125px';
 
 	public $thumbnailUrl = null;
 
