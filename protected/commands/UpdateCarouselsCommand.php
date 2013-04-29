@@ -2,6 +2,8 @@
 
 class UpdateCarouselsCommand extends CConsoleCommand
 {
+    const ITEMS_LIMIT = 300;
+
 	public function actionIndex($id = null) {
 		/** @var $fs FileSystem */
 		$fs = Yii::app()->fs;
@@ -20,8 +22,9 @@ class UpdateCarouselsCommand extends CConsoleCommand
 				$fs->resizeImage($carousel->client->logoUid, array($carousel->logoSize, $carousel->logoSize));
 			$feedFile = $carousel->client->getFeedFile(true);
 			$items = YMLHelper::getItems($feedFile, $carousel->categories, $carousel->viewType);
+            $allItemsCount = count($items);
 			shuffle($items);
-			$items = array_slice($items, 0, 300);
+			$items = array_slice($items, 0, self::ITEMS_LIMIT);
 			foreach ($items as $id => &$itemAttributes) {
 				$tempFile = tempnam(sys_get_temp_dir(), 'myarusel-image');
 				try {
@@ -55,6 +58,15 @@ class UpdateCarouselsCommand extends CConsoleCommand
 					throw new CException("Can't save Item:\n".print_r($item->getErrors(), true).print_r($item->getAttributes(), true));
 			}
 			$carousel->invalidate();
+
+            if ($id !== null) {
+                if ($allItemsCount > self::ITEMS_LIMIT) {
+                    echo "Подлежат обработке " . $allItemsCount . " записей. Из них случайно отобрано " . self::ITEMS_LIMIT .
+                        ". Успешно обработано " . count($items) . ".";
+                } else {
+                    echo "Подлежат обработке " . $allItemsCount . " записей. Успешно обработано " . count($items) . ".";
+                }
+            }
 		}
 	}
 }

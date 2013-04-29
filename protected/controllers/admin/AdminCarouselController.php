@@ -136,10 +136,7 @@ class AdminCarouselController extends AdminController
 		$cs->registerScript($this->getId(), "
 $('.updateCache').live('click', function() {
 	$.get($(this).attr('href'), function (data) {
-		if (data.errorCode != 0)
-			alert(data.output);
-		else
-			alert('Кеш успешно обновлен');
+        alert(data.output);
 	}, 'json');
 
 	return false;
