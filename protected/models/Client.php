@@ -1,5 +1,7 @@
 <?php
 
+use m8rge\CurlHelper;
+
 /**
  * This is the model class for table "Client".
  *

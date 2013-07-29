@@ -1,5 +1,8 @@
 <?php
 
+use m8rge\CurlHelper;
+use m8rge\CurlException;
+
 class UpdateCarouselsCommand extends CConsoleCommand
 {
     const ITEMS_LIMIT = 300;

@@ -1,5 +1,7 @@
 <?php
 
+use m8rge\CurlHelper;
+
 /**
  * fetch file from url from attribute and check it for valid xml inside
  */
