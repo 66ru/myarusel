@@ -1,6 +1,7 @@
 <?php
 
 Yii::setPathOfAlias('lib', realpath(dirname(__FILE__).'/../../lib'));
+Yii::setPathOfAlias('m8rge', realpath(dirname(__FILE__).'/../helpers/CurlHelper'));
 
 $params = require('params.php');
 return array(
@@ -14,7 +15,6 @@ return array(
 		'application.models.*',
 		'application.models.forms.*',
 		'application.components.*',
-		'application.helpers.CurlHelper.*',
 		'application.helpers.*',
 	),
 
