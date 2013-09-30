@@ -53,6 +53,7 @@ class YMLHelper
 	public static function getItems($ymlFile, $categoryIds, $viewType) {
 		$currencies = array(
 			'RUR' => '{price} р.',
+			'RUB' => '{price} р.',
 			'USD' => '${price}',
 			'UAH' => '{price} грн.',
 			'KZT' => '{price} тңг',
