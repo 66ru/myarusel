@@ -30,6 +30,7 @@ class UpdateCarouselsCommand extends CConsoleCommand
 			$items = array_slice($items, 0, self::ITEMS_LIMIT);
 			foreach ($items as $id => &$itemAttributes) {
 				$tempFile = tempnam(sys_get_temp_dir(), 'myarusel-image');
+                $itemAttributes['url'] = trim($itemAttributes['url']);
 				try {
 					if (!empty($itemAttributes['picture'])) {
                         $itemAttributes['picture'] = trim($itemAttributes['picture']);
