@@ -32,6 +32,7 @@ class UpdateCarouselsCommand extends CConsoleCommand
 				$tempFile = tempnam(sys_get_temp_dir(), 'myarusel-image');
 				try {
 					if (!empty($itemAttributes['picture'])) {
+                        $itemAttributes['picture'] = trim($itemAttributes['picture']);
                         $filename = pathinfo( parse_url($itemAttributes['picture'], PHP_URL_PATH), PATHINFO_BASENAME );
 						CurlHelper::downloadToFile($itemAttributes['picture'], $tempFile);
 						if (ImageHelper::checkImageCorrect($tempFile)) {
