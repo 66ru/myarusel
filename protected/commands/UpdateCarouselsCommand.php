@@ -24,7 +24,13 @@ class UpdateCarouselsCommand extends CConsoleCommand
 			if (!empty($carousel->client->logoUid))
 				$fs->resizeImage($carousel->client->logoUid, array($carousel->logoSize, $carousel->logoSize));
 			$feedFile = $carousel->client->getFeedFile(true);
-			$items = YMLHelper::getItems($feedFile, $carousel->categories, $carousel->viewType);
+            try {
+			    $items = YMLHelper::getItems($feedFile, $carousel->categories, $carousel->viewType);
+            } catch (CException $e) {
+                echo $e->getMessage();
+                Yii::app()->end(1);
+                exit;
+            }
             $allItemsCount = count($items);
 			shuffle($items);
 			$items = array_slice($items, 0, self::ITEMS_LIMIT);

@@ -43,7 +43,7 @@ class Client extends CActiveRecord
 			array('name', 'unique'),
 			array('url', 'url'),
 			array('feedUrl', 'url'),
-			array('feedUrl', 'ext.xmlValidator.ValidXml'),
+			array('feedUrl', 'ext.ymlValidator.ValidYml'),
 			array('name, feedUrl, caption, logoUid', 'length', 'max'=>255),
 			array('_logo', 'file', 'types'=>'jpg, gif, png', 'allowEmpty' => true),
 			array('_removeLogoFlag', 'safe'),

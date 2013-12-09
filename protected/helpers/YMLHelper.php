@@ -1,13 +1,25 @@
 <?php
 
+Yii::import('ext.ymlValidator.*');
+
 class YMLHelper
 {
-	private static function loadXmlFile($ymlFile){
-		$xml = @simplexml_load_file($ymlFile);
-		if ($xml === false)
-			throw new CException('can\'t load xml file: '.pathinfo($ymlFile, PATHINFO_FILENAME));
+	private static function loadXmlFile($ymlFile)
+    {
+        static $loadedFiles = array();
+        if (empty($loadedFiles[$ymlFile])) {
+            $validator = new ValidYml();
+            $res = $validator->validateFile($ymlFile);
+            if ($res !== true) {
+                throw new CException($res);
+            }
+            $xml = @simplexml_load_file($ymlFile);
+            if ($xml === false)
+                throw new CException('can\'t load xml file: '.pathinfo($ymlFile, PATHINFO_FILENAME));
+            $loadedFiles[$ymlFile] = $xml;
+        }
 
-		return $xml;
+		return $loadedFiles[$ymlFile];
 	}
 
 	public static function getCategories($ymlFile) {
