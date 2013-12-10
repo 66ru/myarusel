@@ -42,15 +42,20 @@ class ValidYml extends CValidator
 			try {
 				CurlHelper::downloadToFile($value, $xmlFile);
 				self::$filesCache[$value] = $xmlFile;
-			} catch (Exception $e) {}
+			} catch (\m8rge\CurlException $e) {
+                $this->addError($object, $attribute, 'Произошла ошибка при получении yml файла клиента: ' . $e->getMessage());
+                return;
+            } catch (CException $e) {
+            }
 		}
 
+        $res = false;
 		if (file_exists($xmlFile)) {
             $res = $this->validateFile($xmlFile);
-            if ($res !== true) {
-                $message = $this->message!==null ? $this->message : $res;
-                $this->addError($object, $attribute, $message);
-            }
+        }
+        if ($res !== true) {
+            $message = $this->message!==null ? $this->message : $res;
+            $this->addError($object, $attribute, $message);
         }
 	}
 
@@ -70,7 +75,7 @@ class ValidYml extends CValidator
             $creator = new DOMImplementation;
             $docType = $creator->createDocumentType($root, null, __DIR__ . '/shops.dtd');
             $validateXmlDocument = $creator->createDocument($root, null, $docType);
-            $validateXmlDocument->encoding = $xmlDocument->encoding;
+            $validateXmlDocument->encoding = $xmlDocument->encoding ? $xmlDocument->encoding : 'utf-8';
 
             $oldNode = $xmlDocument->getElementsByTagName($root)->item(0);
             $newNode = $validateXmlDocument->importNode($oldNode, true);

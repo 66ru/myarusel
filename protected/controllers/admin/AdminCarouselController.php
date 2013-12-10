@@ -15,8 +15,14 @@ class AdminCarouselController extends AdminController
 		$categoriesList = array('');
 		$categoriesDisabled = true;
 		if (!empty($model->clientId)) {
-			$categoriesList = $model->client->getCategories();
-			$categoriesDisabled = false;
+            try {
+			    $categoriesList = $model->client->getCategories();
+                $categoriesDisabled = false;
+            } catch (CException $e) {
+                $model->addError('clientId', $e->getMessage());
+            } catch (\m8rge\CurlException $e) {
+                $model->addError('clientId', 'Произошла ошибка при получении yml файла клиента: ' . $e->getMessage());
+            }
 		}
 
 		$clients = Client::model();
