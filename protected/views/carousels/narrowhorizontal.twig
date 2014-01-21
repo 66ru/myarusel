@@ -41,7 +41,7 @@
 </script>
 <div class="ekabu-goods-feed">
     <div class="ekabu-goods-feed-card">
-        <a href="{{urlPrefix}}{{client.url}}" target="blank"><img class="ekabu-goods-feed__img" src="{{client.getResizedLogoUrl(logoSize)}}" alt="{{client.name}}"/></a>
+        <a href="{{urlPrefix}}{{client.url}}{{urlPostfix}}" target="blank"><img class="ekabu-goods-feed__img" src="{{client.getResizedLogoUrl(logoSize)}}" alt="{{client.name}}"/></a>
     </div>
 
     <div class="ekabu-goods-feed__descr">{{client.caption}}</div>
@@ -63,7 +63,7 @@
                             <div class="b-popular__item">
                                 <div class="b-popular__item-brd">
                                     <div class="b-popular__item-title-wrapper">
-                                        <a href="{{urlPrefix}}{{item.url}}" class="b-popular__item-title" target="_blank">
+                                        <a href="{{urlPrefix}}{{item.url}}{{urlPostfix}}" class="b-popular__item-title" target="_blank">
                                             <span class="b-popular__item-image-wrapper"><img class="b-popular__item-image lazy" src="/images/empty.gif" data-original="{{item.getResizedImageUrl(thumbSize)}}" alt="{{item.title}}" /></span>
                                             <span class="b-popular__item-title-text">
                                                 {{item.title}}
@@ -71,7 +71,7 @@
                                         </a>
                                     </div>
                                     <div class="b-popular__item-price-wrapper">
-                                        <a href="{{urlPrefix}}{{item.url}}" class="b-popular__item-title" target="_blank">
+                                        <a href="{{urlPrefix}}{{item.url}}{{urlPostfix}}" class="b-popular__item-title" target="_blank">
                                             <span class="b-popular__item-price">
                                                 <span class="b-popular__item-price-content">{{item.price|replace({' ':'&nbsp;'})|raw}}</span>
                                             </span>

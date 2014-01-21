@@ -61,6 +61,12 @@ class AdminCarouselController extends AdminController
 					'hint' => 'Например: http://domain.com/go/',
 				),
 			),
+			'urlPostfix' => array(
+				'type' => 'textField',
+				'htmlOptions' => array(
+					'hint' => '?utm=fromDomain',
+				),
+			),
 			'categories' => array(
 				'type' => 'dropDownList',
 				'data' => $categoriesList,
