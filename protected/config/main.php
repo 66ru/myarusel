@@ -70,6 +70,7 @@ return array(
 					0 => 'TwigFunctions::widget',
 					1 => array('is_safe' => array('html')),
 				),
+				'createMyarouselLink' => 'TwigFunctions::createMyarouselLink',
 			),
 		),
 		'bootstrap'=>array(
