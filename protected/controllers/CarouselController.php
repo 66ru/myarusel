@@ -42,6 +42,7 @@ class CarouselController extends Controller
 			'items' => $items,
 			'onPage' => $carousel->onPage,
 			'urlPrefix' => $carousel->urlPrefix,
+			'urlPostfix' => $carousel->urlPostfix,
 			'logoSize' => $carousel->logoSize,
 			'thumbSize' => $carousel->thumbSize,
 		));
