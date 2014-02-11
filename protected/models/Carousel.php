@@ -7,6 +7,7 @@
  * @property int onPage
  * @property string categories
  * @property string urlPrefix
+ * @property string urlPostfix
  * @property int viewType
  * @property string template
  * @property int ownerId
@@ -102,6 +103,7 @@ class Carousel extends CActiveRecord
             array('name, clientId', 'required'),
             array('onPage', 'numerical', 'integerOnly'=>true, 'min'=>0),
             array('urlPrefix', 'url'),
+            array('urlPostfix', 'length', 'max'=>255),
             array('viewType', 'in', 'range'=>array_keys(self::getViewTypes())),
             array('template', 'in', 'range'=>array_keys(self::getTemplates())),
             array('clientId', 'in', 'range'=>EHtml::listData(Client::model())),
@@ -129,6 +131,7 @@ class Carousel extends CActiveRecord
             'ownerId' => 'Владелец',
             'categories' => 'Категории',
             'urlPrefix' => 'Префикс ссылки',
+            'urlPostfix' => 'Постфикс ссылки',
             'viewType' => 'Формат отображения',
             'template' => 'Шаблон',
             'onPage' => 'Позиций в блоке',
