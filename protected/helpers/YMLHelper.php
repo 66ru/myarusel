@@ -91,7 +91,7 @@ class YMLHelper
 		/** @var $offer SimpleXMLElement */
 		foreach ($xml->shop->offers->offer as $offer) {
 			$attributes = $offer->attributes();
-			if (in_array((string)$offer->categoryId, $fullCategoryIds)) {
+			if ($viewType == Carousel::VIEW_ALL || in_array((string)$offer->categoryId, $fullCategoryIds)) {
 				$price = number_format((float)$offer->price, 0, ',', ' ');
 				$price = str_replace('{price}', $price, $currencies[(string)$offer->currencyId]);
 
