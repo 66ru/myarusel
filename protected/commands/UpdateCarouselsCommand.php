@@ -40,10 +40,10 @@ class UpdateCarouselsCommand extends CConsoleCommand
 				try {
 					if (!empty($itemAttributes['picture'])) {
                         $itemAttributes['picture'] = trim($itemAttributes['picture']);
-                        $filename = pathinfo( parse_url($itemAttributes['picture'], PHP_URL_PATH), PATHINFO_BASENAME );
 						CurlHelper::downloadToFile($itemAttributes['picture'], $tempFile);
 						if (ImageHelper::checkImageCorrect($tempFile)) {
-							$itemAttributes['imageUid'] = $fs->publishFile($tempFile, $filename);
+                            $ext = ExtendedFileHelper::getExtensionByMimeType($tempFile);
+							$itemAttributes['imageUid'] = $fs->publishFile($tempFile, "file.$ext");
 							$fs->resizeImage($itemAttributes['imageUid'], array($carousel->thumbSize, $carousel->thumbSize));
 						}
 						unlink($tempFile);
