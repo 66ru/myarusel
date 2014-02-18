@@ -154,7 +154,11 @@ class FileSystem extends CComponent
 		$cImage = Yii::app()->image;
 		$imageFile = $this->getFilePath($uid);
 		$pathInfo = pathinfo($imageFile);
-		$ext = $pathInfo['extension'] ? '.'.$pathInfo['extension'] : '';
+        $ext = $pathInfo['extension'];
+        if (!in_array($ext, array('jpg', 'jpeg', 'png', 'gif'))) {
+            $ext = 'jpg';
+        }
+		$ext = '.' . $ext;
 
 		$originalImage = $cImage->load($imageFile);
 		if (!is_array($sizes[0]))
