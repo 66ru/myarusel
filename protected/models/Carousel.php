@@ -22,9 +22,10 @@ class Carousel extends CActiveRecord
 {
     const INVALIDATE_KEY = 'invalidateCarousel';
 
-    const VIEW_ALL = 0;
+    const VIEW_ALL_IN_CATEGORIES = 0;
     const VIEW_ONLY_CHEAP = 1;
     const VIEW_USE_GROUPS = 2;
+    const VIEW_ALL = 3;
 
     const TEMPLATE_VERTICAL = 'vertical';
     const TEMPLATE_HORIZONTAL = 'horizontal';
@@ -35,6 +36,7 @@ class Carousel extends CActiveRecord
 
     public static function getViewTypes(){
         return array(
+            self::VIEW_ALL_IN_CATEGORIES => 'Показывать все товары в выбранных категориях',
             self::VIEW_ALL => 'Показывать все товары',
             self::VIEW_ONLY_CHEAP => 'Показывать только дешевые товары, по одному из каждой рубрики',
             self::VIEW_USE_GROUPS => 'Группировать товары по рубрикам',
