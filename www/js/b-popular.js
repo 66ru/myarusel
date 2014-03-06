@@ -59,7 +59,7 @@
 			}
 
 			(position == 0 ? prev_vertical_control.hide() : prev_vertical_control.show());
-			(position >= total_vertical_items - window.onPage + 1 ?  next_vertical_control.hide() : next_vertical_control.show());
+			(position >= total_vertical_items - window.onPage ?  next_vertical_control.hide() : next_vertical_control.show());
 		}
 
 
