@@ -45,13 +45,15 @@ class ValidYml extends CValidator
 			} catch (\m8rge\CurlException $e) {
                 $this->addError($object, $attribute, 'Произошла ошибка при получении yml файла клиента: ' . $e->getMessage());
                 return;
-            } catch (CException $e) {
-            }
+            } catch (CException $e) {}
 		}
 
         $res = false;
 		if (file_exists($xmlFile)) {
             $res = $this->validateFile($xmlFile);
+            if ($res) {
+                $res = $this->validateCategoriesTree($xmlFile);
+            }
         }
         if ($res !== true) {
             $message = $this->message!==null ? $this->message : $res;
@@ -91,5 +93,26 @@ class ValidYml extends CValidator
         }
 
         return true;
+    }
+
+    public function validateCategoriesTree($xmlFile)
+    {
+        $categories = YMLHelper::getCategories($xmlFile);
+        $missingCategories = array();
+        foreach ($categories as $category) {
+            if (!empty($category['parentId']) && !array_key_exists($category['parentId'], $categories)) {
+                $missingCategories[] = $category['parentId'];
+            }
+        }
+        if (!empty($missingCategories)) {
+            $missingCategories = array_unique($missingCategories);
+            return Yii::t(
+                'ValidYml.app',
+                'Missing category ids: {errors}',
+                array('{errors}' => '<ul><li>'.implode('<li>', $missingCategories).'</ul>')
+            );
+        } else {
+            return true;
+        }
     }
 }
