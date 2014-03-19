@@ -33,7 +33,7 @@ class Image_ImageMagick_Driver extends Image_Driver {
 		if (empty($config['directory']))
 		{
 			// Attempt to locate IM by using "which" (only works for *nix!)
-			if ( ! is_file($path = exec('which convert')))
+			if ( ! is_file($path = exec('PATH=$PATH:/usr/local/bin which convert')))
 				throw new CException('image imagemagick not_found');
 
 			$config['directory'] = dirname($path);
