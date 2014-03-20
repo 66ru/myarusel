@@ -2,8 +2,7 @@
 
 Yii::import('application.controllers.admin.*');
 
-class AdminCarouselController extends AdminController
-{
+class AdminCarouselController extends AdminController {
 	public $modelName = 'Carousel';
 	public $modelHumanTitle = array('карусельку', 'карусельки', 'каруселек');
 
@@ -15,19 +14,18 @@ class AdminCarouselController extends AdminController
 		$categoriesList = array('');
 		$categoriesDisabled = true;
 		if (!empty($model->clientId)) {
-            try {
-			    $categoriesList = $model->client->getCategories();
-                $categoriesDisabled = false;
-            } catch (CException $e) {
-                $model->addError('clientId', $e->getMessage());
-            } catch (\m8rge\CurlException $e) {
-                $model->addError('clientId', 'Произошла ошибка при получении yml файла клиента: ' . $e->getMessage());
-            }
+			try {
+				$categoriesList     = $model->client->getCategories();
+				$categoriesDisabled = false;
+			} catch (CException $e) {
+				$model->addError('clientId', $e->getMessage());
+			} catch (\m8rge\CurlException $e) {
+				$model->addError('clientId', 'Произошла ошибка при получении yml файла клиента: '.$e->getMessage());
+			}
 		}
 
 		$clients = Client::model();
-		if (!Yii::app()->user->checkAccess('admin'))
-			$clients = $clients->mine();
+		if (!Yii::app()->user->checkAccess('admin')) $clients = $clients->mine();
 		$clients = EHtml::listData($clients, 'id', 'name');
 
 		$formElements =  array(
@@ -108,8 +106,7 @@ class AdminCarouselController extends AdminController
 		}
 	}
 
-	public function getTableColumns()
-	{
+	public function getTableColumns() {
 		$attributes = array(
 			array(
 				'name' => 'name',
@@ -146,68 +143,69 @@ class AdminCarouselController extends AdminController
 		/** @var $cs CClientScript */
 		$cs = Yii::app()->clientScript;
 		$cs->registerScript($this->getId(), "
-$('.updateCache').live('click', function() {
-	$.get($(this).attr('href'), function (data) {
-        alert(data.output);
-	}, 'json');
+			$('.updateCache').live('click', function() {
+				$.get($(this).attr('href'), function (data) {
+					alert(data.output);
+				}, 'json');
 
-	return false;
-})");
+				return false;
+			});
+		");
 
 		return $attributes;
 	}
 
-	public function actionAjaxRefreshCache($id){
-		if (!Yii::app()->request->isAjaxRequest)
-			throw new CHttpException(403);
+	public function actionAjaxRefreshCache($id) {
+		if (!Yii::app()->request->isAjaxRequest) throw new CHttpException(403);
 
 		$id = (int)$id;
-
 		$returnVal = 0;
-		$output = array();
-		exec(Yii::app()->getBasePath().'/yiic updateCarousels --id='.$id, $output, $returnVal);
+
+		//$output = array();
+		//exec(Yii::app()->getBasePath().'/yiic updateCarousels --id='.$id, $output, $returnVal);
+		//$output = implode("\n", $output);
+
+		ob_start();
+		require_once(Yii::app()->getBasePath().'/commands/UpdateCarouselsCommand.php');
+		$c = new UpdateCarouselsCommand('', '');
+		$c->actionIndex($id);
+		$output = ob_get_clean();
 
 		echo json_encode(array(
-			'errorCode'=>$returnVal,
-			'output' => implode("\n", $output),
+			'errorCode' => $returnVal,
+			'output'    => $output,
 		));
 	}
 
 	/**
 	 * @param Carousel $model
 	 */
-	public function beforeSave($model)
-	{
+	public function beforeSave($model) {
 		parent::beforeSave($model);
 
-		if ($model->scenario == 'insert')
-			$model->ownerId = Yii::app()->user->getId();
+		if ($model->scenario == 'insert') $model->ownerId = Yii::app()->user->getId();
 	}
 
 	/**
 	 * @param Carousel $model
 	 * @throws CHttpException
 	 */
-	public function beforeEdit($model)
-	{
+	public function beforeEdit($model) {
 		parent::beforeEdit($model);
 
 		$admin = Yii::app()->user->checkAccess('admin');
 
-		if (!$admin && !$model->isNewRecord && $model->ownerId != Yii::app()->user->getId())
-			throw new CHttpException(403);
+		if (!$admin && !$model->isNewRecord && $model->ownerId != Yii::app()->user->getId()) throw new CHttpException(403);
 	}
 
 	/**
 	 * @param Carousel $model
-	 * @param array $attributes
+	 * @param array    $attributes
 	 */
-	public function beforeList($model, &$attributes)
-	{
+	public function beforeList($model, &$attributes) {
 		parent::beforeList($model, $attributes);
 
 		$admin = Yii::app()->user->checkAccess('admin');
-		if (!$admin)
-			$model->ownerId = Yii::app()->user->getId();
+		if (!$admin) $model->ownerId = Yii::app()->user->getId();
 	}
 }
