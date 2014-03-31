@@ -54,7 +54,13 @@ class UpdateCarouselsCommand extends CConsoleCommand
 					}
 				} catch (CurlException $e) {
 					unset($items[$id]);
-				}
+				} catch (CException $e) {
+                    if ($e->getMessage() == 'image type not allowed') {
+                        unset($items[$id]);
+                    } else {
+                        throw $e;
+                    }
+                }
 			}
 			unset($itemAttributes); // remove link
 
