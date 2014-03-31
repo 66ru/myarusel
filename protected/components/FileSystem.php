@@ -155,7 +155,7 @@ class FileSystem extends CComponent
 		$imageFile = $this->getFilePath($uid);
 		$pathInfo = pathinfo($imageFile);
         $ext = !empty($pathInfo['extension']) ? $pathInfo['extension'] : ExtendedFileHelper::getExtensionByMimeType($imageFile);
-        if (!in_array($ext, array('jpg', 'jpeg', 'png', 'gif'))) {
+        if (empty($ext)) {
             $ext = 'jpg';
         }
 		$ext = '.' . $ext;

@@ -32,6 +32,7 @@ class Image {
 		IMAGETYPE_PNG => 'png',
 		IMAGETYPE_TIFF_II => 'tiff',
 		IMAGETYPE_TIFF_MM => 'tiff',
+        IMAGETYPE_BMP => 'bmp',
 	);
 
 	// Driver instance
