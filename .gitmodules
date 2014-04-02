@@ -9,7 +9,7 @@
 	url = git://github.com/mediasite/yii-bootstrap.git
 [submodule "lib/ar-relation-behavior"]
 	path = lib/ar-relation-behavior
-	url = git@github.com:m8rge/activerecord-relation-behavior.git
+	url = git://github.com/m8rge/activerecord-relation-behavior.git
 [submodule "protected/helpers/CurlHelper"]
 	path = protected/helpers/CurlHelper
-	url = git@github.com:mediasite/CurlHelper.git
+	url = git://github.com/mediasite/CurlHelper.git
