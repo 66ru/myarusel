@@ -23,13 +23,17 @@ class UpdateCarouselsCommand extends CConsoleCommand
 
 			if (!empty($carousel->client->logoUid))
 				$fs->resizeImage($carousel->client->logoUid, array($carousel->logoSize, $carousel->logoSize));
-			$feedFile = $carousel->client->getFeedFile(true);
+            try {
+    			$feedFile = $carousel->client->getFeedFile(true);
+            } catch (CurlException $e) {
+                $this->captureException($e, !empty($id));
+                continue;
+            }
             try {
 			    $items = YMLHelper::getItems($feedFile, $carousel->categories, $carousel->viewType);
             } catch (CException $e) {
-                echo $e->getMessage();
-                Yii::app()->end(1);
-                exit;
+                $this->captureException($e, !empty($id));
+                continue;
             }
             $allItemsCount = count($items);
 			shuffle($items);
@@ -87,4 +91,18 @@ class UpdateCarouselsCommand extends CConsoleCommand
             }
 		}
 	}
+
+    public function captureException($e, $fatal)
+    {
+        if (Yii::app()->params['useSentry']) {
+            /** @var RSentryComponent $raven */
+            $raven = Yii::app()->getComponent('RSentryException');
+            $raven->getClient()->captureException($e);
+        }
+
+        echo $e;
+        if ($fatal) {
+            Yii::app()->end(1);
+        }
+    }
 }

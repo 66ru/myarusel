@@ -1,5 +1,7 @@
 <?php
 
+require_once(__DIR__ . '/../vendor/autoload.php');
+
 $params=require(dirname(__FILE__).'/../protected/config/params.php');
 defined('YII_DEBUG') or define('YII_DEBUG', $params['yiiDebug']);
 defined('YII_TRACE_LEVEL') or define('YII_TRACE_LEVEL',3);

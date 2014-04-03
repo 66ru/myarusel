@@ -14,7 +14,14 @@ class ValidYml extends CValidator
 
 	function __construct()
 	{
-		Yii::app()->attachEventHandler('onEndRequest', array('ValidYml', 'removeTemporaryFiles'));
+        $eventHandlers = Yii::app()->getEventHandlers('onEndRequest');
+        foreach ($eventHandlers as $eventHandler) {
+            if ($eventHandler == array('ValidYml', 'removeTemporaryFiles')) {
+                return;
+            }
+        }
+
+        Yii::app()->attachEventHandler('onEndRequest', array('ValidYml', 'removeTemporaryFiles'));
 	}
 
 	public static function removeTemporaryFiles(){
