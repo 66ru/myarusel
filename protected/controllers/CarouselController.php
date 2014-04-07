@@ -10,6 +10,11 @@ class CarouselController extends Controller
 
 			if (!empty($carousel) && !YII_DEBUG)
 				return array(
+                    array(
+                        'CHttpCacheFilter',
+                        'cacheControl' => 'private',
+                        'etagSeed' => Yii::app()->getGlobalState($carousel->getInvalidateKey()),
+                    ),
 					array(
 						'COutputCache',
 						'duration'=>300,
@@ -22,7 +27,8 @@ class CarouselController extends Controller
 		return array();
 	}
 
-	public function actionShow($id) {
+	public function actionShow($id)
+    {
 		/** @var $carousel Carousel */
 		$carousel = Carousel::model()->with(array(
 			'client',
