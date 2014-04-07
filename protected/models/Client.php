@@ -165,9 +165,11 @@ class Client extends CActiveRecord
 		if (!empty($this->logoUid))
 			$fs->removeFile($this->logoUid);
 
-		$feedFile = $this->getFeedFile();
-		if (file_exists($feedFile))
-			unlink($feedFile);
+        try {
+            $feedFile = $this->getFeedFile();
+            if (file_exists($feedFile))
+                unlink($feedFile);
+        } catch (Exception $e) {}
 
 		/** @var $carousel Carousel */
 		foreach ($this->carousels as $carousel) {
