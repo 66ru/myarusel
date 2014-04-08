@@ -172,6 +172,11 @@ class Carousel extends CActiveRecord
         foreach($this->items as $item) {
             $item->delete();
         }
+        /** @var FileSystem $fs */
+        $fs = Yii::app()->getComponent('fs');
+        $carouselPath = $fs->getCarouselPath($this->id);
+        foreach (glob($carouselPath.'/*') as $file)
+            unlink($file);
 
         Yii::app()->setGlobalState($this->getInvalidateKey(), null);
     }

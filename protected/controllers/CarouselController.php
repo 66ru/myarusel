@@ -10,11 +10,6 @@ class CarouselController extends Controller
 
 			if (!empty($carousel) && !YII_DEBUG)
 				return array(
-                    array(
-                        'CHttpCacheFilter',
-                        'cacheControl' => 'private',
-                        'etagSeed' => Yii::app()->getGlobalState($carousel->getInvalidateKey()),
-                    ),
 					array(
 						'COutputCache',
 						'duration'=>300,

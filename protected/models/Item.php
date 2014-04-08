@@ -30,14 +30,6 @@ class Item extends CActiveRecord
 		);
 	}
 
-	protected function afterDelete()
-	{
-		/** @var $fs FileSystem */
-		$fs = Yii::app()->fs;
-		if (!empty($this->imageUid))
-			$fs->removeFile($this->imageUid);
-	}
-
 	public function scopes()
 	{
 		return array(
@@ -51,11 +43,10 @@ class Item extends CActiveRecord
 		if (!empty($this->imageUid)) {
 			/** @var $fs FileSystem */
 			$fs = Yii::app()->fs;
-			return $fs->getFileUrl($this->imageUid);
+			return $fs->getCarouselFileUrl($this->carouselId, $this->imageUid);
 		} else {
 			return '';
 		}
-
 	}
 
 	/**
@@ -69,7 +60,7 @@ class Item extends CActiveRecord
 		if (!empty($this->imageUid)) {
 			/** @var $fs FileSystem */
 			$fs = Yii::app()->fs;
-			return $fs->getResizedImageUrl($this->imageUid, array($width, $height, $master));
+			return $fs->getResizedCarouselImageUrl($this->imageUid, $this->carouselId, array($width, $height, $master));
 		} else {
 			return '';
 		}
