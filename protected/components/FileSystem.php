@@ -181,6 +181,21 @@ class FileSystem extends CComponent
         return $this->storageUrl.'/carousel' . $carouselId.'/'.$fileName.$this->getSizeSuffix($size).$ext;
 	}
 
+    public function getResizedCarouselImagePath($uid, $carouselId, $size = array())
+    {
+        $imageFile = $this->getCarouselFilePath($carouselId, $uid);
+        $pathInfo = pathinfo($imageFile);
+
+        $ext = !empty($pathInfo['extension']) ? $pathInfo['extension'] : ExtendedFileHelper::getExtensionByMimeType($imageFile);
+        if (empty($ext)) {
+            $ext = 'jpg';
+        }
+        $ext = '.' . $ext;
+        $newImageName = $pathInfo['dirname'] . '/' . $pathInfo['filename'] . $this->getSizeSuffix($size) . $ext;
+
+        return $newImageName;
+    }
+
 	/**
 	 * @param string $uid
 	 * @param array $size
@@ -192,7 +207,7 @@ class FileSystem extends CComponent
 		if (!empty($ext))
 			$ext = '.'.$ext;
 
-        return $this->storageUrl.$this->getIntermediatePath($uid).$fileName.$this->getSizeSuffix($size).$ext;
+        return $this->storageUrl.'/'.$this->getIntermediatePath($uid).$fileName.$this->getSizeSuffix($size).$ext;
     }
 
 	/**

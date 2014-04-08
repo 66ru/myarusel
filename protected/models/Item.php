@@ -43,7 +43,11 @@ class Item extends CActiveRecord
 		if (!empty($this->imageUid)) {
 			/** @var $fs FileSystem */
 			$fs = Yii::app()->fs;
-			return $fs->getCarouselFileUrl($this->carouselId, $this->imageUid);
+            if (file_exists($fs->getCarouselFilePath($this->carouselId, $this->imageUid))) {
+                return $fs->getCarouselFileUrl($this->carouselId, $this->imageUid);
+            } else {
+                return $fs->getFileUrl($this->imageUid);
+            }
 		} else {
 			return '';
 		}
@@ -60,7 +64,15 @@ class Item extends CActiveRecord
 		if (!empty($this->imageUid)) {
 			/** @var $fs FileSystem */
 			$fs = Yii::app()->fs;
-			return $fs->getResizedCarouselImageUrl($this->imageUid, $this->carouselId, array($width, $height, $master));
+            if (file_exists($fs->getResizedCarouselImagePath($this->imageUid, $this->carouselId, array($width, $height, $master)))) {
+                return $fs->getResizedCarouselImageUrl(
+                    $this->imageUid,
+                    $this->carouselId,
+                    array($width, $height, $master)
+                );
+            } else {
+                return $fs->getResizedImageUrl($this->imageUid, array($width, $height, $master));
+            }
 		} else {
 			return '';
 		}
