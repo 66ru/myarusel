@@ -38,7 +38,7 @@ class UpdateCarouselsCommand extends CConsoleCommand
             $allItemsCount = count($items);
 			shuffle($items);
 			$items = array_slice($items, 0, self::ITEMS_LIMIT);
-			foreach ($items as $id => &$itemAttributes) {
+			foreach ($items as $i => &$itemAttributes) {
 				$tempFile = tempnam(sys_get_temp_dir(), 'myarusel-image');
                 $itemAttributes['url'] = trim($itemAttributes['url']);
 				try {
@@ -53,13 +53,13 @@ class UpdateCarouselsCommand extends CConsoleCommand
 						$itemAttributes['carouselId'] = $carousel->id;
 						unset($itemAttributes['picture']);
 					} else {
-						unset($items[$id]);
+						unset($items[$i]);
 					}
 				} catch (CurlException $e) {
-					unset($items[$id]);
+					unset($items[$i]);
 				} catch (CException $e) {
                     if ($e->getMessage() == 'image type not allowed') {
-                        unset($items[$id]);
+                        unset($items[$i]);
                     } else {
                         throw $e;
                     }
