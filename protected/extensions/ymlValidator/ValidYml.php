@@ -58,7 +58,7 @@ class ValidYml extends CValidator
         $res = false;
 		if (file_exists($xmlFile)) {
             $res = $this->validateFile($xmlFile);
-            if ($res) {
+            if ($res === true) {
                 $res = $this->validateCategoriesTree($xmlFile);
             }
         }
