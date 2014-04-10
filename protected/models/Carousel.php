@@ -30,6 +30,7 @@ class Carousel extends CActiveRecord
     const TEMPLATE_VERTICAL = 'vertical';
     const TEMPLATE_HORIZONTAL = 'horizontal';
     const TEMPLATE_NARROWHORIZONTAL= 'narrowhorizontal';
+    const TEMPLATE_ORANGEHORIZONTAL= 'orangehorizontal';
 
     const THUMB_SIZE_ATTR = 'thumbSize';
     const LOGO_SIZE_ATTR = 'logoSize';
@@ -46,6 +47,7 @@ class Carousel extends CActiveRecord
     public static function getTemplates(){
         return array(
             self::TEMPLATE_HORIZONTAL => 'Горизонтальный',
+            self::TEMPLATE_ORANGEHORIZONTAL => 'Горизонтальный с оранжевой рамкой',
             self::TEMPLATE_VERTICAL => 'Вертикальный',
             self::TEMPLATE_NARROWHORIZONTAL => 'Горизонтальный узкий',
         );
@@ -54,6 +56,10 @@ class Carousel extends CActiveRecord
     public static function getTemplateAttributes(){
         return array(
             self::TEMPLATE_HORIZONTAL => array(
+                self::THUMB_SIZE_ATTR => array(90, 90),
+                self::LOGO_SIZE_ATTR => array(120 ,120),
+            ),
+            self::TEMPLATE_ORANGEHORIZONTAL => array(
                 self::THUMB_SIZE_ATTR => array(90, 90),
                 self::LOGO_SIZE_ATTR => array(120 ,120),
             ),
