@@ -10,6 +10,7 @@
         }
     ],
     "require": {
-        "m8rge/yii-sentry-log": "dev-master"
+        "m8rge/yii-sentry-log": "dev-master",
+        "m8rge/curl-helper": "1.2"
     }
 }

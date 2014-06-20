@@ -2,7 +2,6 @@
 
 Yii::setPathOfAlias('lib', realpath(dirname(__FILE__).'/../../lib'));
 Yii::setPathOfAlias('vendor', realpath(__DIR__ . '/../../vendor'));
-Yii::setPathOfAlias('m8rge', realpath(dirname(__FILE__).'/../helpers/CurlHelper'));
 
 $params = require('params.php');
 $components = array();
