@@ -29,13 +29,14 @@ class Carousel extends CActiveRecord
 
     const TEMPLATE_VERTICAL = 'vertical';
     const TEMPLATE_HORIZONTAL = 'horizontal';
-    const TEMPLATE_NARROWHORIZONTAL= 'narrowhorizontal';
-    const TEMPLATE_ORANGEHORIZONTAL= 'orangehorizontal';
+    const TEMPLATE_NARROWHORIZONTAL = 'narrowhorizontal';
+    const TEMPLATE_ORANGEHORIZONTAL = 'orangehorizontal';
 
     const THUMB_SIZE_ATTR = 'thumbSize';
     const LOGO_SIZE_ATTR = 'logoSize';
 
-    public static function getViewTypes(){
+    public static function getViewTypes()
+    {
         return array(
             self::VIEW_ALL_IN_CATEGORIES => 'Показывать все товары в выбранных категориях',
             self::VIEW_ALL => 'Показывать все товары',
@@ -44,7 +45,8 @@ class Carousel extends CActiveRecord
         );
     }
 
-    public static function getTemplates(){
+    public static function getTemplates()
+    {
         return array(
             self::TEMPLATE_HORIZONTAL => 'Горизонтальный',
             self::TEMPLATE_ORANGEHORIZONTAL => 'Горизонтальный с оранжевой рамкой',
@@ -53,15 +55,16 @@ class Carousel extends CActiveRecord
         );
     }
 
-    public static function getTemplateAttributes(){
+    public static function getTemplateAttributes()
+    {
         return array(
             self::TEMPLATE_HORIZONTAL => array(
                 self::THUMB_SIZE_ATTR => array(90, 90),
-                self::LOGO_SIZE_ATTR => array(120 ,120),
+                self::LOGO_SIZE_ATTR => array(120, 120),
             ),
             self::TEMPLATE_ORANGEHORIZONTAL => array(
                 self::THUMB_SIZE_ATTR => array(90, 90),
-                self::LOGO_SIZE_ATTR => array(120 ,120),
+                self::LOGO_SIZE_ATTR => array(120, 120),
             ),
             self::TEMPLATE_VERTICAL => array(
                 self::THUMB_SIZE_ATTR => array(86, 86),
@@ -74,12 +77,14 @@ class Carousel extends CActiveRecord
         );
     }
 
-    public function getThumbSize() {
+    public function getThumbSize()
+    {
         $templateAttributes = self::getTemplateAttributes();
         return $templateAttributes[$this->template][self::THUMB_SIZE_ATTR];
     }
 
-    public function getLogoSize() {
+    public function getLogoSize()
+    {
         $templateAttributes = self::getTemplateAttributes();
         return $templateAttributes[$this->template][self::LOGO_SIZE_ATTR];
     }
@@ -109,16 +114,15 @@ class Carousel extends CActiveRecord
         return array(
             array('name', 'unique'),
             array('name, clientId', 'required'),
-            array('onPage', 'numerical', 'integerOnly'=>true, 'min'=>0),
+            array('onPage', 'numerical', 'integerOnly' => true, 'min' => 0),
             array('urlPrefix', 'url'),
-            array('urlPostfix', 'length', 'max'=>255),
-            array('viewType', 'in', 'range'=>array_keys(self::getViewTypes())),
-            array('template', 'in', 'range'=>array_keys(self::getTemplates())),
-            array('clientId', 'in', 'range'=>EHtml::listData(Client::model())),
-            array('ownerId', 'in', 'allowEmpty' => false, 'range'=>EHtml::listData(User::model())),
+            array('urlPostfix', 'length', 'max' => 255),
+            array('viewType', 'in', 'range' => array_keys(self::getViewTypes())),
+            array('template', 'in', 'range' => array_keys(self::getTemplates())),
+            array('clientId', 'in', 'range' => EHtml::listData(Client::model())),
+            array('ownerId', 'in', 'allowEmpty' => false, 'range' => EHtml::listData(User::model())),
             array('categories', 'safe'),
-
-            array('name, clientId, ownerId', 'safe', 'on'=>'search'),
+            array('name, clientId, ownerId', 'safe', 'on' => 'search'),
         );
     }
 
@@ -148,41 +152,47 @@ class Carousel extends CActiveRecord
 
     public function search()
     {
-        $criteria=new CDbCriteria;
+        $criteria = new CDbCriteria;
 
         $criteria->compare('name', $this->name, true);
         $criteria->compare('clientId', $this->clientId);
         $criteria->compare('ownerId', $this->ownerId);
 
-        return new CActiveDataProvider($this, array(
-            'criteria' => $criteria,
-        ));
+        return new CActiveDataProvider(
+            $this, array(
+                'criteria' => $criteria,
+            )
+        );
     }
 
-    public function getInvalidateKey(){
-        return self::INVALIDATE_KEY.$this->id;
+    public function getInvalidateKey()
+    {
+        return self::INVALIDATE_KEY . $this->id;
     }
 
-    public function invalidate(){
+    public function invalidate()
+    {
         Yii::app()->setGlobalState($this->getInvalidateKey(), time());
     }
 
-    public function getUrl(){
-        return Yii::app()->getBaseUrl(true).CHtml::normalizeUrl(array('/carousel/show', 'id' => $this->id));
+    public function getUrl()
+    {
+        return Yii::app()->getBaseUrl(true) . CHtml::normalizeUrl(array('/carousel/show', 'id' => $this->id));
     }
 
     protected function afterDelete()
     {
         parent::afterDelete();
         /** @var $item Item */
-        foreach($this->items as $item) {
+        foreach ($this->items as $item) {
             $item->delete();
         }
         /** @var FileSystem $fs */
         $fs = Yii::app()->getComponent('fs');
         $carouselPath = $fs->getCarouselPath($this->id);
-        foreach (glob($carouselPath.'/*') as $file)
+        foreach (glob($carouselPath . '/*') as $file) {
             unlink($file);
+        }
 
         Yii::app()->setGlobalState($this->getInvalidateKey(), null);
     }
