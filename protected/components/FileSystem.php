@@ -107,7 +107,7 @@ class FileSystem extends CComponent
 			$originalName = $fileName;
 		$ext = strtolower(CFileHelper::getExtension($originalName));
 		if (empty($ext)) { // we have empty extension. Trying determine using mime type
-			$ext = ExtendedFileHelper::getExtensionByMimeType($fileName);
+			$ext = EFileHelper::getExtensionByMimeType($fileName);
 		}
 		if (!empty($ext))
 			$ext = '.'.$ext;
@@ -133,7 +133,7 @@ class FileSystem extends CComponent
     public function publishFileForCarousel($fileName, $fileUniqueId, $carouselId, $ext = '')
     {
         if (empty($ext)) { // we have empty extension. Trying determine using mime type
-            $ext = ExtendedFileHelper::getExtensionByMimeType($fileName);
+            $ext = EFileHelper::getExtensionByMimeType($fileName);
         }
         if (!empty($ext)) {
             $ext = '.' . $ext;
@@ -184,7 +184,7 @@ class FileSystem extends CComponent
         $imageFile = $this->getCarouselFilePath($carouselId, $uid);
         $pathInfo = pathinfo($imageFile);
 
-        $ext = !empty($pathInfo['extension']) ? $pathInfo['extension'] : ExtendedFileHelper::getExtensionByMimeType($imageFile);
+        $ext = !empty($pathInfo['extension']) ? $pathInfo['extension'] : EFileHelper::getExtensionByMimeType($imageFile);
         if (empty($ext)) {
             $ext = 'jpg';
         }
@@ -238,7 +238,7 @@ class FileSystem extends CComponent
 		$cImage = Yii::app()->image;
 		$imageFile = $this->getFilePath($uid);
 		$pathInfo = pathinfo($imageFile);
-        $ext = !empty($pathInfo['extension']) ? $pathInfo['extension'] : ExtendedFileHelper::getExtensionByMimeType($imageFile);
+        $ext = !empty($pathInfo['extension']) ? $pathInfo['extension'] : EFileHelper::getExtensionByMimeType($imageFile);
         if (empty($ext)) {
             $ext = 'jpg';
         }
@@ -265,7 +265,7 @@ class FileSystem extends CComponent
         $cImage = Yii::app()->image;
         $imageFile = $this->getCarouselFilePath($carouselId, $uid);
         $pathInfo = pathinfo($imageFile);
-        $ext = !empty($pathInfo['extension']) ? $pathInfo['extension'] : ExtendedFileHelper::getExtensionByMimeType($imageFile);
+        $ext = !empty($pathInfo['extension']) ? $pathInfo['extension'] : EFileHelper::getExtensionByMimeType($imageFile);
         if (empty($ext)) {
             $ext = 'jpg';
         }

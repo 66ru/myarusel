@@ -33,7 +33,7 @@ class TbImageColumn extends TbDataColumn
 			CHtml::link(
 				CHtml::image(' . $this->thumbnailUrl . ',"", array("style"=>"' . addslashes($this->imageStyle) . '")),
 				$data->' . $this->name . ',
-				array("target" => "_blank")
+				array("target" => "_blank", "class" => "fancybox")
 			);';
 
         parent::init();

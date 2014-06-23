@@ -186,7 +186,7 @@ class AdminCarouselController extends CommonAdminController
             array(
                 array(
                     'type' => 'raw',
-                    'value' => 'CHtml::link("Обновить кеш", array("/admin/adminCarousel/ajaxRefreshCache", "id"=>$data->id), array("class"=>"updateCache"))',
+                    'value' => 'CHtml::link("Обновить кеш", array("/system/adminCarousel/ajaxRefreshCache", "id"=>$data->id), array("class"=>"updateCache"))',
                     'htmlOptions' => array(
                         'style' => 'width:100px',
                     )

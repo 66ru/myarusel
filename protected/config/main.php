@@ -67,7 +67,7 @@ return array(
                     'admin/<module:\w+>/<controller:\w+>/<action:\w+>/' => '<module>/admin<controller>/<action>',
                     'carousel/<id:\d+>' => 'carousel/show',
                     '<action:\w+>' => 'site/<action>',
-                    'admin/<action:\w+>/' => 'admin/admin/<action>',
+                    'admin/<action:\w+>/' => 'systemø/admin/<action>',
                 ),
             ),
             'assetManager' => array(
