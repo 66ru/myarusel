@@ -96,7 +96,10 @@ class ImageFileRowWidget extends CInputWidget
                         array('style' => "max-width:{$this->maxImageSize}px; max-height:{$this->maxImageSize}px")
                     ),
                     $model->$attributeName,
-                    array('target' => '_blank')
+                    array(
+                        'target' => '_blank',
+                        'class' => 'fancybox',
+                    )
                 ),
             );
         }

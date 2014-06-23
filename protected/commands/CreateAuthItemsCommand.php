@@ -12,16 +12,19 @@ class CreateAuthItemsCommand extends CConsoleCommand
             $auth->createRole('admin');
         }
 
-		$newAdmin = User::model()->findByAttributes(array('name'=>$name));
-        if (empty($newAdmin))
+        $newAdmin = User::model()->findByAttributes(array('name' => $name));
+        if (empty($newAdmin)) {
             $newAdmin = new User();
+        }
         $newAdmin->name = $name;
         $newAdmin->password = $password;
-        if (!$newAdmin->save())
+        if (!$newAdmin->save()) {
             throw new CException(print_r($newAdmin->getErrors(), true));
+        }
 
         $userRoles = $auth->getRoles($newAdmin->id);
-        if (!array_key_exists('admin', $userRoles))
+        if (!array_key_exists('admin', $userRoles)) {
             $auth->assign('admin', $newAdmin->id);
+        }
     }
 }

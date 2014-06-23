@@ -1,2 +1,4 @@
 /protected/config/params.php
-/www/storage*
+.idea/*
+vendor/*
+composer.lock
