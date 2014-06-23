@@ -1,27 +1,26 @@
 {% extends 'views/layouts/main.twig' %}
 
 {% block content %}
+    <h1>Войти</h1>
 
-<h2>Войти</h2>
+    <p class="note">Поля с символом <span class="required">*</span> обязательны для заполнения.</p>
+    {% set form = this.beginWidget('bootstrap.widgets.TbActiveForm', {
+    'type' : 'horizontal',
+    'enableClientValidation': true,
+    }) %}
 
-<p>Поля с символом <span class="required">*</span> обязательны для заполнения.</p>
+    {{ form.textFieldRow(model, 'name', { placeholder: false }) | raw }}
+    {{ form.passwordFieldRow(model, 'password', { placeholder: false }) | raw }}
+    {{ form.checkBoxRow(model, 'rememberMe')|raw }}
 
-{% set form = this.beginWidget('bootstrap.widgets.BootActiveForm', {
-	'enableClientValidation': true,
-	'clientOptions': {'validateOnSubmit': true},
-	'htmlOptions' : {'class' : 'well'},
-}) %}
-
-{{ form.textFieldRow(model, 'name')|raw }}
-{{ form.passwordFieldRow(model, 'password')|raw }}
-{{ form.checkboxRow(model, 'rememberMe')|raw }}
-{{ widget('bootstrap.widgets.BootButton', {
-	'type': 'primary',
-	'buttonType' : 'submit',
-	'icon' : 'ok white',
-	'label' : 'Войти',
-}) }}
-
-{{ void(this.endWidget()) }}
+    <div class="form-actions">
+        {{ widget('bootstrap.widgets.TbButton', {
+        'type' : 'primary',
+        'buttonType' : 'submit',
+        'icon' : 'ok white',
+        'label' : 'Войти',
+        }) }}
+    </div>
+    {{ void(this.endWidget()) }}
 
 {% endblock %}

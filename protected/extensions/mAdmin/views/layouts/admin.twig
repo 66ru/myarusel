@@ -1,0 +1,53 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta name="language" content="en" />
+
+	{{ void(App.clientScript.registerCssFile(this.assetsUrl~'/css/admin.css')) }}
+
+	<title>{% block title %}{{ this.pageTitle }}{% endblock %}</title>
+</head>
+
+<body>
+<div id="ajaxLoader">&nbsp;</div>
+{{ void(App.clientScript.registerScript('ajaxLoader', "
+    var ajaxInProgress = false;
+
+    $(document).ajaxStart(function() {
+        ajaxInProgress = true;
+        setTimeout(function() {
+            if (ajaxInProgress)
+                $('#ajaxLoader').css('left',$(document).width()/2+'px').fadeIn(300).animate({
+                    left:'+=400'
+                },{
+                    'duration' : 10000,
+                    'easing' : 'linear',
+                    'queue' : false
+                });
+        }, 2000);
+    });
+    $(document).ajaxStop(function() {
+        ajaxInProgress = false;
+        $('#ajaxLoader').fadeOut(300);
+    });
+    $('#logout-link').on('click', function() {
+        $.post($(this).attr('href'), {
+            "~App.request.csrfTokenName~": '"~App.request.csrfToken~"'
+        }, function() {
+            window.location = '"~App.homeUrl~"';
+        });
+
+        return false;
+    });
+")) }}
+
+{% block mainMenu %}
+{% endblock %}
+
+<div class="container" id="page">
+	{% block content %}{% endblock %}
+</div>
+
+</body>
+</html>

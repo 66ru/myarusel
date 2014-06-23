@@ -1,9 +1,10 @@
 <?php
 
-Yii::setPathOfAlias('lib', realpath(dirname(__FILE__).'/../../lib'));
+Yii::setPathOfAlias('lib', realpath(__DIR__ . '/../../lib'));
 Yii::setPathOfAlias('vendor', realpath(__DIR__ . '/../../vendor'));
 
 $params = require('params.php');
+
 $components = array();
 $logRoutes = array(
     array(
@@ -28,66 +29,68 @@ if ($params['useSentry']) {
         'class' => 'ESentryComponent',
     );
 }
-
 return array(
-	'basePath'=>dirname(__FILE__).DIRECTORY_SEPARATOR.'..',
-	'name'=>'Myarusel',
-	'language' => 'ru',
-
-	'preload'=>array('log', 'RSentryException'),
-
-	'import'=>array(
-		'application.models.*',
-		'application.models.forms.*',
-		'application.components.*',
-		'application.helpers.*',
-	),
-
-//	'modules'=>array(
-//	),
-
-	'components'=>array_merge(
+    'basePath' => dirname(__FILE__) . DIRECTORY_SEPARATOR . '..',
+    'name' => $params['appName'],
+    'language' => 'ru',
+    'timeZone' => 'Asia/Yekaterinburg',
+    'preload' => array('log', 'RSentryException'),
+    'import' => array(
+        'application.models.*',
+        'application.models.forms.*',
+        'application.components.*',
+        'application.helpers.*',
+        'ext.mAdmin.*',
+    ),
+    'modules' => require(__DIR__.'/modules.php'),
+    'components' => array_merge(
         array(
-            'user'=>array(
+            'user' => array(
                 // enable cookie-based authentication
-                'allowAutoLogin'=>true,
-                'loginUrl'=>array('site/login'),
+                'allowAutoLogin' => true,
+                'loginUrl' => array('site/login'),
             ),
-            'urlManager'=>array(
-                'urlFormat'=>'path',
+            'request' => array(
+                'class' => 'application.components.SecuredCsrfHttpRequest',
+                'enableCsrfValidation' => true,
+                'noCsrfValidationRoutes'=>array(),
+            ),
+            'urlManager' => array(
+                'urlFormat' => 'path',
                 'urlSuffix' => '/',
                 'showScriptName' => false,
-                'rules'=>array(
-                    '/' => '/admin/adminCarousel',
-    //				'admin/' => 'admin/admin',
-                    'admin/<controller:\w+>/' => 'admin/admin<controller>',
-                    'admin/<controller:\w+>/<action:\w+>/' => 'admin/admin<controller>/<action>',
+                'useStrictParsing' => true,
+                'rules' => array(
+                    '/' => 'system/admin', // or system/admin
+                    'admin/' => 'system',
+                    'admin/<module:\w+>/<controller:\w+>/' => '<module>/admin<controller>',
+                    'admin/<module:\w+>/<controller:\w+>/<action:\w+>/' => '<module>/admin<controller>/<action>',
                     'carousel/<id:\d+>' => 'carousel/show',
-    //				'<action:\w+>/<id:\d+>' => 'site/<action>',
                     '<action:\w+>' => 'site/<action>',
-    //				'<controller:\w+>/<id:\d+>'=>'<controller>/view',
-    //				'<controller:\w+>/<action:\w+>/<id:\d+>'=>'<controller>/<action>',
-    //				'<controller:\w+>/<action:\w+>'=>'<controller>/<action>',
+                    'admin/<action:\w+>/' => 'admin/admin/<action>',
                 ),
             ),
-            'db'=>array(
-                'connectionString' => 'mysql:host='.$params['dbHost'].';dbname='.$params['dbName'],
+            'assetManager' => array(
+                'linkAssets' => true,
+            ),
+            'db' => array(
+                'connectionString' => 'mysql:host=' . $params['dbHost'] . ';dbname=' . $params['dbName'],
                 'emulatePrepare' => true,
                 'username' => $params['dbLogin'],
                 'password' => $params['dbPassword'],
                 'charset' => 'utf8',
             ),
-            'authManager'=>array(
-                'class'=>'CDbAuthManager',
-                'connectionID'=>'db',
+            'authManager' => array(
+                'class' => 'CDbAuthManager',
+                'connectionID' => 'db',
             ),
             'fs' => array(
                 'class' => 'FileSystem',
                 'nestedFolders' => 1,
             ),
-            'viewRenderer'=>array(
-                'class'=>'ext.ETwigViewRenderer',
-                'twigPathAlias' => 'lib.twig.lib.Twig',
+            'viewRenderer' => array(
+                'class' => 'vendor.yiiext.twig-renderer.ETwigViewRenderer',
+                'twigPathAlias' => 'vendor.twig.twig.lib.Twig',
                 'options' => array(
                     'autoescape' => true,
                 ),
@@ -96,15 +99,26 @@ return array(
                         0 => 'TwigFunctions::widget',
                         1 => array('is_safe' => array('html')),
                     ),
+                    'const' => 'TwigFunctions::constGet',
+                    'static' => 'TwigFunctions::staticCall',
+                    'url' => 'TwigFunctions::url',
+                    'absUrl' => 'TwigFunctions::absUrl',
+                    'plural' => 'TwigFunctions::plural',
+                    'new' => 'TwigFunctions::newObject',
                     'createMyarouselLink' => 'TwigFunctions::createMyarouselLink',
                 ),
+                'filters' => array(
+                    'unset' => 'TwigFunctions::_unset',
+                ),
             ),
-            'bootstrap'=>array(
-                'class'=>'lib.bootstrap.components.Bootstrap', // assuming you extracted bootstrap under extensions
+            'bootstrap' => array(
+                'class' => 'vendor.clevertech.yii-booster.src.components.Bootstrap',
                 'responsiveCss' => true,
+                'jqueryCss' => false,
+                'minify' => !YII_DEBUG,
             ),
-            'errorHandler'=>array(
-                'errorAction'=>'site/error',
+            'errorHandler' => array(
+                'errorAction' => 'site/error',
             ),
             'image' => array(
                 'class' => 'ext.image.CImageComponent',
@@ -116,13 +130,13 @@ return array(
             'format' => array(
                 'booleanFormat' => array('Нет', 'Да'),
             ),
-            'log'=>array(
-                'class'=>'CLogRouter',
-                'routes'=> $logRoutes,
+            'log' => array(
+                'class' => 'CLogRouter',
+                'routes' => $logRoutes,
             ),
         ),
         $components
-	),
+    ),
 
 	'params'=> array_merge($params, array(
 		'md5Salt' => 'ThisIsMymd5Salt(*&^%$#',

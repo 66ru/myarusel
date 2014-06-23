@@ -6,11 +6,19 @@
     "authors": [
         {
             "name": "m8rge",
-            "email": "to.merge@gmail.com"
+            "email": "to.merge@gmail.com",
+            "homepage": "http://aputilov.ru"
         }
     ],
     "require": {
-        "m8rge/yii-sentry-log": "dev-master",
-        "m8rge/curl-helper": "1.2"
+        "php": ">=5.3.0",
+        "ircmaxell/password-compat": "1.0.3",
+        "yiisoft/yii": "1.1.14",
+        "twig/twig": ">=1.8,<2.0-dev",
+        "m8rge/curl-helper": "1.2",
+        "clevertech/yii-booster": "3.*",
+        "yiiext/activerecord-relation-behavior": "1.1",
+        "yiiext/twig-renderer": "dev-master",
+        "m8rge/yii-sentry-log": "dev-master"
     }
 }

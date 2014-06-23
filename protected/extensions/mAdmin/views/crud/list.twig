@@ -1,0 +1,79 @@
+{% extends adminLayout %}
+
+{% block content %}
+    <h1>{{ this.actionsTitles[2] }} {{ this.modelHumanTitle[2] }}</h1>
+
+    {% if advancedFilters %}
+        <div class="row-fluid">
+            <div class="span9">
+    {% endif %}
+
+    {% if canAdd %}
+        {{ widget('bootstrap.widgets.TbButton', {
+            'buttonType' : 'link',
+            'type' : 'primary',
+            'icon' : 'plus white',
+            'label' : this.buttonTitles[0]~' '~this.modelHumanTitle[0],
+            'url' : ['add'],
+        }) }}
+    {% endif %}
+
+    {% set gridOptions = {
+        'type' : 'condensed striped',
+        'dataProvider' : dataProvider,
+        'filter' : model,
+        'selectableRows' : false,
+        'columns' : columns,
+    }|merge(gridOptions|default({})) %}
+
+    {% if advancedFilters %}
+        {% set filterForm = static('TbFilterForm','createForm', [
+            advancedFilters,
+            model,
+            {
+                'htmlOptions' : {
+                    'class' : 'well',
+                },
+            }
+        ]) %}
+        {% set filterFormHtml = filterForm.render() %}
+        {% set gridOptions = {
+            'ajaxUpdate' : filterForm.activeFormWidget.id,
+            'beforeAjaxUpdate' : 'js:function(id, ajaxOptions) {
+                if (ajaxOptions.type == "POST")
+                    return;
+                var sort = ajaxOptions.url.match(/\\w+_sort=\\w+/);
+                var page = ajaxOptions.url.match(/\\w+_page=\\d+/);
+
+                $("#"+id+" input, #"+id+" select").each(function (){
+                    var $fieldInExtendedFilters = $("#'~filterForm.activeFormWidget.id~' [id="+$(this).attr("id")+"]");
+                    if ($fieldInExtendedFilters.length == 0) {
+                        $fieldInExtendedFilters = $("<input type=\'hidden\' />")
+                            .appendTo("#'~filterForm.activeFormWidget.id~'")
+                            .attr("name", $(this).attr("name"));
+                    }
+                    $fieldInExtendedFilters.val($(this).val());
+                });
+                ajaxOptions.url = ajaxOptions.url.substring(0, ajaxOptions.url.indexOf("?")+1) + $("#'~filterForm.activeFormWidget.id~'").serialize();
+                if (sort && sort[0])
+                    ajaxOptions.url+= "&" + sort[0];
+                if (page && page[0])
+                    ajaxOptions.url+= "&" + page[0];
+            }'
+        }|merge(gridOptions) %}
+    {% endif %}
+
+    {{ widget('bootstrap.widgets.TbExtendedGridView', gridOptions) }}
+
+    {% if advancedFilters %}
+            </div>
+            <div class="span3">
+            {% block filtersColumn %}
+                <h4>Фильтры</h4>
+                {{ filterFormHtml|raw }}
+            {% endblock %}
+            </div>
+        </div>
+    {% endif %}
+
+{% endblock %}

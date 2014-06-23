@@ -1,0 +1,46 @@
+body {
+	padding-top: 60px;
+	padding-bottom: 60px;
+}
+html {
+    -webkit-font-smoothing: subpixel-antialiased;
+}
+
+@media (max-width: 980px) {
+	body {
+		padding-top: 0;
+	}
+}
+
+h1, h2, h3, h4, h5, h6 {
+	margin-bottom: 0.6em;
+}
+
+.uneditable-input {
+	height: auto;
+	min-height: 18px;
+	overflow: scroll;
+}
+
+#ajaxLoader {
+	width: 32px;
+	height: 32px;
+	position: absolute;
+	top: 50px;
+	background: url('../images/ajaxLoader.gif');
+	display: none;
+}
+
+.pseudo-link {
+    text-decoration: none;
+    border-bottom: dashed 1px rgb(128, 36, 32);
+    cursor: pointer;
+}
+.pseudo-link:hover {
+    text-decoration: none;
+    border-bottom: none;
+}
+
+.button-column a {
+    padding: 4px;
+}

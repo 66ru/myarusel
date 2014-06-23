@@ -1,13 +1,15 @@
 <?php
 
-Yii::setPathOfAlias('lib', realpath(dirname(__FILE__).'/../../lib'));
+Yii::setPathOfAlias('lib', realpath(__DIR__ . '/../../lib'));
 Yii::setPathOfAlias('vendor', realpath(__DIR__ . '/../../vendor'));
 
 $params = require('params.php');
+
 $components = array();
 $logRoutes = array(
     array(
         'class' => 'CFileLogRoute',
+        'logFile' => 'console.log',
         'levels' => 'error,warning',
     ),
     array(
@@ -28,31 +30,35 @@ if ($params['useSentry']) {
         'class' => 'vendor.m8rge.yii-sentry-log.RSentryComponent',
     );
 }
+
 return array(
-	'basePath'=>dirname(__FILE__).DIRECTORY_SEPARATOR.'..',
-	'name'=>'Myarusel',
-
-	'preload'=>array('log'),
-
-	'import'=>array(
-		'application.models.*',
-		'application.models.forms.*',
-		'application.components.*',
-		'application.helpers.*',
-	),
-
-	'components'=>array_merge(
+    'basePath' => dirname(__FILE__) . DIRECTORY_SEPARATOR . '..',
+    'name' => $params['appName'],
+    'language' => 'ru',
+    'timeZone' => 'Asia/Yekaterinburg',
+    'preload' => array('log', 'RSentryException'),
+    'import' => array(
+        'application.models.*',
+        'application.models.forms.*',
+        'application.components.*',
+        'application.helpers.*',
+    ),
+    'modules' => require(__DIR__.'/modules.php'),
+    'components' => array_merge(
         array(
-            'db'=>array(
-                'connectionString' => 'mysql:host='.$params['dbHost'].';dbname='.$params['dbName'],
+            'db' => array(
+                'connectionString' => 'mysql:host=' . $params['dbHost'] . ';dbname=' . $params['dbName'],
                 'emulatePrepare' => true,
                 'username' => $params['dbLogin'],
                 'password' => $params['dbPassword'],
                 'charset' => 'utf8',
             ),
-            'authManager'=>array(
-                'class'=>'CDbAuthManager',
-                'connectionID'=>'db',
+            'errorHandler' => array(
+                'class' => 'ConsoleErrorHandler',
+            ),
+            'authManager' => array(
+                'class' => 'CDbAuthManager',
+                'connectionID' => 'db',
             ),
             'fs' => array(
                 'class' => 'FileSystem',
@@ -65,20 +71,20 @@ return array(
             'cache' => array(
                 'class' => 'CFileCache',
             ),
-            'log'=>array(
-                'class'=>'CLogRouter',
-                'routes'=>$logRoutes,
+            'log' => array(
+                'class' => 'CLogRouter',
+                'routes' => $logRoutes,
             ),
         ),
         $components
-	),
-	'commandMap'=>array(
-		'migrate'=>array(
-			'class'=>'system.cli.commands.MigrateCommand',
-			'migrationTable'=>'migrations',
-		),
     ),
-	'params'=> array_merge($params, array(
-		'md5Salt' => 'ThisIsMymd5Salt(*&^%$#',
-	)),
+    'params' => array_merge($params, array(
+            'md5Salt' => 'ThisIsMymd5Salt(*&^%$#',
+        )),
+    'commandMap' => array(
+        'migrate' => array(
+            'class' => 'vendor.yiisoft.yii.framework.cli.commands.MigrateCommand',
+            'migrationTable' => 'migrations',
+        ),
+    ),
 );

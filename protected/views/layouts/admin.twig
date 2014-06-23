@@ -1,1 +1,26 @@
-{% extends 'views/layouts/main.twig' %}
+{% extends 'layouts/admin.twig' %}
+
+{% block mainMenu %}
+{{ widget('bootstrap.widgets.TbNavbar',{
+	'collapse' : true,
+	'items':[
+	{
+		'class' : 'bootstrap.widgets.TbMenu',
+		'items' : [
+            {'label':'Карусельки', 'url':['/system/adminCarousel'], 'active' : this.id == 'system/adminCarousel', 'visible':not App.user.isGuest },
+            {'label':'Клиенты', 'url':['/system/adminClients'], 'active' : this.id == 'system/adminClients', 'visible':not App.user.isGuest },
+		]
+	},{
+		'class' : 'bootstrap.widgets.TbMenu',
+		'htmlOptions' : {'class':'pull-right'},
+		'items' : [
+            { 'label':'Админ зона', 'url':'#', 'visible':App.user.checkAccess('admin'),
+                'items': [
+                    {'label':'Пользователи', 'url':['/system/adminUsers'], 'active' : this.id == 'system/adminUsers' },
+                ]
+            },
+			{'label':'Выйти ('~App.user.name~')', 'url':['/site/logout'], 'linkOptions': {id: 'logout-link'}, 'visible':not App.user.isGuest}
+		]
+	}]
+}) }}
+{% endblock %}

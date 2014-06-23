@@ -201,7 +201,14 @@ class Client extends CActiveRecord
 		}
 	}
 
-	public function mine(){
+    public function defaultScope()
+    {
+        return array(
+            'order' => 'name',
+        );
+    }
+
+    public function mine(){
 		$this->getDbCriteria()->mergeWith(array(
 			'condition' => 'ownerId = :ownerId',
 			'params' => array(

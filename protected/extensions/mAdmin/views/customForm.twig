@@ -1,0 +1,21 @@
+{% extends adminLayout %}
+
+{% block content %}
+
+    <h1>{{ title }}</h1>
+
+    {% set form = new('TbForm', [
+        form.formConfig|merge({
+            activeForm: {
+                class: 'TbActiveForm',
+                type: 'horizontal',
+                clientOptions: {
+                    validateOnSubmit: true,
+                },
+            },
+        }),
+        form
+    ]) %}
+    {{ form.render()|raw }}
+
+{% endblock %}

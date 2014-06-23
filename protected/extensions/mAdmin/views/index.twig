@@ -1,0 +1,13 @@
+{% extends adminLayout %}
+
+{% block content %}
+
+<h1>Зона администрирования</h1>
+
+{{ void(App.user.setFlash('success', '<strong>Выберите раздел в меню выше</strong>')) }}
+{{ widget('bootstrap.widgets.TbAlert', {
+    closeText : false,
+    alerts: null,
+}) }}
+
+{% endblock %}

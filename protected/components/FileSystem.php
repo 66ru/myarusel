@@ -1,7 +1,5 @@
 <?php
 
-Yii::import('ext.image.Image');
-
 /**
  * Upload files, images. Resize images. Get URLs.
  */
