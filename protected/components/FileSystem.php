@@ -276,7 +276,7 @@ class FileSystem extends CComponent
         $resizedImagePath =  $this->getResizedImagePath($uid, $width, $height);
         if (!file_exists($resizedImagePath) || $forceCreate) {
             $image = Image::create($this->getFilePath($uid));
-            $image->resize($width, $height)->setCompressionQuality(90)->save($resizedImagePath);
+            $image->resize($width, $height)->setCompressionQuality(95)->save($resizedImagePath);
         }
     }
 
@@ -292,7 +292,7 @@ class FileSystem extends CComponent
         $resizedImagePath = $this->getResizedCarouselImagePath($carouselId, $uid, $width, $height);
         if (!file_exists($resizedImagePath) || $forceCreate) {
             $image = Image::create($this->getCarouselFilePath($carouselId, $uid));
-            $image->resize($width, $height)->setCompressionQuality(90)->save($resizedImagePath);
+            $image->resize($width, $height)->setCompressionQuality(95)->save($resizedImagePath);
         }
     }
 }
