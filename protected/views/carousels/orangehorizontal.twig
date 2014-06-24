@@ -58,7 +58,7 @@
 				<div class="b-popular__items-wrapper">
 					<!-- Максимум 100 элементов! -->
 					<ul class="b-popular__items">
-						{% for item in items if loop.index0 < 100 %}
+						{% for item in items[:100] %}
 						<li class="b-popular__items-item">
 							<div class="b-popular__item">
 								<div class="b-popular__item-title-wrapper">

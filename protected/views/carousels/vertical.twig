@@ -52,7 +52,7 @@
 
 			<div class="horizontal-goods-screen" style="height: {{onPage*131}}px">
 				<ul class="horizontal-goods">
-				{% for item in items %}
+				{% for item in items[:100] %}
 				<li>
 					<a href="{{ createMyarouselLink(item.url, urlPrefix, urlPostfix) }}" target="_blank">
 						<span class="horizontal-goods__img">

@@ -10,71 +10,82 @@
  */
 class Item extends CActiveRecord
 {
-	/**
-	 * @static
-	 * @param string $className
-	 * @return Item
-	 */
-	public static function model($className = __CLASS__)
-	{
-		return parent::model($className);
-	}
+    /**
+     * @static
+     * @param string $className
+     * @return Item
+     */
+    public static function model($className = __CLASS__)
+    {
+        return parent::model($className);
+    }
 
-	public function rules()
-	{
-		return array(
-			array('title', 'length', 'max'=>255, 'allowEmpty' => false),
-			array('url', 'url', 'allowEmpty' => false),
-			array('imageUid, price', 'length', 'max'=>100, 'allowEmpty' => false),
-			array('carouselId', 'in', 'allowEmpty' => false, 'range'=>EHtml::listData(Carousel::model())),
-		);
-	}
+    public function rules()
+    {
+        return array(
+            array('title', 'length', 'max' => 255, 'allowEmpty' => false),
+            array('url', 'url', 'allowEmpty' => false),
+            array('imageUid, price', 'length', 'max' => 100, 'allowEmpty' => false),
+            array('carouselId', 'in', 'allowEmpty' => false, 'range' => EHtml::listData(Carousel::model())),
+        );
+    }
 
-	public function scopes()
-	{
-		return array(
-			'onSite' => array(
-				'condition' => $this->getTableAlias().'.imageUid != "" AND '.$this->getTableAlias().'.url != ""',
-			),
-		);
-	}
+    public function scopes()
+    {
+        $t = $this->getTableAlias(false, false);
 
-	public function getImageUrl(){
-		if (!empty($this->imageUid)) {
-			/** @var $fs FileSystem */
-			$fs = Yii::app()->fs;
+        return array(
+            'onSite' => array(
+                'condition' => $t . '.imageUid != "" AND ' . $t . '.url != ""',
+            ),
+        );
+    }
+
+    public function getImageUrl()
+    {
+        if (!empty($this->imageUid)) {
+            /** @var $fs FileSystem */
+            $fs = Yii::app()->fs;
             if (file_exists($fs->getCarouselFilePath($this->carouselId, $this->imageUid))) {
                 return $fs->getCarouselFileUrl($this->carouselId, $this->imageUid);
             } else {
                 return $fs->getFileUrl($this->imageUid);
             }
-		} else {
-			return '';
-		}
-	}
+        } else {
+            return '';
+        }
+    }
 
-	/**
-	 * @param array $sizes array(width, height)
-	 * @param null $master Image::NONE, Image::AUTO, Image::WIDTH, Image::HEIGHT
-	 * @return string
-	 */
-	public function getResizedImageUrl($sizes, $master = null) {
-		$width = $sizes[0];
-		$height = $sizes[1];
-		if (!empty($this->imageUid)) {
-			/** @var $fs FileSystem */
-			$fs = Yii::app()->fs;
-            if (file_exists($fs->getResizedCarouselImagePath($this->imageUid, $this->carouselId, array($width, $height, $master)))) {
-                return $fs->getResizedCarouselImageUrl(
-                    $this->imageUid,
+    /**
+     * @param array $sizes array(width, height)
+     * @return string
+     */
+    public function getResizedImageUrl($sizes)
+    {
+        $width = $sizes[0];
+        $height = $sizes[1];
+        if (!empty($this->imageUid)) {
+            /** @var $fs FileSystem */
+            $fs = Yii::app()->fs;
+            if (file_exists(
+                $fs->getResizedCarouselImagePath(
                     $this->carouselId,
-                    array($width, $height, $master)
+                    $this->imageUid,
+                    $width,
+                    $height
+                )
+            )) {
+                return $fs->getResizedCarouselImageUrl(
+                    $this->carouselId,
+                    $this->imageUid,
+                    $width,
+                    $height
                 );
             } else {
-                return $fs->getResizedImageUrl($this->imageUid, array($width, $height, $master));
+                return $fs->getResizedImageUrl($this->imageUid, $width, $height);
             }
-		} else {
-			return '';
-		}
-	}
+        } else {
+            return '';
+        }
+    }
 }

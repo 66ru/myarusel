@@ -8,7 +8,7 @@ class EFileHelper
      */
     public static function getExtensionByMimeType($fileName)
     {
-        $mimeTypes = require(Yii::getPathOfAlias('system.utils.mimeTypes') . '.php');
+        $mimeTypes = require(Yii::getPathOfAlias('vendor.yiisoft.yii.framework.utils.mimeTypes') . '.php');
         $unsetArray = array('jpe', 'jpeg');
         foreach ($unsetArray as $key)
             unset($mimeTypes[$key]);

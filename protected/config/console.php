@@ -64,10 +64,6 @@ return array(
                 'class' => 'FileSystem',
                 'nestedFolders' => 1,
             ),
-            'image' => array(
-                'class' => 'ext.image.CImageComponent',
-                'driver' => $params['imageDriver'],
-            ),
             'cache' => array(
                 'class' => 'CFileCache',
             ),

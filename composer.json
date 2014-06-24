@@ -19,6 +19,7 @@
         "clevertech/yii-booster": "3.*",
         "yiiext/activerecord-relation-behavior": "1.1",
         "yiiext/twig-renderer": "dev-master",
-        "m8rge/yii-sentry-log": "dev-master"
+        "m8rge/yii-sentry-log": "dev-master",
+        "imagecow/imagecow": "v1.1.0"
     }
 }

@@ -91,16 +91,15 @@ class Client extends CActiveRecord
 
 	/**
 	 * @param array $sizes array(width, height)
-	 * @param null $master Image::NONE, Image::AUTO, Image::WIDTH, Image::HEIGHT
 	 * @return string
 	 */
-	public function getResizedLogoUrl($sizes, $master = NULL) {
+	public function getResizedLogoUrl($sizes) {
 		$width = $sizes[0];
 		$height = $sizes[1];
 		if (!empty($this->logoUid)) {
 			/** @var $fs FileSystem */
 			$fs = Yii::app()->fs;
-			return $fs->getResizedImageUrl($this->logoUid, array($width, $height, $master));
+			return $fs->getResizedImageUrl($this->logoUid, $width, $height);
 		} else {
 			return '';
 		}
@@ -203,8 +202,9 @@ class Client extends CActiveRecord
 
     public function defaultScope()
     {
+        $t = $this->getTableAlias(false, false);
         return array(
-            'order' => 'name',
+            'order' => $t . '.name',
         );
     }
 

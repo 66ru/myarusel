@@ -192,7 +192,7 @@ class Carousel extends CActiveRecord
         }
         /** @var FileSystem $fs */
         $fs = Yii::app()->getComponent('fs');
-        $carouselPath = $fs->getCarouselPath($this->id);
+        $carouselPath = $fs->storagePath . '/' . $fs->getIntermediateCarouselPath($this->id);
         foreach (glob($carouselPath . '/*') as $file) {
             unlink($file);
         }

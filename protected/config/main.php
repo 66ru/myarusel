@@ -120,10 +120,6 @@ return array(
             'errorHandler' => array(
                 'errorAction' => 'site/error',
             ),
-            'image' => array(
-                'class' => 'ext.image.CImageComponent',
-                'driver' => $params['imageDriver'],
-            ),
             'cache' => array(
                 'class' => 'CFileCache',
             ),

@@ -25,7 +25,7 @@ class UpdateCarouselsCommand extends CConsoleCommand
             }
 
             if (!empty($carousel->client->logoUid)) {
-                $fs->resizeImage($carousel->client->logoUid, array($carousel->logoSize, $carousel->logoSize));
+                $fs->resizeImage($carousel->client->logoUid, $carousel->logoSize[0], $carousel->logoSize[1]);
             }
             try {
                 $feedFile = $carousel->client->getFeedFile(true);
@@ -43,7 +43,7 @@ class UpdateCarouselsCommand extends CConsoleCommand
             shuffle($items);
             $items = array_slice($items, 0, self::ITEMS_LIMIT);
             foreach ($items as $i => &$itemAttributes) {
-                $tempFile = tempnam(sys_get_temp_dir(), 'myarusel-image');
+                $tempFile = tempnam(Yii::app()->runtimePath, 'myarusel-image-');
                 $itemAttributes['url'] = trim($itemAttributes['url']);
                 try {
                     if (!empty($itemAttributes['picture'])) {
@@ -56,9 +56,10 @@ class UpdateCarouselsCommand extends CConsoleCommand
                                 $carousel->id
                             );
                             $fs->resizeCarouselImage(
-                                $itemAttributes['imageUid'],
                                 $carousel->id,
-                                array($carousel->thumbSize, $carousel->thumbSize)
+                                $itemAttributes['imageUid'],
+                                $carousel->thumbSize[0],
+                                $carousel->thumbSize[1]
                             );
                         }
                         unlink($tempFile);
@@ -68,8 +69,10 @@ class UpdateCarouselsCommand extends CConsoleCommand
                         unset($items[$i]);
                     }
                 } catch (CurlException $e) {
+                    @unlink($tempFile);
                     unset($items[$i]);
                 } catch (CException $e) {
+                    @unlink($tempFile);
                     if ($e->getMessage() == 'image type not allowed') {
                         unset($items[$i]);
                     } else {
