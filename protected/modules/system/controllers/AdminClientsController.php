@@ -132,7 +132,7 @@ class AdminClientsController extends CommonAdminController
                 $fs->removeFile($model->logoUid);
             }
             $model->logoUid = $fs->publishFile($model->_logo->tempName, $model->_logo->name);
-            $fs->resizeImage($model->logoUid, array(125, 125));
+            $fs->resizeImage($model->logoUid, 125, 125);
         }
 
         if ($model->scenario == 'insert') {
