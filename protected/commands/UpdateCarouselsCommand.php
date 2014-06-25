@@ -3,7 +3,7 @@
 use m8rge\CurlHelper;
 use m8rge\CurlException;
 
-class UpdateCarouselsCommand extends CConsoleCommand
+class UpdateCarouselsCommand extends ConsoleCommand
 {
     const ITEMS_LIMIT = 300;
 
@@ -23,6 +23,7 @@ class UpdateCarouselsCommand extends CConsoleCommand
             if (!($carousel instanceof Carousel)) {
                 throw new CException('Can\'t find carousel');
             }
+            $this->log("processing carousel id=" . $carousel->id);
 
             if (!empty($carousel->client->logoUid)) {
                 $fs->resizeImage($carousel->client->logoUid, $carousel->logoSize[0], $carousel->logoSize[1]);
@@ -117,7 +118,9 @@ class UpdateCarouselsCommand extends CConsoleCommand
             $raven->getClient()->captureException($e);
         }
 
-        echo $e;
+        if (YII_DEBUG) {
+            echo $e;
+        }
         if ($fatal) {
             Yii::app()->end(1);
         }
