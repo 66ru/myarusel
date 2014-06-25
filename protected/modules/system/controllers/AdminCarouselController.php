@@ -268,6 +268,8 @@ $('.updateCache').live('click', function() {
     {
         parent::beforeList($model, $attributes);
 
+        $model->orderDefault();
+
         $admin = Yii::app()->user->checkAccess('admin');
         if (!$admin) {
             $model->ownerId = Yii::app()->user->getId();

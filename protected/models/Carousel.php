@@ -17,6 +17,8 @@
  * @property User $owner
  * @property array $thumbSize
  * @property array $logoSize
+ *
+ * @method Carousel orderDefault()
  */
 class Carousel extends CActiveRecord
 {
@@ -148,6 +150,16 @@ class Carousel extends CActiveRecord
             'template' => 'Шаблон',
             'onPage' => 'Позиций в блоке',
         );
+    }
+
+    public function scopes()
+    {
+        $t = $this->getTableAlias(false, false);
+        return [
+            'orderDefault' => [
+                'order' => $t . '.name',
+            ]
+        ];
     }
 
     public function search()

@@ -188,7 +188,10 @@ class Client extends CActiveRecord
 
 		return new CActiveDataProvider('Client', array(
 			'criteria'=>$criteria,
-		));
+                'pagination' => array(
+                    'pageSize' => 30,
+                ),
+            ));
 	}
 
 	protected function afterSave()
