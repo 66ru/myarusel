@@ -83,12 +83,12 @@ class AdminClientsController extends CommonAdminController
             array(
                 'name' => 'url',
                 'type' => 'raw',
-                'value' => 'CHtml::link($data->url, $data->url, array("target"=>"_blank"))',
+                'value' => 'CHtml::link(StringHelper::cutString($data->url, 60), $data->url, array("target"=>"_blank", "title" => $data->url, "data-toggle" => "tooltip"))',
             ),
             array(
                 'name' => 'feedUrl',
                 'type' => 'raw',
-                'value' => 'CHtml::link($data->feedUrl, $data->feedUrl, array("target"=>"_blank"))',
+                'value' => 'CHtml::link(StringHelper::cutString($data->feedUrl, 60), $data->feedUrl, array("target"=>"_blank", "title" => $data->feedUrl, "data-toggle" => "tooltip"))',
             ),
         );
         if (Yii::app()->user->checkAccess('admin')) {

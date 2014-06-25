@@ -28,4 +28,19 @@ class StringHelper
 
         return $source;
     }
+
+    public static function cutString($string, $length, $cut = false, $append = '…')
+    {
+        if (mb_strlen($string) < $length) {
+            return $string;
+        }
+
+        if ($cut) {
+            return mb_substr($string, 0, $length) . $append;
+        } else {
+            $string = mb_substr($string, 0, $length);
+            $replaced = preg_replace("/\\s+?(\\S+)?$/u", '', $string);
+            return $replaced . $append;
+        }
+    }
 }
