@@ -11,6 +11,7 @@
  * @property int viewType
  * @property string template
  * @property int ownerId
+ * @property int status
  *
  * @property Client $client
  * @property array $items
@@ -19,6 +20,7 @@
  * @property array $logoSize
  *
  * @method Carousel orderDefault()
+ * @method Carousel onSite()
  */
 class Carousel extends CActiveRecord
 {
@@ -36,6 +38,29 @@ class Carousel extends CActiveRecord
 
     const THUMB_SIZE_ATTR = 'thumbSize';
     const LOGO_SIZE_ATTR = 'logoSize';
+
+    const STATUS_DISABLED = 0;
+    const STATUS_ACTIVE = 1;
+
+    public function getStatusList()
+    {
+        return [
+            self::STATUS_DISABLED => 'отключен',
+            self::STATUS_ACTIVE => 'активен',
+        ];
+    }
+
+    public function getStatusText($status = null)
+    {
+        $statusList = $this->getStatusList();
+        if (!is_null($status) && array_key_exists($status, $statusList)) {
+            return $statusList[$status];
+        } elseif (array_key_exists($this->status, $statusList)) {
+            return $statusList[$this->status];
+        } else {
+            return null;
+        }
+    }
 
     public static function getViewTypes()
     {
@@ -115,12 +140,13 @@ class Carousel extends CActiveRecord
     {
         return array(
             array('name', 'unique'),
-            array('name, clientId', 'required'),
+            array('name, clientId, status', 'required'),
             array('onPage', 'numerical', 'integerOnly' => true, 'min' => 0),
             array('urlPrefix', 'url'),
             array('urlPostfix', 'length', 'max' => 255),
             array('viewType', 'in', 'range' => array_keys(self::getViewTypes())),
             array('template', 'in', 'range' => array_keys(self::getTemplates())),
+            array('status', 'in', 'range' => array_keys($this->getStatusList())),
             array('clientId', 'in', 'range' => EHtml::listData(Client::model())),
             array('ownerId', 'in', 'allowEmpty' => false, 'range' => EHtml::listData(User::model())),
             array('categories', 'safe'),
@@ -148,6 +174,7 @@ class Carousel extends CActiveRecord
             'urlPostfix' => 'Постфикс ссылки',
             'viewType' => 'Формат отображения',
             'template' => 'Шаблон',
+            'status' => 'Статус',
             'onPage' => 'Позиций в блоке',
         );
     }
@@ -158,6 +185,12 @@ class Carousel extends CActiveRecord
         return [
             'orderDefault' => [
                 'order' => $t . '.name',
+            ],
+            'onSite' => [
+                'condition' => $t . '.status = :status',
+                'params' => [
+                    ':status' => self::STATUS_ACTIVE,
+                ]
             ]
         ];
     }
@@ -169,6 +202,7 @@ class Carousel extends CActiveRecord
         $criteria->compare('name', $this->name, true);
         $criteria->compare('clientId', $this->clientId);
         $criteria->compare('ownerId', $this->ownerId);
+        $criteria->compare('status', $this->status);
 
         return new CActiveDataProvider(
             $this, array(

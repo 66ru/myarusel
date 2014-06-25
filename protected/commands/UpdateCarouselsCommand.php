@@ -13,7 +13,7 @@ class UpdateCarouselsCommand extends CConsoleCommand
         $fs = Yii::app()->fs;
 
         if ($id === null) {
-            $carousels = Carousel::model()->findAll();
+            $carousels = Carousel::model()->onSite()->findAll();
         } else {
             $carousels = array(Carousel::model()->findByPk($id));
         }

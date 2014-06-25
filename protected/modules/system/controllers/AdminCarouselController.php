@@ -54,6 +54,15 @@ class AdminCarouselController extends CommonAdminController
                     'class' => 'span4',
                 ),
             ),
+            'status' => array(
+                'type' => 'dropDownList',
+                'data' => $model->getStatusList(),
+                'htmlOptions' => array(
+                    'empty' => 'Не выбран',
+                    'placeholder' => false,
+                    'class' => 'span4',
+                ),
+            ),
             'clientId' => array(
                 'type' => 'dropDownList',
                 'data' => $clients,
@@ -156,6 +165,11 @@ class AdminCarouselController extends CommonAdminController
         }
     }
 
+    /**
+     * @param Carousel $model
+     * @return array
+     * @throws CException
+     */
     public function getTableColumns($model)
     {
         $attributes = array(
@@ -184,6 +198,12 @@ class AdminCarouselController extends CommonAdminController
         $attributes = array_merge(
             $attributes,
             array(
+                array(
+                    'name' => 'status',
+                    'value' => '$data->statusText',
+                    'filter' => $model->getStatusList(),
+                    'sortable' => false,
+                ),
                 array(
                     'type' => 'raw',
                     'value' => 'CHtml::link("Обновить кеш", array("/system/adminCarousel/ajaxRefreshCache", "id"=>$data->id), array("class"=>"updateCache"))',
