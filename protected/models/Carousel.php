@@ -42,6 +42,26 @@ class Carousel extends CActiveRecord
     const STATUS_DISABLED = 0;
     const STATUS_ACTIVE = 1;
 
+    /**
+     * @static
+     * @param string $className
+     * @return Carousel
+     */
+    public static function model($className = __CLASS__)
+    {
+        return parent::model($className);
+    }
+
+    public function init()
+    {
+        parent::init();
+
+        $this->attachEventHandler('onAfterSave', array('EHtml', 'invalidateCache'));
+        $this->attachEventHandler('onAfterDelete', array('EHtml', 'invalidateCache'));
+        $this->attachEventHandler('onAfterDelete', array($this, 'cleanUp'));
+        $this->attachEventHandler('onAfterSave', array($this, 'invalidate'));
+    }
+
     public function getStatusList()
     {
         return [
@@ -114,16 +134,6 @@ class Carousel extends CActiveRecord
     {
         $templateAttributes = self::getTemplateAttributes();
         return $templateAttributes[$this->template][self::LOGO_SIZE_ATTR];
-    }
-
-    /**
-     * @static
-     * @param string $className
-     * @return Carousel
-     */
-    public static function model($className = __CLASS__)
-    {
-        return parent::model($className);
     }
 
     public function behaviors()
@@ -229,7 +239,7 @@ class Carousel extends CActiveRecord
         return Yii::app()->getBaseUrl(true) . CHtml::normalizeUrl(array('/carousel/show', 'id' => $this->id));
     }
 
-    protected function afterDelete()
+    public function cleanUp()
     {
         parent::afterDelete();
         /** @var $item Item */
@@ -245,12 +255,4 @@ class Carousel extends CActiveRecord
 
         Yii::app()->setGlobalState($this->getInvalidateKey(), null);
     }
-
-    protected function afterSave()
-    {
-        parent::afterSave();
-
-        $this->invalidate();
-    }
-
 }

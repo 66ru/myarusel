@@ -13,9 +13,9 @@ class UpdateCarouselsCommand extends ConsoleCommand
         $fs = Yii::app()->fs;
 
         if ($id === null) {
-            $carousels = Carousel::model()->onSite()->findAll();
+            $carousels = Carousel::model()->onSite()->with('client')->findAll();
         } else {
-            $carousels = array(Carousel::model()->findByPk($id));
+            $carousels = array(Carousel::model()->with('client')->findByPk($id));
         }
 
         /** @var $carousel Carousel */
@@ -24,6 +24,7 @@ class UpdateCarouselsCommand extends ConsoleCommand
                 throw new CException('Can\'t find carousel');
             }
             $this->log("processing carousel id=" . $carousel->id);
+            $this->log(memory_get_usage() . ' | ' . memory_get_peak_usage());
 
             if (!empty($carousel->client->logoUid)) {
                 $fs->resizeImage($carousel->client->logoUid, $carousel->logoSize[0], $carousel->logoSize[1]);
@@ -83,10 +84,13 @@ class UpdateCarouselsCommand extends ConsoleCommand
             }
             unset($itemAttributes); // remove link
 
-            /** @var $item Item */
-            foreach ($carousel->items as $item) {
-                $item->delete();
-            }
+            $c = new CDbCriteria([
+                    'condition' => 'carouselId = :carouselId',
+                    'params' => [
+                        ':carouselId' => $carousel->id,
+                    ]
+                ]);
+            Yii::app()->db->commandBuilder->createDeleteCommand(Item::model()->tableName(), $c)->execute();
 
             foreach ($items as $itemAttributes) {
                 $item = new Item();
@@ -107,6 +111,7 @@ class UpdateCarouselsCommand extends ConsoleCommand
                     echo "Подлежат обработке " . $allItemsCount . " записей. Успешно обработано " . count($items) . ".";
                 }
             }
+            $this->log("end processing carousel id=" . $carousel->id);
         }
     }
 
