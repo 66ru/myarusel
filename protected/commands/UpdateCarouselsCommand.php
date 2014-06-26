@@ -50,9 +50,14 @@ class UpdateCarouselsCommand extends ConsoleCommand
                 try {
                     $itemAttributes['picture'] = trim($itemAttributes['picture']);
                     if (!empty($itemAttributes['picture'])) {
-                        $publishedMask = $fs->getCarouselFilePath($carousel->id, md5($itemAttributes['picture'])) . '*';
-                        $imageExists = glob($publishedMask);
-                        $imageExists = !empty($imageExists);
+                        $publishedMask = $fs->getCarouselFilePath($carousel->id, md5($itemAttributes['picture'])) . '.*';
+                        $existingImage = glob($publishedMask);
+                        $imageExists = !empty($existingImage);
+                        if ($imageExists) {
+                            $imageUid = reset($existingImage);
+                            $imageUid = pathinfo($imageUid, PATHINFO_BASENAME);
+                            $itemAttributes['imageUid'] = $imageUid;
+                        }
 
                         if (!$imageExists || $withImages) {
                             CurlHelper::downloadToFile($itemAttributes['picture'], $tempFile);
