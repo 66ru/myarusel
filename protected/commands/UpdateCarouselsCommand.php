@@ -7,13 +7,13 @@ class UpdateCarouselsCommand extends ConsoleCommand
 {
     const ITEMS_LIMIT = 300;
 
-    public function actionIndex($id = null)
+    public function actionIndex($id = null, $withImages = false)
     {
         /** @var $fs FileSystem */
         $fs = Yii::app()->fs;
 
         if ($id === null) {
-            $carousels = Carousel::model()->onSite()->with('client')->findAll();
+            $carousels = Carousel::model()->onSite()->orderById()->with('client')->findAll();
         } else {
             $carousels = array(Carousel::model()->with('client')->findByPk($id));
         }
@@ -48,38 +48,39 @@ class UpdateCarouselsCommand extends ConsoleCommand
                 $tempFile = tempnam(Yii::app()->runtimePath, 'myarusel-image-');
                 $itemAttributes['url'] = trim($itemAttributes['url']);
                 try {
+                    $itemAttributes['picture'] = trim($itemAttributes['picture']);
                     if (!empty($itemAttributes['picture'])) {
-                        $itemAttributes['picture'] = trim($itemAttributes['picture']);
-                        CurlHelper::downloadToFile($itemAttributes['picture'], $tempFile);
-                        if (ImageHelper::checkImageCorrect($tempFile)) {
-                            $itemAttributes['imageUid'] = $fs->publishFileForCarousel(
-                                $tempFile,
-                                $itemAttributes['picture'],
-                                $carousel->id
-                            );
-                            $fs->resizeCarouselImage(
-                                $carousel->id,
-                                $itemAttributes['imageUid'],
-                                $carousel->thumbSize[0],
-                                $carousel->thumbSize[1]
-                            );
+                        $publishedMask = $fs->getCarouselFilePath($carousel->id, md5($itemAttributes['picture'])) . '*';
+                        $imageExists = glob($publishedMask);
+                        $imageExists = !empty($imageExists);
+
+                        if (!$imageExists || $withImages) {
+                            CurlHelper::downloadToFile($itemAttributes['picture'], $tempFile);
+                            if (ImageHelper::checkImageCorrect($tempFile)) {
+                                $itemAttributes['imageUid'] = $fs->publishFileForCarousel(
+                                    $tempFile,
+                                    $itemAttributes['picture'],
+                                    $carousel->id
+                                );
+                                $fs->resizeCarouselImage(
+                                    $carousel->id,
+                                    $itemAttributes['imageUid'],
+                                    $carousel->thumbSize[0],
+                                    $carousel->thumbSize[1]
+                                );
+                            }
                         }
-                        unlink($tempFile);
                         $itemAttributes['carouselId'] = $carousel->id;
                         unset($itemAttributes['picture']);
                     } else {
                         unset($items[$i]);
                     }
                 } catch (CurlException $e) {
-                    @unlink($tempFile);
                     unset($items[$i]);
-                } catch (CException $e) {
+                } catch (Imagecow\ImageException $e) {
+                    unset($items[$i]);
+                } finally {
                     @unlink($tempFile);
-                    if ($e->getMessage() == 'image type not allowed') {
-                        unset($items[$i]);
-                    } else {
-                        throw $e;
-                    }
                 }
             }
             unset($itemAttributes); // remove link

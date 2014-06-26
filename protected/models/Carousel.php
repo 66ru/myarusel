@@ -20,6 +20,7 @@
  * @property array $logoSize
  *
  * @method Carousel orderDefault()
+ * @method Carousel orderById()
  * @method Carousel onSite()
  */
 class Carousel extends CActiveRecord
@@ -195,6 +196,9 @@ class Carousel extends CActiveRecord
         return [
             'orderDefault' => [
                 'order' => $t . '.name',
+            ],
+            'orderById' => [
+                'order' => $t . '.id',
             ],
             'onSite' => [
                 'condition' => $t . '.status = :status',

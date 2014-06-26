@@ -1,4 +1,6 @@
 <?php
+use m8rge\CurlHelper;
+
 /**
  * ValidXml class file.
  * fetch file from url from attribute and check it for valid xml inside
@@ -43,9 +45,9 @@ class ValidXml extends CValidator
             $xmlFile = self::$filesCache[$value];
         } else {
             $xmlFile = tempnam(Yii::app()->getRuntimePath(), 'xml');
+            self::$filesCache[$value] = $xmlFile;
             try {
                 CurlHelper::downloadToFile($value, $xmlFile);
-                self::$filesCache[$value] = $xmlFile;
             } catch (Exception $e) {
             }
         }

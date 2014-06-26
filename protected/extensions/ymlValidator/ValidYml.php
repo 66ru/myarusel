@@ -46,9 +46,9 @@ class ValidYml extends CValidator
 			$xmlFile = self::$filesCache[$value];
 		} else {
 			$xmlFile = tempnam(Yii::app()->getRuntimePath(), 'xml');
+            self::$filesCache[$value] = $xmlFile;
 			try {
 				CurlHelper::downloadToFile($value, $xmlFile);
-				self::$filesCache[$value] = $xmlFile;
 			} catch (\m8rge\CurlException $e) {
                 $this->addError($object, $attribute, 'Произошла ошибка при получении yml файла клиента: ' . $e->getMessage());
                 return;
