@@ -1,6 +1,6 @@
 <?php
 
-Yii::import('ext.ymlValidator.*');
+Yii::import('ext.validators.ymlValidator.*');
 
 class YMLHelper
 {
