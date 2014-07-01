@@ -9,6 +9,8 @@ class UpdateCarouselsCommand extends ConsoleCommand
 
     public function actionIndex($id = null, $forceImages = false)
     {
+        define('SINGLE_REFRESH', $id !== null);
+
         /** @var $fs FileSystem */
         $fs = Yii::app()->fs;
 
@@ -37,13 +39,13 @@ class UpdateCarouselsCommand extends ConsoleCommand
                     $feedFile = $clientFiles[ $carousel->clientId ];
                 }
             } catch (CurlException $e) {
-                $this->captureException($e, !empty($id));
+                $this->captureException($e);
                 continue;
             }
             try {
                 $items = YMLHelper::getItems($feedFile, $carousel->categories, $carousel->viewType, self::ITEMS_LIMIT);
             } catch (CException $e) {
-                $this->captureException($e, !empty($id));
+                $this->captureException($e);
                 continue;
             }
             $allItemsCount = count($items);
@@ -111,7 +113,7 @@ class UpdateCarouselsCommand extends ConsoleCommand
             }
             $carousel->invalidate();
 
-            if ($id !== null) {
+            if (SINGLE_REFRESH) {
                 if ($allItemsCount > self::ITEMS_LIMIT) {
                     echo "Подлежат обработке " . $allItemsCount . " записей. Из них случайно отобрано " . self::ITEMS_LIMIT .
                         ". Успешно обработано " . count($items) . ".";
@@ -124,7 +126,10 @@ class UpdateCarouselsCommand extends ConsoleCommand
         }
     }
 
-    public function captureException($e, $fatal)
+    /**
+     * @param Exception $e
+     */
+    public function captureException($e)
     {
         if (Yii::app()->params['useSentry']) {
             /** @var RSentryComponent $raven */
@@ -135,7 +140,10 @@ class UpdateCarouselsCommand extends ConsoleCommand
         if (YII_DEBUG) {
             echo $e;
         }
-        if ($fatal) {
+        if (SINGLE_REFRESH) {
+            if (!YII_DEBUG) {
+                echo $e->getMessage();
+            }
             Yii::app()->end(1);
         }
     }
