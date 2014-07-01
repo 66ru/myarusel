@@ -4,7 +4,6 @@ Yii::setPathOfAlias('lib', realpath(__DIR__ . '/../../lib'));
 Yii::setPathOfAlias('vendor', realpath(__DIR__ . '/../../vendor'));
 
 $params = require('params.php');
-
 $components = array();
 $logRoutes = array(
     array(
@@ -66,6 +65,8 @@ return array(
                     'admin/<module:\w+>/<controller:\w+>/' => '<module>/admin<controller>',
                     'admin/<module:\w+>/<controller:\w+>/<action:\w+>/' => '<module>/admin<controller>/<action>',
                     'carousel/<id:\d+>' => 'carousel/show',
+    //				'<action:\w+>/<id:\d+>' => 'site/<action>',
+                    'validate' => 'validate/index',
                     '<action:\w+>' => 'site/<action>',
                     'admin/<action:\w+>/' => 'systemø/admin/<action>',
                 ),

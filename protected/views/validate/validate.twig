@@ -1,8 +1,13 @@
-{% extends adminLayout %}
+{% extends '/views/layouts/main.twig' %}
 
 {% block content %}
 
     <h1>{{ title }}</h1>
+
+    {{ widget('bootstrap.widgets.TbAlert', {
+    closeText : false,
+    alerts: null,
+    }) }}
 
     {% set form = new('TbForm', [
         form.formConfig|merge({
