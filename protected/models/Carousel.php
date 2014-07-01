@@ -27,10 +27,10 @@ class Carousel extends CActiveRecord
 {
     const INVALIDATE_KEY = 'invalidateCarousel';
 
-    const VIEW_ALL_IN_CATEGORIES = 0;
-    const VIEW_ONLY_CHEAP = 1;
-    const VIEW_USE_GROUPS = 2;
-    const VIEW_ALL = 3;
+    const VIEW_ALL_IN_CATEGORIES = 0; // all items in selected categories
+    const VIEW_CHEAP_IN_CATEGORIES = 1; // cheap items one from each category
+    const VIEW_GROUP_BY_CATEGORIES = 2; // random image from category, custom label
+    const VIEW_ALL = 3; // all items
 
     const TEMPLATE_VERTICAL = 'vertical';
     const TEMPLATE_HORIZONTAL = 'horizontal';
@@ -88,8 +88,8 @@ class Carousel extends CActiveRecord
         return array(
             self::VIEW_ALL_IN_CATEGORIES => 'Показывать все товары в выбранных категориях',
             self::VIEW_ALL => 'Показывать все товары',
-            self::VIEW_ONLY_CHEAP => 'Показывать только дешевые товары, по одному из каждой рубрики',
-            self::VIEW_USE_GROUPS => 'Группировать товары по рубрикам',
+            self::VIEW_CHEAP_IN_CATEGORIES => 'Показывать только дешевые товары, по одному из каждой рубрики',
+            self::VIEW_GROUP_BY_CATEGORIES => 'Группировать товары по рубрикам',
         );
     }
 

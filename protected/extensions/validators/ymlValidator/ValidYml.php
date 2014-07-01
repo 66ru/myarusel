@@ -1,7 +1,6 @@
 <?php
 
 use m8rge\CurlHelper;
-require_once __DIR__ . '/SilentDOMDocument.php';
 
 /**
  * fetch file from url from attribute and check it for valid yml inside
@@ -69,34 +68,63 @@ class ValidYml extends CValidator
 	}
 
     /**
+     * @param string $file
+     */
+    public function normalizeDTD($file)
+    {
+        $temp = tempnam(Yii::app()->runtimePath, 'yml-');
+        $f = fopen($file, 'r');
+        $fw = fopen($temp, 'w');
+
+        $str = fread($f, 512);
+        $doctypeMask = '/(?:<!doctype.*?>)?\s*?<yml_catalog/is';
+        if (preg_match($doctypeMask, $str, $matches)) {
+            $newLines = substr_count($matches[0], "\n");
+            $newLines = str_repeat("\n", $newLines);
+            $str = preg_replace($doctypeMask, "<!DOCTYPE yml_catalog SYSTEM \"" . __DIR__ . "/shops.dtd\">$newLines<yml_catalog", $str);
+            fwrite($fw, $str);
+            while (fwrite($fw, fread($f, 1024*512))) {
+            }
+            fclose($f);
+            fclose($fw);
+            rename($temp, $file);
+        } else {
+            fclose($f);
+            fclose($fw);
+            unlink($temp);
+        }
+    }
+
+    /**
      * @param $xmlFile
      * @return bool|string true or text error
      */
     public function validateFile($xmlFile)
     {
-        $root = 'yml_catalog';
+        $this->normalizeDTD($xmlFile);
 
-        $xmlDocument = new DOMDocument();
-        $validXml = @$xmlDocument->loadXML(file_get_contents($xmlFile));
-        if ($validXml === false) {
-            return Yii::t('ValidYml.app','{attribute} doesn\'t contain valid XML.');
-        } else {
-            $creator = new DOMImplementation;
-            $docType = $creator->createDocumentType($root, null, __DIR__ . '/shops.dtd');
-            $validateXmlDocument = $creator->createDocument($root, null, $docType);
-            $validateXmlDocument->encoding = $xmlDocument->encoding ? $xmlDocument->encoding : 'utf-8';
+        $errors = [];
+        libxml_use_internal_errors(true);
+        $r = new XMLReader();
+        $r->open($xmlFile, null, LIBXML_DTDLOAD | LIBXML_DTDVALID | LIBXML_NONET | LIBXML_NOBLANKS);
+        while ($r->read()) {
+        }
+        $libXmlErrors = libxml_get_errors();
+        libxml_clear_errors();
 
-            $oldNode = $xmlDocument->getElementsByTagName($root)->item(0);
-            $newNode = $validateXmlDocument->importNode($oldNode, true);
-            $validateXmlDocument->appendChild($newNode);
-            $validateXmlDocument = new SilentDOMDocument($validateXmlDocument);
-            if (@$validateXmlDocument->validate() === false) {
-                return Yii::t(
-                    'ValidYml.app',
-                    'Following errors occurred during document validate: {errors}',
-                    array('{errors}' => '<ul><li>'.implode('<li>', $validateXmlDocument->errors).'</ul>')
-                );
+        foreach ($libXmlErrors as $error) {
+            if ($error->code == 505) {
+                continue; // skip warning due not determinist dtd
             }
+            $message = trim($error->message);
+            $errors[] = "Line $error->line:$error->column: $message";
+        }
+        if (!empty($errors)) {
+            return Yii::t(
+                'ValidYml.app',
+                'Following errors occurred during document validate: {errors}',
+                array('{errors}' => '<ul><li>'.implode('<li>', array_unique($errors)).'</ul>')
+            );
         }
 
         return true;
@@ -121,5 +149,10 @@ class ValidYml extends CValidator
         } else {
             return true;
         }
+    }
+
+    public function validateItems()
+    {
+
     }
 }

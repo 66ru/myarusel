@@ -7,7 +7,7 @@ class UpdateCarouselsCommand extends ConsoleCommand
 {
     const ITEMS_LIMIT = 300;
 
-    public function actionIndex($id = null, $withImages = false)
+    public function actionIndex($id = null, $forceImages = false)
     {
         /** @var $fs FileSystem */
         $fs = Yii::app()->fs;
@@ -24,31 +24,32 @@ class UpdateCarouselsCommand extends ConsoleCommand
                 throw new CException('Can\'t find carousel');
             }
             $this->log("processing carousel id=" . $carousel->id);
-            $this->log(memory_get_usage() . ' | ' . memory_get_peak_usage());
 
             if (!empty($carousel->client->logoUid)) {
                 $fs->resizeImage($carousel->client->logoUid, $carousel->logoSize[0], $carousel->logoSize[1]);
             }
             try {
-                $feedFile = $carousel->client->getFeedFile(true);
+                static $clientFiles = [];
+                if (empty($clientFiles[ $carousel->clientId ])) {
+                    $feedFile = $carousel->client->getFeedFile(true);
+                    $clientFiles[ $carousel->clientId ] = $feedFile;
+                } else {
+                    $feedFile = $clientFiles[ $carousel->clientId ];
+                }
             } catch (CurlException $e) {
                 $this->captureException($e, !empty($id));
                 continue;
             }
             try {
-                $items = YMLHelper::getItems($feedFile, $carousel->categories, $carousel->viewType);
+                $items = YMLHelper::getItems($feedFile, $carousel->categories, $carousel->viewType, self::ITEMS_LIMIT);
             } catch (CException $e) {
                 $this->captureException($e, !empty($id));
                 continue;
             }
             $allItemsCount = count($items);
-            shuffle($items);
-            $items = array_slice($items, 0, self::ITEMS_LIMIT);
             foreach ($items as $i => &$itemAttributes) {
                 $tempFile = tempnam(Yii::app()->runtimePath, 'myarusel-image-');
-                $itemAttributes['url'] = trim($itemAttributes['url']);
                 try {
-                    $itemAttributes['picture'] = trim($itemAttributes['picture']);
                     if (!empty($itemAttributes['picture'])) {
                         $publishedMask = $fs->getCarouselFilePath($carousel->id, md5($itemAttributes['picture'])) . '.*';
                         $existingImage = glob($publishedMask);
@@ -59,7 +60,7 @@ class UpdateCarouselsCommand extends ConsoleCommand
                             $itemAttributes['imageUid'] = $imageUid;
                         }
 
-                        if (!$imageExists || $withImages) {
+                        if (!$imageExists || $forceImages) {
                             CurlHelper::downloadToFile($itemAttributes['picture'], $tempFile);
                             if (ImageHelper::checkImageCorrect($tempFile)) {
                                 $itemAttributes['imageUid'] = $fs->publishFileForCarousel(
@@ -71,7 +72,8 @@ class UpdateCarouselsCommand extends ConsoleCommand
                                     $carousel->id,
                                     $itemAttributes['imageUid'],
                                     $carousel->thumbSize[0],
-                                    $carousel->thumbSize[1]
+                                    $carousel->thumbSize[1],
+                                    $forceImages
                                 );
                             }
                         }
@@ -118,6 +120,7 @@ class UpdateCarouselsCommand extends ConsoleCommand
                 }
             }
             $this->log("end processing carousel id=" . $carousel->id);
+            $this->log(memory_get_usage() . ' | ' . memory_get_peak_usage());
         }
     }
 
