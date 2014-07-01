@@ -6,6 +6,7 @@ if (file_exists("/proc/$parentPid/cmdline") && strpos(file_get_contents("/proc/$
     ini_set('display_errors', '0'); // don't display errors while under cron
     define('YII_DEBUG', false);
 } else {
+    ini_set('display_errors', '1');
     define('YII_DEBUG', true);
 }
 
