@@ -40,6 +40,6 @@ class XMLReader2 extends XMLReader
             $options = LIBXML_NONET | LIBXML_NOBLANKS | LIBXML_NOERROR | LIBXML_NOWARNING;
         }
 
-        parent::open($URI, $encoding, $options);
+        return parent::open($URI, $encoding, $options);
     }
 } 
