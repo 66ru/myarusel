@@ -32,11 +32,11 @@ class UpdateCarouselsCommand extends ConsoleCommand
             }
             try {
                 static $clientFiles = [];
-                if (empty($clientFiles[ $carousel->clientId ])) {
+                if (empty($clientFiles[ $carousel->client->feedUrl ])) {
                     $feedFile = $carousel->client->getFeedFile(true);
-                    $clientFiles[ $carousel->clientId ] = $feedFile;
+                    $clientFiles[ $carousel->client->feedUrl ] = $feedFile;
                 } else {
-                    $feedFile = $clientFiles[ $carousel->clientId ];
+                    $feedFile = $clientFiles[ $carousel->client->feedUrl ];
                 }
             } catch (CurlException $e) {
                 $this->captureException($e);
