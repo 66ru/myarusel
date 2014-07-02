@@ -28,7 +28,7 @@ class ValidateController extends Controller
             }
         }
         $this->render('validate', [
-                'adminLayout' => '/views/layouts/main.twig',
+                'adminLayout' => '/views/layouts/admin.twig',
                 'title' => 'Проверка YML файла',
                 'form' => $form,
             ]);

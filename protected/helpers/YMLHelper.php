@@ -28,7 +28,7 @@ class YMLHelper
             }
         }
         $r = new XMLReader2();
-        if ($r->open($ymlFile) === false) {
+        if (!@$r->open($ymlFile)) {
             throw new CException('can\'t open xml file: ' . pathinfo($ymlFile, PATHINFO_FILENAME));
         }
         $loadedFiles[$ymlFile] = true;
