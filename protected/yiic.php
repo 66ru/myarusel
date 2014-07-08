@@ -13,6 +13,17 @@ if (file_exists("/proc/$parentPid/cmdline") && strpos(file_get_contents("/proc/$
 require_once(__DIR__ . '/../vendor/autoload.php');
 require_once(__DIR__ . '/../vendor/yiisoft/yii/framework/yii.php');
 
+if (extension_loaded('xhprof')) {
+    xhprof_enable(XHPROF_FLAGS_CPU);
+
+    register_shutdown_function(function() {
+            $profiler_namespace = 'myarusel';  // namespace for your application
+            $xhprof_data = xhprof_disable();
+            $xhprof_runs = new XHProfRuns_Default();
+            echo 'xhprof_run id: ' . $xhprof_runs->save_run($xhprof_data, $profiler_namespace);
+        });
+}
+
 $config = require(__DIR__ . '/config/console.php');
 $app = Yii::createConsoleApplication($config);
 $app->commandRunner->addCommands(__DIR__ . '/commands');

@@ -110,10 +110,11 @@ class YMLHelper
      * @param array $categoryIds
      * @param int $viewType
      * @param int $limit
+     * @param int $itemsCount output total items count
      * @throws CException
      * @return array array with Items attributes
      */
-    public static function getItems($ymlFile, $categoryIds, $viewType, $limit)
+    public static function getItems($ymlFile, $categoryIds, $viewType, $limit, &$itemsCount = 0)
     {
         if (!is_array($categoryIds)) {
             $categoryIds = [];
@@ -127,10 +128,12 @@ class YMLHelper
 
         // Получаем id и цену товаров с картинкой и ссылкой
         $fetchingItemsInCategories = [];
+        $itemsCount = 0;
         $r = self::loadXmlFile($ymlFile);
         $r->readUntil('shop')->readUntil('offers')->readAll(
             'offer',
-            function () use ($r, $viewType, $fetchCategoryIds, &$fetchingItemsInCategories) {
+            function () use ($r, $viewType, $fetchCategoryIds, &$fetchingItemsInCategories, &$itemsCount) {
+                $itemsCount++;
                 $offer = self::gatherOfferProperties($r);
                 if (empty($offer['id']) || empty($offer['picture']) || empty($offer['url'])) {
                     return;

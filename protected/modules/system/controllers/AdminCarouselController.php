@@ -238,16 +238,17 @@ $('.updateCache').live('click', function() {
             throw new CHttpException(403);
         }
 
-        $id = (int)$id;
+        /** @var Carousel $carousel */
+        $carousel = Carousel::model()->with('client')->findByPk($id);
 
-        $returnVal = 0;
-        $output = array();
-        exec(Yii::app()->getBasePath() . '/yiic updateCarousels --id=' . $id, $output, $returnVal);
+        Yii::import('application.commands.*');
+        $command = new UpdateCarouselsCommand('UpdateCarouselsCommand', null);
+        $status = $command->processCarousel($carousel);
 
         echo json_encode(
             array(
-                'errorCode' => $returnVal,
-                'output' => implode("\n", $output),
+                'errorCode' => $status === false,
+                'output' => $status,
             )
         );
     }

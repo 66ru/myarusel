@@ -7,122 +7,168 @@ class UpdateCarouselsCommand extends ConsoleCommand
 {
     const ITEMS_LIMIT = 300;
 
-    public function actionIndex($id = null, $forceImages = false)
+    /** @var Client[] $urlToClient */
+    public $urlToClient = [];
+
+    /** @var bool */
+    public $forceImages = false;
+
+    public function actionIndex()
     {
-        define('SINGLE_REFRESH', $id !== null);
+        /** @var Client[] $clients */
+        $clients = Client::model()->with('carouselsOnSite')->findAll();
 
-        /** @var $fs FileSystem */
-        $fs = Yii::app()->fs;
-
-        if ($id === null) {
-            $carousels = Carousel::model()->onSite()->orderById()->with('client')->findAll();
-        } else {
-            $carousels = array(Carousel::model()->with('client')->findByPk($id));
+        $urlToFiles = [];
+        foreach ($clients as $client) {
+            if (!empty($client->carouselsOnSite)) {
+                $feedFile = tempnam(Yii::app()->getRuntimePath(), 'yml');
+                $urlToFiles[$client->feedUrl] = $feedFile;
+                $this->urlToClient[$client->feedUrl] = $client;
+            }
         }
 
-        /** @var $carousel Carousel */
-        foreach ($carousels as $carousel) {
-            if (!($carousel instanceof Carousel)) {
-                throw new CException('Can\'t find carousel');
-            }
-            $this->log("processing carousel id=" . $carousel->id);
-
-            if (!empty($carousel->client->logoUid)) {
-                $fs->resizeImage($carousel->client->logoUid, $carousel->logoSize[0], $carousel->logoSize[1]);
-            }
-            try {
-                static $clientFiles = [];
-                if (empty($clientFiles[ $carousel->client->feedUrl ])) {
-                    $feedFile = $carousel->client->getFeedFile(true);
-                    $clientFiles[ $carousel->client->feedUrl ] = $feedFile;
-                } else {
-                    $feedFile = $clientFiles[ $carousel->client->feedUrl ];
+        CurlHelper::batchDownload(
+            $urlToFiles,
+            function ($url, $file, $e) {
+                if ($e) {
+                    unlink($file);
+                    $this->captureException($e);
+                    return;
                 }
-            } catch (CurlException $e) {
-                $this->captureException($e);
+                $client = $this->urlToClient[$url];
+                $client->updateFeedFile($file);
+
+                // iterate through client carousels
+                foreach ($client->carouselsOnSite as $carousel) {
+                    $this->processCarousel($carousel);
+                }
+            },
+            [
+                CURLOPT_CONNECTTIMEOUT => 15,
+            ]
+        );
+    }
+
+    public function actionSingle($id)
+    {
+        /** @var Carousel $carousel */
+        $carousel = Carousel::model()->with('client')->findByPk($id);
+        $this->processCarousel($carousel);
+    }
+
+    /**
+     * @param Carousel $carousel
+     * @throws CDbException
+     * @throws CException
+     * @throws m8rge\CurlException
+     * @return bool|string status string or false
+     */
+    public function processCarousel($carousel)
+    {
+        $this->log("processing carousel id=" . $carousel->id);
+        /** @var $fs FileSystem */
+        $fs = Yii::app()->fs;
+        if (!empty($carousel->client->logoUid)) {
+            $fs->resizeImage($carousel->client->logoUid, $carousel->logoSize[0], $carousel->logoSize[1]);
+        }
+
+        try {
+            $items = YMLHelper::getItems($carousel->client->getFeedFile(), $carousel->categories, $carousel->viewType, self::ITEMS_LIMIT, $allItemsCount);
+        } catch (CException $e) {
+            $this->captureException($e);
+            return $e->getMessage();
+        } catch (CurlException $e) {
+            $this->captureException($e);
+            return $e->getMessage();
+        }
+        $urlToFiles = [];
+        $urlToItemId = [];
+        foreach ($items as $i => &$itemAttributes) {
+            if (empty($itemAttributes['picture'])) {
+                unset($items[$i]);
                 continue;
             }
-            try {
-                $items = YMLHelper::getItems($feedFile, $carousel->categories, $carousel->viewType, self::ITEMS_LIMIT);
-            } catch (CException $e) {
-                $this->captureException($e);
-                continue;
+            $itemAttributes['carouselId'] = $carousel->id;
+
+            $publishedMask = $fs->getCarouselFilePath($carousel->id, md5($itemAttributes['picture'])) . '.*';
+            $existingImage = glob($publishedMask);
+            $imageExists = !empty($existingImage);
+            if ($imageExists) {
+                $imageUid = reset($existingImage);
+                $imageUid = pathinfo($imageUid, PATHINFO_BASENAME);
+                $itemAttributes['imageUid'] = $imageUid;
             }
-            $allItemsCount = count($items);
-            foreach ($items as $i => &$itemAttributes) {
+            if (!$imageExists || $this->forceImages) {
                 $tempFile = tempnam(Yii::app()->runtimePath, 'myarusel-image-');
+                $urlToFiles[$itemAttributes['picture']] = $tempFile;
+                $urlToItemId[$itemAttributes['picture']] = $i;
+            }
+        }
+        unset($itemAttributes);
+
+        CurlHelper::batchDownload(
+            $urlToFiles,
+            function ($url, $file, $e) use (&$items, $urlToItemId, $carousel, $fs) {
+                $itemId = $urlToItemId[$url];
+                if ($e) {
+                    /** @var Exception $e */
+                    $this->log($e->getMessage());
+                    unlink($file);
+                    unset($items[$itemId]);
+                    return;
+                }
+                $this->log('downloaded ' . $url);
+                $itemAttributes = & $items[$itemId];
+
                 try {
-                    if (!empty($itemAttributes['picture'])) {
-                        $publishedMask = $fs->getCarouselFilePath($carousel->id, md5($itemAttributes['picture'])) . '.*';
-                        $existingImage = glob($publishedMask);
-                        $imageExists = !empty($existingImage);
-                        if ($imageExists) {
-                            $imageUid = reset($existingImage);
-                            $imageUid = pathinfo($imageUid, PATHINFO_BASENAME);
-                            $itemAttributes['imageUid'] = $imageUid;
-                        }
-
-                        if (!$imageExists || $forceImages) {
-                            CurlHelper::downloadToFile($itemAttributes['picture'], $tempFile);
-                            if (ImageHelper::checkImageCorrect($tempFile)) {
-                                $itemAttributes['imageUid'] = $fs->publishFileForCarousel(
-                                    $tempFile,
-                                    $itemAttributes['picture'],
-                                    $carousel->id
-                                );
-                                $fs->resizeCarouselImage(
-                                    $carousel->id,
-                                    $itemAttributes['imageUid'],
-                                    $carousel->thumbSize[0],
-                                    $carousel->thumbSize[1],
-                                    $forceImages
-                                );
-                            }
-                        }
-                        $itemAttributes['carouselId'] = $carousel->id;
-                        unset($itemAttributes['picture']);
-                    } else {
-                        unset($items[$i]);
-                    }
-                } catch (CurlException $e) {
-                    unset($items[$i]);
-                } catch (Imagecow\ImageException $e) {
-                    unset($items[$i]);
-                } finally {
-                    @unlink($tempFile);
-                }
-            }
-            unset($itemAttributes); // remove link
-
-            $c = new CDbCriteria([
-                    'condition' => 'carouselId = :carouselId',
-                    'params' => [
-                        ':carouselId' => $carousel->id,
-                    ]
-                ]);
-            Yii::app()->db->commandBuilder->createDeleteCommand(Item::model()->tableName(), $c)->execute();
-
-            foreach ($items as $itemAttributes) {
-                $item = new Item();
-                $item->setAttributes($itemAttributes);
-                if (!$item->save()) {
-                    throw new CException(
-                        "Can't save Item:\n" . print_r($item->getErrors(), true) . print_r($item->getAttributes(), true)
+                    $itemAttributes['imageUid'] = $fs->publishFileForCarousel(
+                        $file,
+                        $url,
+                        $carousel->id
                     );
+                    $fs->resizeCarouselImage(
+                        $carousel->id,
+                        $itemAttributes['imageUid'],
+                        $carousel->thumbSize[0],
+                        $carousel->thumbSize[1],
+                        $this->forceImages
+                    );
+                    unset($itemAttributes['picture']);
+                } catch (Imagecow\ImageException $e) {
+                    unset($items[$itemId]);
+                } finally {
+                    @unlink($file);
                 }
             }
-            $carousel->invalidate();
+        );
 
-            if (SINGLE_REFRESH) {
-                if ($allItemsCount > self::ITEMS_LIMIT) {
-                    echo "Подлежат обработке " . $allItemsCount . " записей. Из них случайно отобрано " . self::ITEMS_LIMIT .
-                        ". Успешно обработано " . count($items) . ".";
-                } else {
-                    echo "Подлежат обработке " . $allItemsCount . " записей. Успешно обработано " . count($items) . ".";
-                }
+        $c = new CDbCriteria([
+                'condition' => 'carouselId = :carouselId',
+                'params' => [
+                    ':carouselId' => $carousel->id,
+                ]
+            ]);
+        Yii::app()->db->commandBuilder->createDeleteCommand(Item::model()->tableName(), $c)->execute();
+
+        foreach ($items as $itemAttributes) {
+            $item = new Item();
+            $item->setAttributes($itemAttributes);
+            if (!$item->save()) {
+                throw new CException(
+                    "Can't save Item:\n" . print_r($item->getErrors(), true) . print_r($item->getAttributes(), true)
+                );
             }
-            $this->log("end processing carousel id=" . $carousel->id);
-            $this->log(memory_get_usage() . ' | ' . memory_get_peak_usage());
+        }
+        $carousel->invalidate();
+
+        $this->log("end processing carousel id=" . $carousel->id);
+        $this->log("memory current = " . round(memory_get_usage()/1024) . 'K, peak = ' . round(memory_get_peak_usage()/1024) . 'K');
+
+        if ($allItemsCount > self::ITEMS_LIMIT) {
+            return "Подлежат обработке " . $allItemsCount . " записей. Из них случайно отобрано " . self::ITEMS_LIMIT .
+                ". Успешно обработано " . count($items) . ".";
+        } else {
+            return "Отобрано обработке " . $allItemsCount . " записей. Успешно обработано " . count($items) . ".";
         }
     }
 
@@ -137,14 +183,8 @@ class UpdateCarouselsCommand extends ConsoleCommand
             $raven->getClient()->captureException($e);
         }
 
-        if (YII_DEBUG) {
+        if (YII_DEBUG && Yii::app() instanceof CConsoleApplication) {
             echo $e;
-        }
-        if (SINGLE_REFRESH) {
-            if (!YII_DEBUG) {
-                echo $e->getMessage();
-            }
-            Yii::app()->end(1);
         }
     }
 }

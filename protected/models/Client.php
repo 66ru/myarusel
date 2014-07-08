@@ -15,7 +15,8 @@ use m8rge\CurlHelper;
  * @property string $color
  * @property int ownerId
  *
- * @property array carousels
+ * @property Carousel[] carousels
+ * @property Carousel[] carouselsOnSite
  * @property User $owner
  */
 class Client extends CActiveRecord
@@ -58,6 +59,7 @@ class Client extends CActiveRecord
     {
         return array(
             'carousels' => array(self::HAS_MANY, 'Carousel', 'clientId'),
+            'carouselsOnSite' => array(self::HAS_MANY, 'Carousel', 'clientId', 'scopes' => 'onSite'),
             'owner' => array(self::BELONGS_TO, 'User', 'ownerId'),
         );
     }
@@ -110,16 +112,27 @@ class Client extends CActiveRecord
         return TreeHelper::getTreeForDropDownBox(YMLHelper::getCategories($this->getFeedFile()), true);
     }
 
+    /**
+     * @param string $newFeedFile
+     */
+    public function updateFeedFile($newFeedFile)
+    {
+        $feedCacheKey = $this->getFeedCacheKey();
+        $feedFile = Yii::app()->cache->get($feedCacheKey);
+        if (file_exists($feedFile)) {
+            unlink(($feedFile));
+        }
+        Yii::app()->cache->set($feedCacheKey, $newFeedFile);
+    }
+
     public function getFeedFile($forceDownload = false)
     {
-        $feedFile = Yii::app()->cache->get('feedFile' . $this->feedUrl);
+        $feedCacheKey = $this->getFeedCacheKey();
+        $feedFile = Yii::app()->cache->get($feedCacheKey);
         if ($feedFile === false || !file_exists($feedFile) || $forceDownload) {
-            if (file_exists($feedFile)) {
-                unlink(($feedFile));
-            }
             $feedFile = tempnam(Yii::app()->getRuntimePath(), 'yml');
             CurlHelper::downloadToFile($this->feedUrl, $feedFile);
-            Yii::app()->cache->set('feedFile' . $this->feedUrl, $feedFile);
+            $this->updateFeedFile($feedFile);
         }
 
         return $feedFile;
@@ -165,6 +178,15 @@ class Client extends CActiveRecord
         );
 
         return array($topColorRgb, $bottomColorRgb);
+    }
+
+    /**
+     * @return string
+     */
+    public function getFeedCacheKey()
+    {
+        $feedCacheKey = 'feedFile' . $this->feedUrl;
+        return $feedCacheKey;
     }
 
     protected function afterDelete()

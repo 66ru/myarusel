@@ -15,11 +15,14 @@
         "ircmaxell/password-compat": "1.0.3",
         "yiisoft/yii": "1.1.14",
         "twig/twig": ">=1.8,<2.0-dev",
-        "m8rge/curl-helper": "1.2",
+        "m8rge/curl-helper": "~1.2",
         "clevertech/yii-booster": "3.*",
         "yiiext/activerecord-relation-behavior": "1.1",
         "yiiext/twig-renderer": "dev-master",
         "m8rge/yii-sentry-log": "dev-master",
         "imagecow/imagecow": "v1.1.0"
+    },
+    "require-dev": {
+        "facebook/xhprof": "dev-master"
     }
 }
