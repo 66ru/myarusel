@@ -40,7 +40,6 @@ class AdminClientsController extends CommonAdminController
                 'uploadedFileFieldName' => '_logo',
                 'removeImageFieldName' => '_removeLogoFlag',
                 'thumbnailImageUrl' => $model->getResizedLogoUrl(array(125, 125)),
-                'hint' => 'Максимальный размер: 125×125px',
             ),
             'caption' => array(
                 'type' => 'textField',

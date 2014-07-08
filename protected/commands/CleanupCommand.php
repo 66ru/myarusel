@@ -11,13 +11,29 @@ class CleanupCommand extends ConsoleCommand
 
         $preserve = [];
         foreach ($clients as $client) {
-            $filePath = $fs->getFilePath($client->logoUid);
-            $preserve[] = pathinfo($filePath, PATHINFO_FILENAME);
+            if (!empty($client->logoUid)) {
+                $filePath = $fs->getFilePath($client->logoUid);
+                $preserve[] = pathinfo($filePath, PATHINFO_FILENAME);
+            }
         }
 
-        $root = opendir($fs->storagePath);
-        while ($dir = readdir($root)) {
-            
+        $rootHandle = opendir($fs->storagePath);
+        while (false !== $dir = readdir($rootHandle)) {
+            if ($dir != '.' && strlen($dir) == 1 && is_dir($fs->storagePath.'/'.$dir)) {
+                $innerHandle = opendir($fs->storagePath.'/'.$dir);
+                while ($file = readdir($innerHandle)) {
+                    if (strpos($file, '.') === 0) {
+                        continue;
+                    }
+                    $uid = pathinfo($file, PATHINFO_FILENAME);
+                    $uid = preg_replace('/-.*?$/', '', $uid);
+                    if (!in_array($uid, $preserve)) {
+                        unlink($fs->storagePath.'/'.$dir.'/'.$file);
+                    }
+                }
+                closedir($innerHandle);
+            }
         }
+        closedir($rootHandle);
     }
 } 
