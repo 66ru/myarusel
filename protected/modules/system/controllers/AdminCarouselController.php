@@ -27,6 +27,7 @@ class AdminCarouselController extends CommonAdminController
             'ajaxTaskStatus' => 'ext.asyncTask.actions.GetTaskStatusAction',
             'ajaxRefreshCache' => [
                 'class' => 'ext.asyncTask.actions.StartAsyncTaskAction',
+                'timeout' => 60*2,
                 'task' => function() {
                     /** @var Carousel $carousel */
                     $carousel = Carousel::model()->with('client')->findByPk($_GET['id']);

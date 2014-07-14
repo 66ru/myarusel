@@ -5,6 +5,11 @@ class StartAsyncTaskAction extends CAction
     public $asyncTaskComponentName = 'asyncTask';
 
     /**
+     * @var int seconds
+     */
+    public $timeout = 60;
+
+    /**
      * @var callable
      */
     public $task;
@@ -14,7 +19,7 @@ class StartAsyncTaskAction extends CAction
         /** @var AsyncTaskComponent $component */
         $component = Yii::app()->getComponent($this->asyncTaskComponentName);
 
-        $taskId = $component->getProvider()->addTask(5);
+        $taskId = $component->getProvider()->addTask($this->timeout);
 
         header('Content-Type: application/json');
         echo json_encode(['taskId' => $taskId]);
