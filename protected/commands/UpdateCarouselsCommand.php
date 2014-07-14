@@ -168,7 +168,7 @@ class UpdateCarouselsCommand extends ConsoleCommand
             return "Подлежат обработке " . $allItemsCount . " записей. Из них случайно отобрано " . self::ITEMS_LIMIT .
                 ". Успешно обработано " . count($items) . ".";
         } else {
-            return "Отобрано обработке " . $allItemsCount . " записей. Успешно обработано " . count($items) . ".";
+            return "Отобрано для обработки " . $allItemsCount . " записей. Успешно обработано " . count($items) . ".";
         }
     }
 

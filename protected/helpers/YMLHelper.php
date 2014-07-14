@@ -116,6 +116,7 @@ class YMLHelper
      */
     public static function getItems($ymlFile, $categoryIds, $viewType, $limit, &$itemsCount = 0)
     {
+        $itemsCount = 0;
         if (!is_array($categoryIds)) {
             $categoryIds = [];
         }

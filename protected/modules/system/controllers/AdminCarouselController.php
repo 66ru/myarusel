@@ -7,7 +7,7 @@ class AdminCarouselController extends CommonAdminController
 
     public function accessRules()
     {
-        $allowedActions = array_merge($this->getAllowedActions(), array('index', 'list', 'ajaxGetClientCategories', 'ajaxRefreshCache'));
+        $allowedActions = array_merge($this->getAllowedActions(), array('index', 'list', 'ajaxGetClientCategories', 'ajaxRefreshCache', 'ajaxTaskStatus'));
         return array(
             array(
                 'allow',
@@ -19,6 +19,26 @@ class AdminCarouselController extends CommonAdminController
                 'users' => array('*')
             ),
         );
+    }
+
+    public function actions()
+    {
+        return [
+            'ajaxTaskStatus' => 'ext.asyncTask.actions.GetTaskStatusAction',
+            'ajaxRefreshCache' => [
+                'class' => 'ext.asyncTask.actions.StartAsyncTaskAction',
+                'task' => function() {
+                    /** @var Carousel $carousel */
+                    $carousel = Carousel::model()->with('client')->findByPk($_GET['id']);
+
+                    Yii::import('application.commands.*');
+                    $command = new UpdateCarouselsCommand('UpdateCarouselsCommand', null);
+                    $status = $command->processCarousel($carousel);
+
+                    return [IAsyncTaskProvider::STATUS_DONE, $status];
+                }
+            ],
+        ];
     }
 
     /**
@@ -206,51 +226,25 @@ class AdminCarouselController extends CommonAdminController
                 ),
                 array(
                     'type' => 'raw',
-                    'value' => 'CHtml::link("Обновить кеш", array("/system/adminCarousel/ajaxRefreshCache", "id"=>$data->id), array("class"=>"updateCache"))',
+                    'value' => "Yii::app()->controller->widget('ext.asyncTask.widget.StartTaskButton', [
+                            'label' => 'Обновить кеш',
+                            'doneAction' => 'function(\$button, result) { alert(result); }',
+                            'taskStatusRoute' => ['/system/adminCarousel/ajaxTaskStatus'],
+                            'startTaskRoute' => ['/system/adminCarousel/ajaxRefreshCache', 'id'=>\$data->id],
+                            'buttonProperties' => [
+                                'size' => 'mini',
+                                'type'=> 'link',
+                            ],
+                        ], true)",
                     'htmlOptions' => array(
                         'style' => 'width:100px',
-                    )
+                    ),
                 ),
                 $this->getButtonsColumn(),
             )
         );
 
-        /** @var $cs CClientScript */
-        $cs = Yii::app()->clientScript;
-        $cs->registerScript(
-            $this->getId(),
-            "
-$('.updateCache').live('click', function() {
-	$.get($(this).attr('href'), function (data) {
-        alert(data.output);
-	}, 'json');
-
-	return false;
-})"
-        );
-
         return $attributes;
-    }
-
-    public function actionAjaxRefreshCache($id)
-    {
-        if (!Yii::app()->request->isAjaxRequest) {
-            throw new CHttpException(403);
-        }
-
-        /** @var Carousel $carousel */
-        $carousel = Carousel::model()->with('client')->findByPk($id);
-
-        Yii::import('application.commands.*');
-        $command = new UpdateCarouselsCommand('UpdateCarouselsCommand', null);
-        $status = $command->processCarousel($carousel);
-
-        echo json_encode(
-            array(
-                'errorCode' => $status === false,
-                'output' => $status,
-            )
-        );
     }
 
     /**
