@@ -131,6 +131,9 @@ return array(
                 'class' => 'CLogRouter',
                 'routes' => $logRoutes,
             ),
+            'asyncTask' => [
+                'class' => 'ext.asyncTask.AsyncTaskComponent',
+            ],
         ),
         $components
     ),
