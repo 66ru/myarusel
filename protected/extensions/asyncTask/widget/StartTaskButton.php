@@ -62,6 +62,9 @@ class StartTaskButton extends CWidget
                                     setTimeout(checkStatus, '.$this->checkStatusTimeout.');
                                 }
                             })
+                            .fail(function() {
+                                setTimeout(checkStatus, '.$this->checkStatusTimeout.');
+                            });
                         };
 
                         setTimeout(checkStatus, '.$this->checkStatusTimeout.');
