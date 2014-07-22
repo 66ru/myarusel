@@ -24,4 +24,4 @@ class GetTaskStatusAction extends CAction
         echo json_encode(['status' => $task[0], 'result' => $task[1]]);
         Yii::app()->end();
     }
-} 
+}
