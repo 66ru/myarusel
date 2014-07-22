@@ -46,7 +46,8 @@ class UpdateCarouselsCommand extends ConsoleCommand
             [
                 CURLOPT_CONNECTTIMEOUT => 15,
                 CURLOPT_TIMEOUT => 3*60,
-            ]
+            ],
+            2
         );
     }
 
