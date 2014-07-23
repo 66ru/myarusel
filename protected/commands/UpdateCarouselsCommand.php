@@ -135,10 +135,13 @@ class UpdateCarouselsCommand extends ConsoleCommand
                         $carousel->thumbSize[1],
                         $this->forceImages
                     );
-                    unset($itemAttributes['picture']);
                 } catch (Imagecow\ImageException $e) {
+                    unset($itemAttributes);
                     unset($items[$itemId]);
                 } finally {
+                    if (!empty($itemAttributes)) {
+                        unset($itemAttributes['picture']);
+                    }
                     @unlink($file);
                 }
             }
