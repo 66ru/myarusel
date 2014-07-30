@@ -99,12 +99,25 @@ class UpdateCarouselsCommand extends ConsoleCommand
                 $imageUid = reset($existingImage);
                 $imageUid = pathinfo($imageUid, PATHINFO_BASENAME);
                 $itemAttributes['imageUid'] = $imageUid;
+                try {
+                    $fs->resizeCarouselImage(
+                        $carousel->id,
+                        $imageUid,
+                        $carousel->thumbSize[0],
+                        $carousel->thumbSize[1],
+                        $this->forceImages
+                    );
+                } catch (Imagecow\ImageException $e) {
+                    unset($items[$i]);
+                    continue;
+                }
             }
             if (!$imageExists || $this->forceImages) {
                 $tempFile = tempnam(Yii::app()->runtimePath, 'myarusel-image-');
                 $urlToFiles[$itemAttributes['picture']] = $tempFile;
                 $urlToItemId[$itemAttributes['picture']] = $i;
             }
+            unset($itemAttributes['picture']);
         }
         unset($itemAttributes);
 
@@ -139,9 +152,6 @@ class UpdateCarouselsCommand extends ConsoleCommand
                     unset($itemAttributes);
                     unset($items[$itemId]);
                 } finally {
-                    if (!empty($itemAttributes)) {
-                        unset($itemAttributes['picture']);
-                    }
                     @unlink($file);
                 }
             }
