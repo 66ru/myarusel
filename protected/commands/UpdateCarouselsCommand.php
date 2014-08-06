@@ -71,7 +71,12 @@ class UpdateCarouselsCommand extends ConsoleCommand
         /** @var $fs FileSystem */
         $fs = Yii::app()->fs;
         if (!empty($carousel->client->logoUid)) {
-            $fs->resizeImage($carousel->client->logoUid, $carousel->logoSize[0], $carousel->logoSize[1]);
+            if (file_exists($fs->getFilePath($carousel->client->logoUid))) {
+                $fs->resizeImage($carousel->client->logoUid, $carousel->logoSize[0], $carousel->logoSize[1]);
+            } else {
+                $e = new CException('missing logo file');
+                $this->captureException($e);
+            }
         }
 
         try {
