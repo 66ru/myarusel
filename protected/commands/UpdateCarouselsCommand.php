@@ -115,6 +115,9 @@ class UpdateCarouselsCommand extends ConsoleCommand
                 } catch (Imagecow\ImageException $e) {
                     unset($items[$i]);
                     continue;
+                } catch (ImagickException $e) {
+                    unset($items[$i]);
+                    continue;
                 }
             }
             if (!$imageExists || $this->forceImages) {
