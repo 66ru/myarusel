@@ -156,6 +156,9 @@ class UpdateCarouselsCommand extends ConsoleCommand
                 } catch (Imagecow\ImageException $e) {
                     unset($itemAttributes);
                     unset($items[$itemId]);
+                } catch (ImagickException $e) {
+                    unset($itemAttributes);
+                    unset($items[$itemId]);
                 } finally {
                     @unlink($file);
                 }
