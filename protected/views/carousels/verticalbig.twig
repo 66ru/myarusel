@@ -1,0 +1,40 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>{{client.name}}</title>
+<link rel="stylesheet" href="/css/reset.css/reset.css">
+<link rel="stylesheet" href="/css/fonts/PT_Sans_Narrow.css">
+<link rel="stylesheet" href="/css/fonts/ALSRubl.css">
+<link rel="stylesheet" href="/css/verticalBig.css">
+
+<script src="/js/bower_components/jquery/jquery.min.js"></script>
+<script src="/js/vert-carousel.js"></script>
+	{% set gradientColors = client.getGradient() %}
+	{% set topColor = gradientColors[0] %}
+	{% set bottomColor = gradientColors[1] %}
+	<style type="text/css">
+	</style>
+</head>
+<body>
+<div class="vert-carousel">
+	<a href="{{ createMyarouselLink(client.url, urlPrefix, urlPostfix) }}" class="vert-carousel__header" style="background: url({{client.getResizedLogoUrl(logoSize)}}) center center no-repeat;"></a>
+	<div class="vert-carousel__main">
+		<ul class="vert-carousel__strap">
+			{% for item in items[:100] %}
+			<li class="vert-carousel__elem">
+				<a href="{{ createMyarouselLink(item.url, urlPrefix, urlPostfix) }}">
+					<div class="vert-carousel__img-wrap"><img src="{{item.getResizedImageUrl(thumbSize)}}" alt="{{item.title}}" class="vert-carousel__img"></div>
+					<div class="vert-carousel__price">{{item.price|replace({' ':'&nbsp;'})|raw}} <span class="rub rub_verdana">Р</span></div>
+					<div class="vert-carousel__name">{{item.title}}</div>
+				</a>
+			</li>
+			{% endfor %}
+		</ul>
+	</div>
+	<a href="#" class="vert-carousel__footer"></a>
+	<span class="vert-carousel__arrow vert-carousel__arrow_prev"></span>
+	<span class="vert-carousel__arrow vert-carousel__arrow_next"></span>
+</div>
+</body>
+</html>
