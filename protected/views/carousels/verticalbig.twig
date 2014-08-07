@@ -23,7 +23,7 @@
 		<ul class="vert-carousel__strap">
 			{% for item in items[:100] %}
 			<li class="vert-carousel__elem">
-				<a href="{{ createMyarouselLink(item.url, urlPrefix, urlPostfix) }}">
+				<a href="{{ createMyarouselLink(item.url, urlPrefix, urlPostfix) }}" class="vert-carousel__elem-link">
 					<div class="vert-carousel__img-wrap"><img src="{{item.getResizedImageUrl(thumbSize)}}" alt="{{item.title}}" class="vert-carousel__img"></div>
 					<div class="vert-carousel__price">{{item.price|replace({' ':'&nbsp;'})|raw}} <span class="rub rub_verdana">Р</span></div>
 					<div class="vert-carousel__name">{{item.title}}</div>
