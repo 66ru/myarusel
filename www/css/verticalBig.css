@@ -22,7 +22,7 @@
 
 	height: 100px;
 
-	background: url('../img/header.png') center top no-repeat transparent;
+	background: url('') center top no-repeat transparent;
 	background-size: 100% 100px;
 	box-shadow: 0 0 10px rgba(0, 0, 0, .3);
 }
@@ -35,9 +35,9 @@
 
 	height: 50px;
 
-	background: url('../img/footer.png') center top no-repeat transparent;
+	background: url('http://bart.unistorageserve.ru/53e43bede8d7b62e3c4209ce') center top no-repeat transparent;
 	background-color: #eef;
-	background-size: 100% 50px;
+	_background-size: 100% 50px;
 	box-shadow: 0 0 10px rgba(0, 0, 0, .3);
 }
 

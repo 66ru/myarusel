@@ -3,12 +3,12 @@
 <head>
 <meta charset="utf-8">
 <title>{{client.name}}</title>
-<link rel="stylesheet" href="/css/reset.css/reset.css">
-<link rel="stylesheet" href="/css/fonts/PT_Sans_Narrow.css">
-<link rel="stylesheet" href="/css/fonts/ALSRubl.css">
+<link rel="stylesheet" href="/css/reset.css">
+<link rel="stylesheet" href="/css/PT_Sans_Narrow.css">
+<link rel="stylesheet" href="/css/ALSRubl.css">
 <link rel="stylesheet" href="/css/verticalBig.css">
 
-<script src="/js/bower_components/jquery/jquery.min.js"></script>
+<script src="/js/jquery.min.js"></script>
 <script src="/js/vert-carousel.js"></script>
 	{% set gradientColors = client.getGradient() %}
 	{% set topColor = gradientColors[0] %}
@@ -32,7 +32,7 @@
 			{% endfor %}
 		</ul>
 	</div>
-	<a href="#" class="vert-carousel__footer"></a>
+	<a href="{{ createMyarouselLink(client.url, urlPrefix, urlPostfix) }}" class="vert-carousel__footer"></a>
 	<span class="vert-carousel__arrow vert-carousel__arrow_prev"></span>
 	<span class="vert-carousel__arrow vert-carousel__arrow_next"></span>
 </div>
