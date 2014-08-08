@@ -49,6 +49,7 @@ class CarouselController extends Controller
                 'onPage' => $carousel->onPage,
                 'urlPrefix' => $carousel->urlPrefix,
                 'urlPostfix' => $carousel->urlPostfix,
+                'customCss' => $carousel->customCss,
                 'logoSize' => $carousel->logoSize,
                 'thumbSize' => $carousel->thumbSize,
             )

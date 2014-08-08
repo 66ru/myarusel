@@ -139,6 +139,16 @@ class AdminCarouselController extends CommonAdminController
                     'hint' => '?utm=fromDomain',
                 ),
             ),
+            'customCss' => array(
+                'type' => 'textField',
+                'htmlOptions' => array(
+                    'placeholder' => false,
+                    'class' => 'span4',
+                ),
+                'rowOptions' => array(
+                    'hint' => 'необязательно',
+                ),
+            ),
             'categories' => array(
                 'type' => 'dropDownList',
                 'data' => $categoriesList,

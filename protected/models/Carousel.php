@@ -8,6 +8,7 @@
  * @property string categories
  * @property string urlPrefix
  * @property string urlPostfix
+ * @property string customCss
  * @property int viewType
  * @property string template
  * @property int ownerId
@@ -161,6 +162,7 @@ class Carousel extends CActiveRecord
             array('onPage', 'numerical', 'integerOnly' => true, 'min' => 0),
             array('urlPrefix', 'url'),
             array('urlPostfix', 'length', 'max' => 255),
+            array('customCss', 'length', 'max' => 255),
             array('viewType', 'in', 'range' => array_keys(self::getViewTypes())),
             array('template', 'in', 'range' => array_keys(self::getTemplates())),
             array('status', 'in', 'range' => array_keys($this->getStatusList())),
@@ -189,6 +191,7 @@ class Carousel extends CActiveRecord
             'categories' => 'Категории',
             'urlPrefix' => 'Префикс ссылки',
             'urlPostfix' => 'Постфикс ссылки',
+            'customCss' => 'ссылка css-файл (необязательно)',
             'viewType' => 'Формат отображения',
             'template' => 'Шаблон',
             'status' => 'Статус',
