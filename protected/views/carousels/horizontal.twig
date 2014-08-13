@@ -6,8 +6,8 @@
 
 	<link rel="stylesheet" href="/css/default.css" />
 	<link rel="stylesheet" href="/css/horizontal.css" />
-	{% if item.customCss %}
-		<link rel="stylesheet" href="{{item.customCss}}" />
+	{% if customCss %}
+		<link rel="stylesheet" href="{{customCss}}" />
 	{% endif %}
 
 	{% set gradientColors = client.getGradient() %}
