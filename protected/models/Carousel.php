@@ -191,7 +191,7 @@ class Carousel extends CActiveRecord
             'categories' => 'Категории',
             'urlPrefix' => 'Префикс ссылки',
             'urlPostfix' => 'Постфикс ссылки',
-            'customCss' => 'ссылка css-файл (необязательно)',
+            'customCss' => 'Ссылка на css-файл (необязательно)',
             'viewType' => 'Формат отображения',
             'template' => 'Шаблон',
             'status' => 'Статус',

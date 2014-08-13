@@ -145,9 +145,6 @@ class AdminCarouselController extends CommonAdminController
                     'placeholder' => false,
                     'class' => 'span4',
                 ),
-                'rowOptions' => array(
-                    'hint' => 'необязательно',
-                ),
             ),
             'categories' => array(
                 'type' => 'dropDownList',
