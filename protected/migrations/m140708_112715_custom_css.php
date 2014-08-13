@@ -1,6 +1,6 @@
 <?php
 
-class m140121_220615_url_postfix extends CDbMigration
+class m140708_112715_custom_css extends CDbMigration
 {
 	public function up()
 	{
