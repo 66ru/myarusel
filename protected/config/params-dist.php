@@ -11,4 +11,7 @@ return array(
 	'dbPassword' => '',
 
     'sentryDSN' => '',
+
+    'unistorageHost' => '',
+    'unistorageToken' => '',
 );

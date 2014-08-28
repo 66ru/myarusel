@@ -65,11 +65,17 @@ return array(
                 'nestedFolders' => 1,
             ),
             'cache' => array(
-                'class' => 'CFileCache',
+                'class' => 'CMemCache',
+                'useMemcached' => true,
             ),
             'log' => array(
                 'class' => 'CLogRouter',
                 'routes' => $logRoutes,
+            ),
+            'unistorage' => array(
+                'class' => 'vendor.66ru.unistorage-yii-client.YiiUnistorage.YiiUnistorage',
+                'host' => $params['unistorageHost'],
+                'token' => $params['unistorageToken'],
             ),
         ),
         $components
