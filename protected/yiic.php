@@ -14,7 +14,7 @@ require_once(__DIR__ . '/../vendor/autoload.php');
 require_once(__DIR__ . '/../vendor/yiisoft/yii/framework/yii.php');
 
 if (extension_loaded('xhprof')) {
-    xhprof_enable(XHPROF_FLAGS_CPU);
+    xhprof_enable(XHPROF_FLAGS_CPU | XHPROF_FLAGS_MEMORY);
 
     register_shutdown_function(function() {
             $profiler_namespace = 'myarusel';  // namespace for your application

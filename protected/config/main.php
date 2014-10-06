@@ -122,7 +122,8 @@ return array(
                 'errorAction' => 'site/error',
             ),
             'cache' => array(
-                'class' => 'CFileCache',
+                'class' => 'CMemCache',
+                'useMemcached' => true,
             ),
             'format' => array(
                 'booleanFormat' => array('Нет', 'Да'),
@@ -130,6 +131,11 @@ return array(
             'log' => array(
                 'class' => 'CLogRouter',
                 'routes' => $logRoutes,
+            ),
+            'unistorage' => array(
+                'class' => 'vendor.66ru.unistorage-yii-client.YiiUnistorage.YiiUnistorage',
+                'host' => $params['unistorageHost'],
+                'token' => $params['unistorageToken'],
             ),
             'asyncTask' => [
                 'class' => 'ext.asyncTask.AsyncTaskComponent',

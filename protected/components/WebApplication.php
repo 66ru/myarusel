@@ -2,8 +2,8 @@
 
 /**
  * @property FileSystem fs
+ * @property YiiUnistorage unistorage
  * @property CDbConnection dbConnection
- * @property CImageComponent image
  */
 class WebApplication extends CWebApplication
 {

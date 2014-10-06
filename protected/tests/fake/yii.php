@@ -6,7 +6,7 @@
 class Yii extends YiiBase {
 
     /**
-     * @return CWebApplication|CConsoleApplication
+     * @return WebApplication|CConsoleApplication
      */
     public static function app()
     {

@@ -1,14 +1,11 @@
 <?php
-
+ini_set('memory_limit', '78M');
 use m8rge\CurlHelper;
 use m8rge\CurlException;
 
 class UpdateCarouselsCommand extends ConsoleCommand
 {
     const ITEMS_LIMIT = 300;
-
-    /** @var Client[] $urlToClient */
-    public $urlToClient = [];
 
     /** @var bool */
     public $forceImages = false;
@@ -19,33 +16,40 @@ class UpdateCarouselsCommand extends ConsoleCommand
         $clients = Client::model()->with('carouselsOnSite')->findAll();
 
         $urlToFiles = [];
+        /** @var Client[] $urlToClient */
+        $urlToClient = [];
         foreach ($clients as $client) {
             if (!empty($client->carouselsOnSite)) {
                 $feedFile = tempnam(Yii::app()->getRuntimePath(), 'yml');
                 $urlToFiles[$client->feedUrl] = $feedFile;
-                $this->urlToClient[$client->feedUrl] = $client;
+                $urlToClient[$client->feedUrl] = $client;
             }
         }
 
         CurlHelper::batchDownload(
             $urlToFiles,
-            function ($url, $file, $e) {
+            function ($url, $file, $e) use ($urlToClient) {
                 if ($e) {
                     unlink($file);
                     $this->captureException($e);
                     return;
                 }
-                $client = $this->urlToClient[$url];
+                $client = $urlToClient[$url];
                 $client->updateFeedFile($file);
 
+                // get known hashes
+                $hashToUri = [];
+                foreach ($client->carousels as $c) {
+                    $hashToUri = EHtml::listData(Item::model()->byCarousel($c->id), 'imageHash', 'imageUri');
+                }
                 // iterate through client carousels
                 foreach ($client->carouselsOnSite as $carousel) {
-                    $this->processCarousel($carousel);
+                    $this->processCarousel($carousel, $hashToUri);
                 }
             },
             [
                 CURLOPT_CONNECTTIMEOUT => 15,
-                CURLOPT_TIMEOUT => 3*60,
+                CURLOPT_TIMEOUT => 60*30, // timeout with callback execution time
             ],
             2
         );
@@ -55,22 +59,30 @@ class UpdateCarouselsCommand extends ConsoleCommand
     {
         /** @var Carousel $carousel */
         $carousel = Carousel::model()->with('client')->findByPk($id);
-        $this->processCarousel($carousel);
+        $hashToUri = EHtml::listData(Item::model()->byCarousel($carousel->id), 'imageHash', 'imageUri');
+        $this->processCarousel($carousel, $hashToUri);
     }
 
     /**
      * @param Carousel $carousel
-     * @throws CDbException
-     * @throws CException
-     * @throws m8rge\CurlException
+     * @param $hashToUri
+     * @throws CantSaveActiveRecordException
      * @return bool|string status string or false
      */
-    public function processCarousel($carousel)
+    public function processCarousel($carousel, $hashToUri)
     {
         $this->log("processing carousel id=" . $carousel->id);
-        /** @var $fs FileSystem */
-        $fs = Yii::app()->fs;
+        $us = Yii::app()->unistorage;
+
+        // resizing client logo
+        if (!empty($carousel->client->logoUri)) {
+            /** @var YiiUnistorage\Models\Files\ImageFile $logo */
+            $logo = $us->getFile($carousel->client->logoUri);
+            $logo->resize(YiiUnistorage\Models\Files\ImageFile::MODE_KEEP_RATIO, $carousel->logoSize[0], $carousel->logoSize[1]);
+        }
+        // legacy
         if (!empty($carousel->client->logoUid)) {
+            $fs = Yii::app()->fs;
             if (file_exists($fs->getFilePath($carousel->client->logoUid))) {
                 $fs->resizeImage($carousel->client->logoUid, $carousel->logoSize[0], $carousel->logoSize[1]);
             } else {
@@ -79,8 +91,9 @@ class UpdateCarouselsCommand extends ConsoleCommand
             }
         }
 
+        // fetching feed items
         try {
-            $items = YMLHelper::getItems($carousel->client->getFeedFile(), $carousel->categories, $carousel->viewType, self::ITEMS_LIMIT, $allItemsCount);
+            $ymlItems = YMLHelper::getItems($carousel->client->getFeedFile(), $carousel->categories, $carousel->viewType, self::ITEMS_LIMIT, $allItemsCount);
         } catch (CException $e) {
             $this->captureException($e);
             return $e->getMessage();
@@ -88,113 +101,117 @@ class UpdateCarouselsCommand extends ConsoleCommand
             $this->captureException($e);
             return $e->getMessage();
         }
+
+        // get image urls
+        $urls = [];
+        foreach ($ymlItems as $ymlItem) {
+            if (!empty($ymlItem['picture'])) {
+                $urls[] = $ymlItem['picture'];
+            }
+        }
+        $urls = array_unique($urls);
+
+        // fill images hash
+        $imagesHash = $this->getImagesHash($urls);
+        foreach ($ymlItems as $i => $ymlItem) {
+            $imageUrl = $ymlItem['picture'];
+            if (array_key_exists($imageUrl, $imagesHash)) {
+                if ($imagesHash[$imageUrl] === false) {
+                    unset($ymlItems[$i]);
+                } else {
+                    $ymlItems[$i]['imageHash'] = $imagesHash[$imageUrl];
+                }
+            }
+        }
+
+        // gather changed images and obsolete item ids or update item info
         $urlToFiles = [];
-        $urlToItemId = [];
-        foreach ($items as $i => &$itemAttributes) {
-            if (empty($itemAttributes['picture'])) {
-                unset($items[$i]);
+        $foundYmlIds = [];
+        $itemIdsToHide = [];
+        $ymlIdToId = EHtml::listData(Item::model()->byCarousel($carousel->id), 'ymlId', 'id');
+        foreach ($ymlIdToId as $ymlId => $id) {
+            if (empty($ymlItems[$ymlId])) { // current $item was deleted
+                $itemIdsToHide[] = $id;
                 continue;
             }
-            $itemAttributes['carouselId'] = $carousel->id;
-
-            $publishedMask = $fs->getCarouselFilePath($carousel->id, md5($itemAttributes['picture'])) . '.*';
-            $existingImage = glob($publishedMask);
-            $imageExists = !empty($existingImage);
-            if ($imageExists) {
-                $imageUid = reset($existingImage);
-                $imageUid = pathinfo($imageUid, PATHINFO_BASENAME);
-                $itemAttributes['imageUid'] = $imageUid;
-                try {
-                    $fs->resizeCarouselImage(
-                        $carousel->id,
-                        $imageUid,
-                        $carousel->thumbSize[0],
-                        $carousel->thumbSize[1],
-                        $this->forceImages
-                    );
-                } catch (Imagecow\ImageException $e) {
-                    unset($items[$i]);
-                    continue;
-                } catch (ImagickException $e) {
-                    unset($items[$i]);
-                    continue;
-                }
+            $ymlItems[$ymlId]['itemId'] = $id;
+            $imageHash = $ymlItems[$ymlId]['imageHash'];
+            if (!empty($hashToUri[$imageHash])) { // we have already downloaded this file
+                $this->log('get uri from cache for ' . $hashToUri[$imageHash]);
+                $ymlItems[$ymlId]['imageUri'] = $hashToUri[$imageHash];
+            } else {
+                $urlToFiles[$ymlItems[$ymlId]['picture']] = tempnam(Yii::app()->runtimePath, 'img-');
             }
-            if (!$imageExists || $this->forceImages) {
-                $tempFile = tempnam(Yii::app()->runtimePath, 'myarusel-image-');
-                $urlToFiles[$itemAttributes['picture']] = $tempFile;
-                $urlToItemId[$itemAttributes['picture']] = $i;
-            }
-            unset($itemAttributes['picture']);
+            $foundYmlIds[$ymlId] = true;
         }
-        unset($itemAttributes);
 
-        CurlHelper::batchDownload(
-            $urlToFiles,
-            function ($url, $file, $e) use (&$items, $urlToItemId, $carousel, $fs) {
-                $itemId = $urlToItemId[$url];
-                if ($e) {
-                    /** @var Exception $e */
-                    $this->log($e->getMessage());
-                    unlink($file);
-                    unset($items[$itemId]);
-                    return;
-                }
-                $this->log('downloaded ' . $url);
-                $itemAttributes = & $items[$itemId];
-
-                try {
-                    $itemAttributes['imageUid'] = $fs->publishFileForCarousel(
-                        $file,
-                        $url,
-                        $carousel->id
-                    );
-                    $fs->resizeCarouselImage(
-                        $carousel->id,
-                        $itemAttributes['imageUid'],
-                        $carousel->thumbSize[0],
-                        $carousel->thumbSize[1],
-                        $this->forceImages
-                    );
-                } catch (Imagecow\ImageException $e) {
-                    unset($itemAttributes);
-                    unset($items[$itemId]);
-                } catch (ImagickException $e) {
-                    unset($itemAttributes);
-                    unset($items[$itemId]);
-                } finally {
-                    @unlink($file);
+        // gather new image urls
+        $newYmlItems = array_diff_key($ymlItems, $foundYmlIds);
+        foreach ($newYmlItems as $ymlId => $ymlItem) {
+            if (!empty($hashToUri[$ymlItem['imageHash']])) {
+                $this->log('get uri from cache for ' . $hashToUri[$ymlItem['imageHash']]);
+                $ymlItems[$ymlId]['imageUri'] = $hashToUri[$ymlItem['imageHash']];
+            } else {
+                $urlToFiles[$ymlItem['picture']] = tempnam(Yii::app()->runtimePath, 'img-');
+            }
+        }
+        //todo: check logo size in page
+        // converting image urls to unistorage resource uris
+        $imagesUri = $this->uploadToUs($urlToFiles, $carousel);
+        foreach ($ymlItems as $ymlId => $ymlItem) {
+            $imageUrl = $ymlItem['picture'];
+            if (array_key_exists($imageUrl, $imagesUri)) {
+                if ($imagesUri[$imageUrl] === false) {
+                    unset($ymlItems[$ymlId]);
+                } else {
+                    $ymlItems[$ymlId]['imageUri'] = $imagesUri[$imageUrl];
+                    $hashToUri[$ymlItems[$ymlId]['imageHash']] = $imagesUri[$imageUrl];
                 }
             }
-        );
+        }
 
-        $c = new CDbCriteria([
-                'condition' => 'carouselId = :carouselId',
-                'params' => [
-                    ':carouselId' => $carousel->id,
-                ]
-            ]);
-        Yii::app()->db->commandBuilder->createDeleteCommand(Item::model()->tableName(), $c)->execute();
+        foreach ($urlToFiles as $file) {
+            @unlink($file);
+        }
 
-        foreach ($items as $itemAttributes) {
-            $item = new Item();
-            $item->setAttributes($itemAttributes);
+        // updating items
+        $emptyItem = new Item();
+        foreach ($ymlItems as $ymlId => $itemAttributes) {
+            $item = clone $emptyItem;
+            if (!empty($itemAttributes['itemId'])) {
+                $item->id = $itemAttributes['itemId'];
+                $item->isNewRecord = false;
+            }
+            $item->setAttributes([
+                        'title' => $itemAttributes['title'],
+                        'price' => $itemAttributes['price'],
+                        'url' => $itemAttributes['url'],
+                        'ymlId' => $ymlId,
+                        'status' => Item::STATUS_VISIBLE,
+                        'carouselId' => $carousel->id,
+                    ]);
+            if (!empty($itemAttributes['imageHash'])) {
+                $item->imageHash = $itemAttributes['imageHash'];
+                $item->imageUri = $itemAttributes['imageUri'];
+            }
+
             if (!$item->save()) {
-                throw new CException(
-                    "Can't save Item:\n" . print_r($item->getErrors(), true) . print_r($item->getAttributes(), true)
-                );
+                throw new CantSaveActiveRecordException($item);
             }
+            $item->getResizedImageUrl($carousel->thumbSize);
         }
         $carousel->invalidate();
 
-        $this->log("end processing carousel id=" . $carousel->id);
-        $this->log("memory current = " . round(memory_get_usage()/1024) . 'K, peak = ' . round(memory_get_peak_usage()/1024) . 'K');
+        // remove obsolete
+        $c = new CDbCriteria();
+        $c->addInCondition('id', $itemIdsToHide);
+        Item::model()->updateAll(['status' => Item::STATUS_HIDDEN], $c);
 
         if ($allItemsCount > self::ITEMS_LIMIT) {
             return "Подлежат обработке " . $allItemsCount . " записей. Из них случайно отобрано " . self::ITEMS_LIMIT .
-                ". Успешно обработано " . count($items) . ".";
+                ". Успешно обработано " . count($ymlItems) . ".";
         } else {
-            return "Отобрано для обработки " . $allItemsCount . " записей. Успешно обработано " . count($items) . ".";
+            return "Отобрано для обработки " . $allItemsCount . " записей. Успешно обработано " . count($ymlItems) . ".";
         }
     }
 
@@ -212,5 +229,77 @@ class UpdateCarouselsCommand extends ConsoleCommand
         if (YII_DEBUG && Yii::app() instanceof CConsoleApplication) {
             echo $e;
         }
+    }
+
+    /**
+     * @param $urls
+     * @return mixed [url => string|false, ...]
+     * @throws CurlException
+     */
+    public function getImagesHash($urls)
+    {
+        $imagesHash = [];
+        $pr_urls = [];
+
+        CurlHelper::batchGet(
+            $urls,
+            function ($url, $result, $e) use (&$imagesHash, &$pr_urls) {
+                $pr_urls[] = $url;
+                if ($e) {
+                    /** @var Exception $e */
+                    $this->log($e->getMessage());
+                    $imagesHash[$url] = false;
+                    return;
+                }
+                $imageData = $url;
+                // todo: work with 'Expires', 'Cache-Control' headers
+                foreach (['ETag', 'Last-Modified', 'Content-Length'] as $headerName) {
+                    $headerNameQuoted = preg_quote($headerName, '/');
+                    if (preg_match('/^' . $headerNameQuoted . ':\s.+$/m', $result, $matches)) {
+                        $imageData .= $matches[0];
+                    }
+                }
+
+                $imagesHash[$url] = md5($imageData);
+            },
+            [
+                CURLOPT_NOBODY => true,
+                CURLOPT_HEADER => true,
+                CURLOPT_TIMEOUT => 10, // timeout with callback execution time
+            ]
+        );
+
+        return $imagesHash;
+    }
+
+    /**
+     * @param $urlToFiles
+     * @throws CurlException
+     * @return mixed
+     */
+    public function uploadToUs($urlToFiles)
+    {
+        $us = Yii::app()->unistorage;
+
+        $imagesUri = [];
+        CurlHelper::batchDownload(
+            $urlToFiles,
+            function ($url, $file, $e) use ($us, &$imagesUri) {
+                if ($e) {
+                    /** @var Exception $e */
+                    $this->log($e->getMessage());
+                    $imagesUri[$url] = false;
+                    return;
+                }
+
+                $this->log('upload to unistorage from ' . $url);
+                $file = $us->uploadFile($file);
+                $imagesUri[$url] = $file->resourceUri;
+            },
+            [
+                CURLOPT_TIMEOUT => 60 * 5, // timeout with callback execution time
+            ]
+        );
+        return $imagesUri;
     }
 }

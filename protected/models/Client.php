@@ -1,6 +1,8 @@
 <?php
 
 use m8rge\CurlHelper;
+use YiiUnistorage\Models\Files\ImageFile;
+use Unistorage\Models\Files\RegularFile;
 
 /**
  * This is the model class for table "Client".
@@ -11,6 +13,7 @@ use m8rge\CurlHelper;
  * @property string $feedUrl
  * @property string $url
  * @property string $logoUid
+ * @property string $logoUri
  * @property string $caption
  * @property string $color
  * @property int ownerId
@@ -46,6 +49,7 @@ class Client extends CActiveRecord
             array('feedUrl', 'url'),
             array('feedUrl', 'ext.validators.ymlValidator.ValidYml'),
             array('name, feedUrl, caption, logoUid', 'length', 'max' => 255),
+            array('logoUri', 'length', 'max' => 100),
             array('_logo', 'file', 'types' => 'jpg, gif, png', 'allowEmpty' => true),
             array('_removeLogoFlag', 'safe'),
             array('ownerId', 'in', 'allowEmpty' => false, 'range' => EHtml::listData(User::model())),
@@ -73,6 +77,7 @@ class Client extends CActiveRecord
             '_logo' => 'Логотип',
             '_removeLogoFlag' => 'Удалить логотип',
             'logoUrl' => 'Логотип',
+            'logoUri' => 'Логотип',
             'caption' => 'Подпись',
             'ownerId' => 'Владелец',
             'color' => 'Цвет',
@@ -81,13 +86,18 @@ class Client extends CActiveRecord
 
     public function getLogoUrl()
     {
-        if (!empty($this->logoUid)) {
-            /** @var $fs FileSystem */
+        if (!Yii::app()->params['useUnistorage'] && !empty($this->logoUid)) {
             $fs = Yii::app()->fs;
             return $fs->getFileUrl($this->logoUid);
-        } else {
-            return '';
+        } elseif (!empty($this->logoUri)) {
+            $us = Yii::app()->unistorage;
+            /** @var ImageFile $file */
+            $file = $us->getFile($this->logoUri);
+            if ($file instanceof \YiiUnistorage\Models\Files\RegularFile) {
+                return $file->url;
+            }
         }
+        return '';
     }
 
     /**
@@ -98,13 +108,21 @@ class Client extends CActiveRecord
     {
         $width = $sizes[0];
         $height = $sizes[1];
-        if (!empty($this->logoUid)) {
-            /** @var $fs FileSystem */
+        if (!Yii::app()->params['useUnistorage'] && !empty($this->logoUid)) {
             $fs = Yii::app()->fs;
             return $fs->getResizedImageUrl($this->logoUid, $width, $height);
-        } else {
-            return '';
+        } elseif (!empty($this->logoUri)) {
+            $us = Yii::app()->unistorage;
+            /** @var ImageFile $file */
+            $file = $us->getFile($this->logoUri);
+            if ($file instanceof ImageFile) {
+                $resizedImage = $file->resize(ImageFile::MODE_KEEP_RATIO, $width, $height);
+                if ($resizedImage instanceof RegularFile) {
+                    return $resizedImage->url;
+                }
+            }
         }
+        return '';
     }
 
     public function getCategories()
@@ -131,7 +149,9 @@ class Client extends CActiveRecord
         $feedFile = Yii::app()->cache->get($feedCacheKey);
         if ($feedFile === false || !file_exists($feedFile) || $forceDownload) {
             $feedFile = tempnam(Yii::app()->getRuntimePath(), 'yml');
-            CurlHelper::downloadToFile($this->feedUrl, $feedFile);
+            CurlHelper::downloadToFile($this->feedUrl, $feedFile, [
+                    CURLOPT_CONNECTTIMEOUT => 20
+                ]);
             $this->updateFeedFile($feedFile);
         }
 

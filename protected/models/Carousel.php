@@ -15,7 +15,8 @@
  * @property int status
  *
  * @property Client $client
- * @property array $items
+ * @property Item[] $items
+ * @property Item[] $onSiteItems
  * @property User $owner
  * @property array $thumbSize
  * @property array $logoSize
@@ -178,6 +179,7 @@ class Carousel extends CActiveRecord
         return array(
             'client' => array(self::BELONGS_TO, 'Client', 'clientId'),
             'items' => array(self::HAS_MANY, 'Item', 'carouselId'),
+            'onSiteItems' => array(self::HAS_MANY, 'Item', 'carouselId', 'scopes' => 'onSite'),
             'owner' => array(self::BELONGS_TO, 'User', 'ownerId'),
         );
     }
