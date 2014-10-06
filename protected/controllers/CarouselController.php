@@ -27,25 +27,25 @@ class CarouselController extends Controller
     {
         /** @var $carousel Carousel */
         $carousel = Carousel::model()->with(
-            array(
+            [
                 'client',
-                'items' => array('scopes' => 'onSite')
-            )
+                'onSiteItems',
+            ]
         )->findByPk($id);
 
-        if (empty($carousel) || empty($carousel->items)) {
+        if (empty($carousel) || empty($carousel->onSiteItems)) {
             header("HTTP/1.0 404 Not Found");
             echo " ";
             Yii::app()->end(0);
         }
 
-        $items = $carousel->items;
-        shuffle($items);
+        $onSiteItems = $carousel->onSiteItems;
+        shuffle($onSiteItems);
         $this->render(
             "//carousels/" . $carousel->template,
             array(
                 'client' => $carousel->client,
-                'items' => $items,
+                'items' => $onSiteItems,
                 'onPage' => $carousel->onPage,
                 'urlPrefix' => $carousel->urlPrefix,
                 'urlPostfix' => $carousel->urlPostfix,

@@ -124,6 +124,7 @@ class AdminClientsController extends CommonAdminController
         if ($model->_removeLogoFlag) {
             $fs->removeFile($model->logoUid);
             $model->logoUid = null;
+            $model->logoUri = null;
         }
         $model->_logo = CUploadedFile::getInstance($model, '_logo');
         if ($model->validate() && !empty($model->_logo)) {
@@ -132,6 +133,10 @@ class AdminClientsController extends CommonAdminController
             }
             $model->logoUid = $fs->publishFile($model->_logo->tempName, $model->_logo->name);
             $fs->resizeImage($model->logoUid, 125, 125);
+
+            $us = Yii::app()->unistorage;
+            $file = $us->uploadFile($model->_logo->tempName, $model->_logo->name);
+            $model->logoUri = $file->resourceUri;
         }
 
         if ($model->scenario == 'insert') {
