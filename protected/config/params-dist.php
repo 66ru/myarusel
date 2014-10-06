@@ -14,4 +14,5 @@ return array(
 
     'unistorageHost' => '',
     'unistorageToken' => '',
+    'useUnistorage' => true,
 );
