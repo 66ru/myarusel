@@ -23,6 +23,7 @@ class AsyncTaskGlobalStateProvider implements IAsyncTaskProvider
         $list = Yii::app()->getGlobalState(self::TASK_LIST_KEY, []);
         $list[$taskId] = time() + $timeout;
         Yii::app()->setGlobalState(self::TASK_LIST_KEY, $list);
+        Yii::app()->saveGlobalState();
 
         $this->removeExpiredTasks();
         return $taskId;
@@ -37,6 +38,7 @@ class AsyncTaskGlobalStateProvider implements IAsyncTaskProvider
         unset($list[$taskId]);
         Yii::app()->setGlobalState(self::TASK_LIST_KEY, $list);
         Yii::app()->clearGlobalState($this->getGlobalStateKey($taskId));
+        Yii::app()->saveGlobalState();
     }
 
     /**
@@ -47,6 +49,7 @@ class AsyncTaskGlobalStateProvider implements IAsyncTaskProvider
     public function updateTask($taskId, $status, $result = null)
     {
         Yii::app()->setGlobalState($this->getGlobalStateKey($taskId), [$status, $result]);
+        Yii::app()->saveGlobalState();
     }
 
     /**
@@ -71,5 +74,6 @@ class AsyncTaskGlobalStateProvider implements IAsyncTaskProvider
             }
         }
         Yii::app()->setGlobalState(self::TASK_LIST_KEY, $list);
+        Yii::app()->saveGlobalState();
     }
 }
