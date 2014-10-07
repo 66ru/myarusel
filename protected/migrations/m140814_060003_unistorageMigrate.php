@@ -31,7 +31,7 @@ class m140814_060003_unistorageMigrate extends CDbMigration
                     if (file_exists($carouselFilePath)) {
                         $file = $unistorage->uploadFile($carouselFilePath);
                         $client->logoUri = $file->resourceUri;
-                        if (!$client->save()) {
+                        if (!$client->save(false)) {
                             throw new CantSaveActiveRecordException($client);
                         }
                     }
