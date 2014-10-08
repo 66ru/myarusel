@@ -19,11 +19,11 @@ class UpdateCarouselsCommand extends ConsoleCommand
         /** @var Client[] $urlToClient */
         $urlToClient = [];
         foreach ($clients as $client) {
-            if (!empty($client->carouselsOnSite)) {
+            if (!empty($client->carouselsOnSite) && empty($urlToFiles[$client->feedUrl])) {
                 $feedFile = tempnam(Yii::app()->getRuntimePath(), 'yml');
                 $urlToFiles[$client->feedUrl] = $feedFile;
-                $urlToClient[$client->feedUrl] = $client;
             }
+            $urlToClient[$client->feedUrl][] = $client;
         }
 
         CurlHelper::batchDownload(
@@ -34,17 +34,18 @@ class UpdateCarouselsCommand extends ConsoleCommand
                     $this->captureException($e);
                     return;
                 }
-                $client = $urlToClient[$url];
-                $client->updateFeedFile($file);
+                foreach ($urlToClient[$url] as $client) {
+                    $client->updateFeedFile($file);
 
-                // get known hashes
-                $hashToUri = [];
-                foreach ($client->carousels as $c) {
-                    $hashToUri = EHtml::listData(Item::model()->byCarousel($c->id), 'imageHash', 'imageUri');
-                }
-                // iterate through client carousels
-                foreach ($client->carouselsOnSite as $carousel) {
-                    $this->processCarousel($carousel, $hashToUri);
+                    // get known hashes
+                    $hashToUri = [];
+                    foreach ($client->carousels as $c) {
+                        $hashToUri = EHtml::listData(Item::model()->byCarousel($c->id), 'imageHash', 'imageUri');
+                    }
+                    // iterate through client carousels
+                    foreach ($client->carouselsOnSite as $carousel) {
+                        $this->processCarousel($carousel, $hashToUri);
+                    }
                 }
             },
             [
@@ -155,7 +156,7 @@ class UpdateCarouselsCommand extends ConsoleCommand
                 $urlToFiles[$ymlItem['picture']] = tempnam(Yii::app()->runtimePath, 'img-');
             }
         }
-        //todo: check logo size in page
+
         // converting image urls to unistorage resource uris
         $imagesUri = $this->uploadToUs($urlToFiles, $carousel);
         foreach ($ymlItems as $ymlId => $ymlItem) {
@@ -239,12 +240,10 @@ class UpdateCarouselsCommand extends ConsoleCommand
     public function getImagesHash($urls)
     {
         $imagesHash = [];
-        $pr_urls = [];
 
         CurlHelper::batchGet(
             $urls,
-            function ($url, $result, $e) use (&$imagesHash, &$pr_urls) {
-                $pr_urls[] = $url;
+            function ($url, $result, $e) use (&$imagesHash) {
                 if ($e) {
                     /** @var Exception $e */
                     $this->log($e->getMessage());
