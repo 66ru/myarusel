@@ -81,16 +81,6 @@ class UpdateCarouselsCommand extends ConsoleCommand
             $logo = $us->getFile($carousel->client->logoUri);
             $logo->resize(YiiUnistorage\Models\Files\ImageFile::MODE_KEEP_RATIO, $carousel->logoSize[0], $carousel->logoSize[1]);
         }
-        // legacy
-        if (!empty($carousel->client->logoUid)) {
-            $fs = Yii::app()->fs;
-            if (file_exists($fs->getFilePath($carousel->client->logoUid))) {
-                $fs->resizeImage($carousel->client->logoUid, $carousel->logoSize[0], $carousel->logoSize[1]);
-            } else {
-                $e = new CException('missing logo file');
-                $this->captureException($e);
-            }
-        }
 
         // fetching feed items
         try {

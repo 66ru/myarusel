@@ -12,7 +12,6 @@ use Unistorage\Models\Files\RegularFile;
  * @property string $name
  * @property string $feedUrl
  * @property string $url
- * @property string $logoUid
  * @property string $logoUri
  * @property string $caption
  * @property string $color
@@ -48,14 +47,14 @@ class Client extends CActiveRecord
             array('url', 'url'),
             array('feedUrl', 'url'),
             array('feedUrl', 'ext.validators.ymlValidator.ValidYml'),
-            array('name, feedUrl, caption, logoUid', 'length', 'max' => 255),
+            array('name, feedUrl, caption', 'length', 'max' => 255),
             array('logoUri', 'length', 'max' => 100),
             array('_logo', 'file', 'types' => 'jpg, gif, png', 'allowEmpty' => true),
             array('_removeLogoFlag', 'safe'),
             array('ownerId', 'in', 'allowEmpty' => false, 'range' => EHtml::listData(User::model())),
             array('color', 'ext.hexValidator.FHexValidator'),
             array('color', 'length', 'max' => 6),
-            array('id, name, feedUrl, logoUid, caption, color, ownerId', 'safe', 'on' => 'search'),
+            array('id, name, feedUrl, caption, color, ownerId', 'safe', 'on' => 'search'),
         );
     }
 
@@ -86,10 +85,7 @@ class Client extends CActiveRecord
 
     public function getLogoUrl()
     {
-        if (!Yii::app()->params['useUnistorage'] && !empty($this->logoUid)) {
-            $fs = Yii::app()->fs;
-            return $fs->getFileUrl($this->logoUid);
-        } elseif (!empty($this->logoUri)) {
+        if (!empty($this->logoUri)) {
             $us = Yii::app()->unistorage;
             /** @var ImageFile $file */
             $file = $us->getFile($this->logoUri);
@@ -108,10 +104,7 @@ class Client extends CActiveRecord
     {
         $width = $sizes[0];
         $height = $sizes[1];
-        if (!Yii::app()->params['useUnistorage'] && !empty($this->logoUid)) {
-            $fs = Yii::app()->fs;
-            return $fs->getResizedImageUrl($this->logoUid, $width, $height);
-        } elseif (!empty($this->logoUri)) {
+        if (!empty($this->logoUri)) {
             $us = Yii::app()->unistorage;
             /** @var ImageFile $file */
             $file = $us->getFile($this->logoUri);
@@ -211,12 +204,6 @@ class Client extends CActiveRecord
 
     protected function afterDelete()
     {
-        /** @var $fs FileSystem */
-        $fs = Yii::app()->fs;
-        if (!empty($this->logoUid)) {
-            $fs->removeFile($this->logoUid);
-        }
-
         try {
             $feedFile = $this->getFeedFile();
             if (file_exists($feedFile)) {

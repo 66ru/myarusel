@@ -7,7 +7,6 @@ use Unistorage\Models\Files\RegularFile;
  * @property string title
  * @property string price
  * @property string url
- * @property string imageUid
  * @property string imageUri
  * @property string imageHash
  * @property string ymlId
@@ -35,7 +34,7 @@ class Item extends CActiveRecord
             array('id', 'numerical', 'integerOnly' => true, 'allowEmpty' => false, 'on' => 'update'),
             array('title', 'length', 'max' => 255, 'allowEmpty' => false),
             array('url', 'url', 'allowEmpty' => false),
-            array('imageUid, price, imageUri', 'length', 'max' => 100, 'allowEmpty' => false),
+            array('price, imageUri', 'length', 'max' => 100, 'allowEmpty' => false),
             array('imageHash', 'length', 'max' => 32, 'allowEmpty' => false),
             array('ymlId', 'length', 'max' => 20, 'allowEmpty' => false),
             array('status', 'in', 'range' => [self::STATUS_HIDDEN, self::STATUS_VISIBLE], 'allowEmpty' => false),
@@ -49,7 +48,7 @@ class Item extends CActiveRecord
 
         return [
             'onSite' => [
-                'condition' => "($t.imageUid != '' or $t.imageUri != '') AND $t.url != '' AND $t.status = :status",
+                'condition' => "$t.imageUri != '' AND $t.url != '' AND $t.status = :status",
                 'params' => [
                     ':status' => Item::STATUS_VISIBLE,
                 ]
@@ -76,14 +75,7 @@ class Item extends CActiveRecord
 
     public function getImageUrl()
     {
-        if (!Yii::app()->params['useUnistorage'] && !empty($this->imageUid)) {
-            $fs = Yii::app()->fs;
-            if (file_exists($fs->getCarouselFilePath($this->carouselId, $this->imageUid))) {
-                return $fs->getCarouselFileUrl($this->carouselId, $this->imageUid);
-            } else {
-                return $fs->getFileUrl($this->imageUid);
-            }
-        } elseif (!empty($this->imageUri)) {
+        if (!empty($this->imageUri)) {
             $us = Yii::app()->unistorage;
             /** @var ImageFile $file */
             $file = $us->getFile($this->imageUri);
@@ -103,27 +95,7 @@ class Item extends CActiveRecord
     {
         $width = $sizes[0];
         $height = $sizes[1];
-        if (!Yii::app()->params['useUnistorage'] && !empty($this->imageUid)) {
-            /** @var $fs FileSystem */
-            $fs = Yii::app()->fs;
-            if (file_exists(
-                $fs->getResizedCarouselImagePath(
-                    $this->carouselId,
-                    $this->imageUid,
-                    $width,
-                    $height
-                )
-            )) {
-                return $fs->getResizedCarouselImageUrl(
-                    $this->carouselId,
-                    $this->imageUid,
-                    $width,
-                    $height
-                );
-            } else {
-                return $fs->getResizedImageUrl($this->imageUid, $width, $height);
-            }
-        } elseif (!empty($this->imageUri)) {
+        if (!empty($this->imageUri)) {
             $us = Yii::app()->unistorage;
             /** @var ImageFile $file */
             $file = $us->getFile($this->imageUri);

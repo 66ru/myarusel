@@ -119,21 +119,11 @@ class AdminClientsController extends CommonAdminController
      */
     public function beforeSave($model)
     {
-        /** @var $fs FileSystem */
-        $fs = Yii::app()->fs;
         if ($model->_removeLogoFlag) {
-            $fs->removeFile($model->logoUid);
-            $model->logoUid = null;
             $model->logoUri = null;
         }
         $model->_logo = CUploadedFile::getInstance($model, '_logo');
         if ($model->validate() && !empty($model->_logo)) {
-            if (!empty($model->logoUid)) {
-                $fs->removeFile($model->logoUid);
-            }
-            $model->logoUid = $fs->publishFile($model->_logo->tempName, $model->_logo->name);
-            $fs->resizeImage($model->logoUid, 125, 125);
-
             $us = Yii::app()->unistorage;
             $file = $us->uploadFile($model->_logo->tempName, $model->_logo->name);
             $model->logoUri = $file->resourceUri;
