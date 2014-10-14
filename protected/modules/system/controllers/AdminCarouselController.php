@@ -102,22 +102,12 @@ class AdminCarouselController extends CommonAdminController
                     'class' => 'span4',
                 ),
             ),
-            'template' => array(
+            'templateId' => array(
                 'type' => 'dropDownList',
-                'data' => Carousel::getTemplates(),
+                'data' => EHtml::listData(Template::model(), 'id', 'name'),
                 'htmlOptions' => array(
                     'placeholder' => false,
                     'class' => 'span4',
-                ),
-            ),
-            'onPage' => array(
-                'type' => 'textField',
-                'htmlOptions' => array(
-                    'placeholder' => false,
-                    'class' => 'span4',
-                ),
-                'rowOptions' => array(
-                    'hint' => 'Количество одновременно показываемых позиций на экране',
                 ),
             ),
             'urlPrefix' => array(
@@ -138,13 +128,6 @@ class AdminCarouselController extends CommonAdminController
                 ),
                 'rowOptions' => array(
                     'hint' => '?utm=fromDomain',
-                ),
-            ),
-            'customCss' => array(
-                'type' => 'textField',
-                'htmlOptions' => array(
-                    'placeholder' => false,
-                    'class' => 'span4',
                 ),
             ),
             'categories' => array(

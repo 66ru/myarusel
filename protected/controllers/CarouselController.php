@@ -28,6 +28,7 @@ class CarouselController extends Controller
         /** @var $carousel Carousel */
         $carousel = Carousel::model()->with(
             [
+                'template',
                 'client',
                 'onSiteItems',
             ]
@@ -39,20 +40,39 @@ class CarouselController extends Controller
             Yii::app()->end(0);
         }
 
+        $items = [];
         $onSiteItems = $carousel->onSiteItems;
         shuffle($onSiteItems);
-        $this->render(
-            "//carousels/" . $carousel->template,
-            array(
-                'client' => $carousel->client,
-                'items' => $onSiteItems,
-                'onPage' => $carousel->onPage,
-                'urlPrefix' => $carousel->urlPrefix,
-                'urlPostfix' => $carousel->urlPostfix,
-                'customCss' => $carousel->customCss,
-                'logoSize' => $carousel->logoSize,
-                'thumbSize' => $carousel->thumbSize,
-            )
+        foreach ($onSiteItems as $item) {
+            $items[] = [
+                'title' => $item->title,
+                'url' => TwigFunctions::createMyarouselLink($item->url, $carousel->urlPrefix, $carousel->urlPostfix),
+                'image' => $item->getResizedImageUrl($carousel->template->itemWidth, $carousel->template->itemHeight),
+                'price' => $item->price,
+            ];
+        }
+
+        $data = [
+            'client' => [
+                'name' => $carousel->client->name,
+                'url' => TwigFunctions::createMyarouselLink($carousel->client->url, $carousel->urlPrefix, $carousel->urlPostfix),
+                'image' => $carousel->client->getResizedLogoUrl($carousel->template->logoWidth, $carousel->template->logoHeight),
+                'caption' => $carousel->client->caption,
+            ],
+            'items' => $items,
+        ];
+
+        Yii::app()->clientScript->registerScript(
+            'templateData',
+            'window.templateData = ' . json_encode($data) . ';',
+            CClientScript::POS_BEGIN
         );
+        Yii::app()->clientScript->registerScript(
+            'templateVariables',
+            'window.templateVars = ' . json_encode($carousel->variables) . ';',
+            CClientScript::POS_BEGIN
+        );
+
+        $this->renderText($carousel->template->html);
     }
 }

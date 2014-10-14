@@ -88,13 +88,12 @@ class Item extends CActiveRecord
     }
 
     /**
-     * @param array $sizes array(width, height)
+     * @param int $width
+     * @param int $height
      * @return string
      */
-    public function getResizedImageUrl($sizes)
+    public function getResizedImageUrl($width, $height)
     {
-        $width = $sizes[0];
-        $height = $sizes[1];
         if (!empty($this->imageUri)) {
             $us = Yii::app()->unistorage;
             /** @var ImageFile $file */

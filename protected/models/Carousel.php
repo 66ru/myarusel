@@ -8,13 +8,14 @@
  * @property string categories
  * @property string urlPrefix
  * @property string urlPostfix
- * @property string customCss
  * @property int viewType
- * @property string template
+ * @property int templateId
  * @property int ownerId
  * @property int status
+ * @property array variables
  *
  * @property Client $client
+ * @property Template template
  * @property Item[] $items
  * @property Item[] $onSiteItems
  * @property User $owner
@@ -34,15 +35,6 @@ class Carousel extends CActiveRecord
     const VIEW_GROUP_BY_CATEGORIES = 2; // random image from category, custom label
     const VIEW_ALL = 3; // all items
 
-    const TEMPLATE_VERTICAL = 'vertical';
-    const TEMPLATE_VERTICALBIG = 'verticalbig';
-    const TEMPLATE_HORIZONTAL = 'horizontal';
-    const TEMPLATE_NARROWHORIZONTAL = 'narrowhorizontal';
-    const TEMPLATE_ORANGEHORIZONTAL = 'orangehorizontal';
-
-    const THUMB_SIZE_ATTR = 'thumbSize';
-    const LOGO_SIZE_ATTR = 'logoSize';
-
     const STATUS_DISABLED = 0;
     const STATUS_ACTIVE = 1;
 
@@ -61,7 +53,6 @@ class Carousel extends CActiveRecord
         parent::init();
 
         $this->attachEventHandler('onAfterSave', array('EHtml', 'invalidateCache'));
-        $this->attachEventHandler('onAfterDelete', array('EHtml', 'invalidateCache'));
         $this->attachEventHandler('onAfterDelete', array($this, 'cleanUp'));
         $this->attachEventHandler('onAfterSave', array($this, 'invalidate'));
     }
@@ -96,63 +87,14 @@ class Carousel extends CActiveRecord
         );
     }
 
-    public static function getTemplates()
-    {
-        return array(
-            self::TEMPLATE_HORIZONTAL => 'Горизонтальный',
-            self::TEMPLATE_ORANGEHORIZONTAL => 'Горизонтальный с оранжевой рамкой',
-            self::TEMPLATE_VERTICAL => 'Вертикальный',
-            self::TEMPLATE_VERTICALBIG => 'Вертикальный с одной большой картинкой',
-            self::TEMPLATE_NARROWHORIZONTAL => 'Горизонтальный узкий',
-        );
-    }
-
-    public static function getTemplateAttributes()
-    {
-        return array(
-            self::TEMPLATE_HORIZONTAL => array(
-                self::THUMB_SIZE_ATTR => array(90, 90),
-                self::LOGO_SIZE_ATTR => array(120, 120),
-            ),
-            self::TEMPLATE_ORANGEHORIZONTAL => array(
-                self::THUMB_SIZE_ATTR => array(90, 90),
-                self::LOGO_SIZE_ATTR => array(120, 120),
-            ),
-            self::TEMPLATE_VERTICAL => array(
-                self::THUMB_SIZE_ATTR => array(86, 86),
-                self::LOGO_SIZE_ATTR => array(220, 150),
-            ),
-            self::TEMPLATE_VERTICALBIG => array(
-                self::THUMB_SIZE_ATTR => array(220, 330),
-                self::LOGO_SIZE_ATTR => array(450, 100),
-            ),
-            self::TEMPLATE_NARROWHORIZONTAL => array(
-                self::THUMB_SIZE_ATTR => array(70, 70),
-                self::LOGO_SIZE_ATTR => array(125, 125),
-            ),
-        );
-    }
-
-    public function getThumbSize()
-    {
-        $templateAttributes = self::getTemplateAttributes();
-        return $templateAttributes[$this->template][self::THUMB_SIZE_ATTR];
-    }
-
-    public function getLogoSize()
-    {
-        $templateAttributes = self::getTemplateAttributes();
-        return $templateAttributes[$this->template][self::LOGO_SIZE_ATTR];
-    }
-
     public function behaviors()
     {
-        return array(
-            'SerializedFieldsBehavior' => array(
+        return [
+            'SerializedFieldsBehavior' => [
                 'class' => 'application.components.SerializedFieldsBehavior',
-                'serializedFields' => array('categories'),
-            ),
-        );
+                'serializedFields' => ['categories', 'variables'],
+            ],
+        ];
     }
 
     public function rules()
@@ -160,16 +102,14 @@ class Carousel extends CActiveRecord
         return array(
             array('name', 'unique'),
             array('name, clientId, status', 'required'),
-            array('onPage', 'numerical', 'integerOnly' => true, 'min' => 0),
             array('urlPrefix', 'url'),
             array('urlPostfix', 'length', 'max' => 255),
-            array('customCss', 'length', 'max' => 255),
             array('viewType', 'in', 'range' => array_keys(self::getViewTypes())),
-            array('template', 'in', 'range' => array_keys(self::getTemplates())),
+            array('templateId', 'in', 'range' => EHtml::listData(Template::model())),
             array('status', 'in', 'range' => array_keys($this->getStatusList())),
             array('clientId', 'in', 'range' => EHtml::listData(Client::model())),
             array('ownerId', 'in', 'allowEmpty' => false, 'range' => EHtml::listData(User::model())),
-            array('categories', 'safe'),
+            array('categories, variables', 'safe'),
             array('name, clientId, ownerId', 'safe', 'on' => 'search'),
         );
     }
@@ -181,6 +121,7 @@ class Carousel extends CActiveRecord
             'items' => array(self::HAS_MANY, 'Item', 'carouselId'),
             'onSiteItems' => array(self::HAS_MANY, 'Item', 'carouselId', 'scopes' => 'onSite'),
             'owner' => array(self::BELONGS_TO, 'User', 'ownerId'),
+            'template' => array(self::BELONGS_TO, 'Template', 'templateId'),
         );
     }
 
@@ -190,14 +131,13 @@ class Carousel extends CActiveRecord
             'name' => 'Имя',
             'clientId' => 'Клиент',
             'ownerId' => 'Владелец',
+            'variables' => 'Js переменные',
             'categories' => 'Категории',
             'urlPrefix' => 'Префикс ссылки',
             'urlPostfix' => 'Постфикс ссылки',
-            'customCss' => 'Ссылка на css-файл (необязательно)',
             'viewType' => 'Формат отображения',
-            'template' => 'Шаблон',
+            'templateId' => 'Шаблон',
             'status' => 'Статус',
-            'onPage' => 'Позиций в блоке',
         );
     }
 

@@ -48,13 +48,6 @@ class AdminClientsController extends CommonAdminController
                     'class' => 'span4',
                 ),
             ),
-            'color' => array(
-                'type' => 'textField',
-                'htmlOptions' => array(
-                    'placeholder' => false,
-                    'class' => 'span4',
-                ),
-            ),
         );
         if (Yii::app()->user->checkAccess('admin')) {
             $formElements['ownerId'] = array(

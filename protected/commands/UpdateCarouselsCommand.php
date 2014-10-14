@@ -79,7 +79,7 @@ class UpdateCarouselsCommand extends ConsoleCommand
         if (!empty($carousel->client->logoUri)) {
             /** @var YiiUnistorage\Models\Files\ImageFile $logo */
             $logo = $us->getFile($carousel->client->logoUri);
-            $logo->resize(YiiUnistorage\Models\Files\ImageFile::MODE_KEEP_RATIO, $carousel->logoSize[0], $carousel->logoSize[1]);
+            $logo->resize(YiiUnistorage\Models\Files\ImageFile::MODE_KEEP_RATIO, $carousel->template->logoWidth, $carousel->template->logoHeight);
         }
 
         // fetching feed items
@@ -189,7 +189,7 @@ class UpdateCarouselsCommand extends ConsoleCommand
             if (!$item->save()) {
                 throw new CantSaveActiveRecordException($item);
             }
-            $item->getResizedImageUrl($carousel->thumbSize);
+            $item->getResizedImageUrl($carousel->template->itemWidth, $carousel->template->itemHeight);
         }
         $carousel->invalidate();
 

@@ -1,0 +1,41 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title></title>
+    <link rel="stylesheet" href="/css/reset.css">
+    <link rel="stylesheet" href="/css/PT_Sans_Narrow.css">
+    <link rel="stylesheet" href="/css/ALSRubl.css">
+    <link rel="stylesheet" href="/css/verticalBig.css">
+
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mustache.js/0.8.1/mustache.min.js"></script>
+    <script src="/js/jquery.min.js"></script>
+    <script src="/js/vert-carousel.js"></script>
+</head>
+<body>
+<script id="carousel-template" type="x-tmpl-mustache">
+    <a href="{{client.url}}" class="vert-carousel__header" style="background: url({{client.image}}) center center no-repeat;"></a>
+    <div class="vert-carousel__main">
+        <ul class="vert-carousel__strap">
+            {{#items}}
+            <li class="vert-carousel__elem">
+                <a href="{{url}}" class="vert-carousel__elem-link">
+                    <div class="vert-carousel__img-wrap"><img src="{{image}}" alt="{{title}}" class="vert-carousel__img"></div>
+                    <div class="vert-carousel__price">{{price}} <span class="rub rub_verdana">Р</span></div>
+                    <div class="vert-carousel__name">{{title}}</div>
+                </a>
+            </li>
+            {{/items}}
+        </ul>
+    </div>
+    <a href="{{client.url}}" class="vert-carousel__footer"></a>
+    <span class="vert-carousel__arrow vert-carousel__arrow_prev"></span>
+    <span class="vert-carousel__arrow vert-carousel__arrow_next"></span>
+</script>
+<div class="vert-carousel"></div>
+<script type="text/javascript">
+    var rendered = Mustache.render($('#carousel-template').html(), templateData);
+    $('div.vert-carousel').html(rendered);
+</script>
+</body>
+</html>
