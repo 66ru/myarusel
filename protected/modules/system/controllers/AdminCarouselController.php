@@ -158,6 +158,15 @@ class AdminCarouselController extends CommonAdminController
                 ),
             );
         }
+        $formElements = array_merge($formElements, [
+                '<div class="variables">',
+                '<legend class="controls">Настройки шаблона</legend>',
+                'variables' => [
+                    'class' => 'system.components.TemplateVariablesEditWidget',
+                    'templateIdAttribute' => 'templateId',
+                ],
+                '</div>',
+            ]);
         return $formElements;
     }
 

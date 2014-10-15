@@ -110,7 +110,7 @@ class Carousel extends CActiveRecord
             array('clientId', 'in', 'range' => EHtml::listData(Client::model())),
             array('ownerId', 'in', 'allowEmpty' => false, 'range' => EHtml::listData(User::model())),
             array('categories, variables', 'safe'),
-            array('name, clientId, ownerId', 'safe', 'on' => 'search'),
+            array('name, clientId, ownerId, variables', 'safe', 'on' => 'search'),
         );
     }
 
