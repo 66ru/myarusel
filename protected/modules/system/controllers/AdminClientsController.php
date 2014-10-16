@@ -39,7 +39,7 @@ class AdminClientsController extends CommonAdminController
                 'class' => 'ext.ImageFileRowWidget',
                 'uploadedFileFieldName' => '_logo',
                 'removeImageFieldName' => '_removeLogoFlag',
-                'thumbnailImageUrl' => $model->getResizedLogoUrl(array(125, 125)),
+                'thumbnailImageUrl' => $model->getResizedLogoUrl(125,125),
             ),
             'caption' => array(
                 'type' => 'textField',
