@@ -69,7 +69,7 @@ class AdminClientsController extends CommonAdminController
             array(
                 'class' => 'ext.TbImageColumn',
                 'name' => 'logoUrl',
-                'thumbnailUrl' => '$data->getResizedLogoUrl(array(125, 125))',
+                'thumbnailUrl' => '$data->getResizedLogoUrl(125, 125)',
             ),
             'name',
             array(
