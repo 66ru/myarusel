@@ -45,7 +45,7 @@ class TemplateVariablesEditWidget extends CInputWidget
                         \$row = $(rowTemplate);
                         \$row.find('label').text(variableVariables[i].label);
                         \$row.find('input').attr('name', rootName + '['+ variableVariables[i].name +']');
-                        if (variables.hasOwnProperty(variableVariables[i].name)) {
+                        if (variables && variables.hasOwnProperty(variableVariables[i].name)) {
                             \$row.find('input').val( variables[variableVariables[i].name] );
                         }
                         \$row.appendTo('#{$this->id}');
