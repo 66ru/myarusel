@@ -35,6 +35,13 @@ class AdminClientsController extends CommonAdminController
                     'class' => 'span4',
                 ),
             ),
+            'failures' => array(
+                'type' => 'textField',
+                'htmlOptions' => array(
+                    'placeholder' => false,
+                    'class' => 'span4',
+                ),
+            ),
             'logoUrl' => array(
                 'class' => 'ext.ImageFileRowWidget',
                 'uploadedFileFieldName' => '_logo',
@@ -82,6 +89,7 @@ class AdminClientsController extends CommonAdminController
                 'type' => 'raw',
                 'value' => 'CHtml::link(StringHelper::cutString($data->feedUrl, 60), $data->feedUrl, array("target"=>"_blank", "title" => $data->feedUrl))',
             ),
+            'failures',
         );
         if (Yii::app()->user->checkAccess('admin')) {
             $attributes[] = array(

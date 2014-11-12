@@ -21,7 +21,8 @@
         "yiiext/twig-renderer": "dev-master",
         "m8rge/yii-sentry-log": "dev-master",
         "imagecow/imagecow": "v1.1.0",
-        "66ru/unistorage-yii-client": "1.0.*"
+        "66ru/unistorage-yii-client": "1.0.*",
+        "m8rge/alternative-mail": "v0.9"
     },
     "require-dev": {
         "facebook/xhprof": "dev-master"

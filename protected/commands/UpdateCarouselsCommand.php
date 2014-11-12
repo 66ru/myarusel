@@ -1,5 +1,6 @@
 <?php
 ini_set('memory_limit', '78M');
+use m8rge\AlternativeMail;
 use m8rge\CurlHelper;
 use m8rge\CurlException;
 
@@ -13,10 +14,10 @@ class UpdateCarouselsCommand extends ConsoleCommand
     public function actionIndex()
     {
         /** @var Client[] $clients */
-        $clients = Client::model()->with('carouselsOnSite')->findAll();
+        $clients = Client::model()->onlyValid()->with('carouselsOnSite')->findAll();
 
         $urlToFiles = [];
-        /** @var Client[] $urlToClient */
+        /** @var array $urlToClient */
         $urlToClient = [];
         foreach ($clients as $client) {
             if (!empty($client->carouselsOnSite) && empty($urlToFiles[$client->feedUrl])) {
@@ -26,15 +27,27 @@ class UpdateCarouselsCommand extends ConsoleCommand
             $urlToClient[$client->feedUrl][] = $client;
         }
 
+        /** @var Client[] $failedClients */
+        $failedClients = [];
+
         CurlHelper::batchDownload(
             $urlToFiles,
-            function ($url, $file, $e) use ($urlToClient) {
+            function ($url, $file, $e) use ($urlToClient, &$failedClients) {
                 if ($e) {
                     unlink($file);
                     $this->captureException($e);
+                    foreach ($urlToClient[$url] as $client) {
+                        /** @var Client $client */
+                        $client->failures++;
+                        $client->saveAttributes(['failures' => $client->failures]);
+                        if ($client->failures == Client::FAILURES_BOUND) {
+                            $failedClients[] = $client;
+                        }
+                    }
                     return;
                 }
                 foreach ($urlToClient[$url] as $client) {
+                    /** @var Client $client */
                     $client->updateFeedFile($file);
 
                     // get known hashes
@@ -54,6 +67,22 @@ class UpdateCarouselsCommand extends ConsoleCommand
             ],
             2
         );
+
+        $emailData = [];
+        foreach ($failedClients as $failedClient) {
+            $emailData[$failedClient->owner->email][] = $failedClient->name;
+        }
+        $body = "Обновление следующих клиентов было отключено из за недоступности фида:";
+
+        foreach ($emailData as $email => $clientNames) {
+            $mail = new AlternativeMail();
+            $mail->setFrom('myarusel-no-reply@66.ru')
+                ->addTo($email)
+                ->setSubject('Отключены клиенты')
+                ->setTextBody($body . "\n\n" . implode("\n", $clientNames))
+                ->setHtmlBody("<p>$body</p><ul>" . implode('<li>', $clientNames) . '</ul>')
+                ->send();
+        }
     }
 
     public function actionSingle($id)

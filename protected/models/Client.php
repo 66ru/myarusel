@@ -15,6 +15,7 @@ use Unistorage\Models\Files\RegularFile;
  * @property string $logoUri
  * @property string $caption
  * @property int ownerId
+ * @property int failures
  *
  * @property Carousel[] carousels
  * @property Carousel[] carouselsOnSite
@@ -27,6 +28,11 @@ class Client extends CActiveRecord
 
     /** @var bool */
     public $_removeLogoFlag;
+
+    /**
+     * if error count of getting client feed file more than this, client excludes from update
+     */
+    const FAILURES_BOUND = 20;
 
     /**
      * @static
@@ -76,6 +82,7 @@ class Client extends CActiveRecord
             'logoUri' => 'Логотип',
             'caption' => 'Подпись',
             'ownerId' => 'Владелец',
+            'failures' => 'Ошибки',
         );
     }
 
@@ -129,6 +136,7 @@ class Client extends CActiveRecord
             unlink(($feedFile));
         }
         Yii::app()->cache->set($feedCacheKey, $newFeedFile);
+        $this->saveAttributes(['failures' => 0]);
     }
 
     public function getFeedFile($forceDownload = false)
@@ -215,6 +223,20 @@ class Client extends CActiveRecord
                 'condition' => 'ownerId = :ownerId',
                 'params' => array(
                     ':ownerId' => Yii::app()->user->getId(),
+                ),
+            )
+        );
+
+        return $this;
+    }
+
+    public function onlyValid()
+    {
+        $this->getDbCriteria()->mergeWith(
+            array(
+                'condition' => 'failures < :failuresBound',
+                'params' => array(
+                    ':failuresBound' => self::FAILURES_BOUND,
                 ),
             )
         );
