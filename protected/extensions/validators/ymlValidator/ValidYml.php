@@ -108,22 +108,31 @@ class ValidYml extends CValidator
         $r = new XMLReader();
         $r->open($xmlFile, null, LIBXML_DTDLOAD | LIBXML_DTDVALID | LIBXML_NONET | LIBXML_NOBLANKS);
         while ($r->read()) {
-        }
-        $libXmlErrors = libxml_get_errors();
-        libxml_clear_errors();
+            if ($error = libxml_get_last_error()) {
+                if ($error->code == 505 || // skip warning due not determinist dtd
+                    $error->code == 504 // skip misplaced elements
+                ) {
+                    continue;
+                }
+                $message = trim($error->message);
+                $stringError = "Line $error->line:$error->column: $message";
+                if (!in_array($stringError, $errors)) {
+                    $errors[] = $stringError;
+                    if (count($errors) >= 100) {
+                        $errors[] = 'Показано только 100 ошибок';
+                        break;
+                    }
+                }
 
-        foreach ($libXmlErrors as $error) {
-            if ($error->code == 505) {
-                continue; // skip warning due not determinist dtd
+                libxml_clear_errors();
             }
-            $message = trim($error->message);
-            $errors[] = "Line $error->line:$error->column: $message";
         }
+
         if (!empty($errors)) {
             return Yii::t(
                 'ValidYml.app',
                 'Following errors occurred during document validate: {errors}',
-                array('{errors}' => '<ul><li>'.implode('<li>', array_unique($errors)).'</ul>')
+                array('{errors}' => '<ul><li>'.implode('<li>', $errors).'</ul>')
             );
         }
 
