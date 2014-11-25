@@ -11,11 +11,4 @@
 * ПРОФИТ!
 
 ## Раскатка проекта.
-* **Требуется:** php-модуль curl, imagemagick
-* `git clone git://github.com/mediasite/myarusel.git`
-* `git submodules init`
-* `git submodules update`
-* создать бд из `/protected/migrations/base.sql`
-* создать params.php из `/protected/config/params-dist.php`
-* создать пользователя с правами суперадмина `./protected/yiic createauthitems`
-* создать крон задачу на `./protected/yiic updatecarousels`. Думаю, стоит раз в день поставить.
+* Расказывается через chef-рецепт
