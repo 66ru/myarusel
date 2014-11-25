@@ -34,8 +34,7 @@ class AdminCarouselController extends CommonAdminController
 
                     Yii::import('application.commands.*');
                     $command = new UpdateCarouselsCommand('UpdateCarouselsCommand', null);
-                    $hashToUri = EHtml::listData(Item::model()->byCarousel($carousel->id), 'imageHash', 'imageUri');
-                    $status = $command->processCarousel($carousel, $hashToUri);
+                    $status = $command->processCarousel($carousel);
 
                     return [IAsyncTaskProvider::STATUS_DONE, $status];
                 }

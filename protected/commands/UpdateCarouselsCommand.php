@@ -50,14 +50,9 @@ class UpdateCarouselsCommand extends ConsoleCommand
                     /** @var Client $client */
                     $client->updateFeedFile($file);
 
-                    // get known hashes
-                    $hashToUri = [];
-                    foreach ($client->carousels as $c) {
-                        $hashToUri = EHtml::listData(Item::model()->byCarousel($c->id), 'imageHash', 'imageUri');
-                    }
                     // iterate through client carousels
                     foreach ($client->carouselsOnSite as $carousel) {
-                        $this->processCarousel($carousel, $hashToUri);
+                        $this->processCarousel($carousel);
                     }
                 }
             },
@@ -89,17 +84,15 @@ class UpdateCarouselsCommand extends ConsoleCommand
     {
         /** @var Carousel $carousel */
         $carousel = Carousel::model()->with('client')->findByPk($id);
-        $hashToUri = EHtml::listData(Item::model()->byCarousel($carousel->id), 'imageHash', 'imageUri');
-        $this->processCarousel($carousel, $hashToUri);
+        $this->processCarousel($carousel);
     }
 
     /**
      * @param Carousel $carousel
-     * @param $hashToUri
      * @throws CantSaveActiveRecordException
      * @return bool|string status string or false
      */
-    public function processCarousel($carousel, $hashToUri)
+    public function processCarousel($carousel)
     {
         $this->log("processing carousel id=" . $carousel->id);
         $us = Yii::app()->unistorage;
@@ -156,9 +149,9 @@ class UpdateCarouselsCommand extends ConsoleCommand
             }
             $ymlItems[$ymlId]['itemId'] = $id;
             $imageHash = $ymlItems[$ymlId]['imageHash'];
-            if (!empty($hashToUri[$imageHash])) { // we have already downloaded this file
-                $this->log('get uri from cache for ' . $hashToUri[$imageHash]);
-                $ymlItems[$ymlId]['imageUri'] = $hashToUri[$imageHash];
+            if ($cache = ImageCache::model()->findByHash($imageHash)) { // we have already downloaded this file
+                $this->log('get uri from cache for ' . $cache->uri);
+                $ymlItems[$ymlId]['imageUri'] = $cache->uri;
             } else {
                 $urlToFiles[$ymlItems[$ymlId]['picture']] = tempnam(Yii::app()->runtimePath, 'img-');
             }
@@ -168,9 +161,9 @@ class UpdateCarouselsCommand extends ConsoleCommand
         // gather new image urls
         $newYmlItems = array_diff_key($ymlItems, $foundYmlIds);
         foreach ($newYmlItems as $ymlId => $ymlItem) {
-            if (!empty($hashToUri[$ymlItem['imageHash']])) {
-                $this->log('get uri from cache for ' . $hashToUri[$ymlItem['imageHash']]);
-                $ymlItems[$ymlId]['imageUri'] = $hashToUri[$ymlItem['imageHash']];
+            if ($cache = ImageCache::model()->findByHash($ymlItem['imageHash'])) {
+                $this->log('get uri from cache for ' . $cache->uri);
+                $ymlItems[$ymlId]['imageUri'] = $cache->uri;
             } else {
                 $urlToFiles[$ymlItem['picture']] = tempnam(Yii::app()->runtimePath, 'img-');
             }
@@ -185,7 +178,13 @@ class UpdateCarouselsCommand extends ConsoleCommand
                     unset($ymlItems[$ymlId]);
                 } else {
                     $ymlItems[$ymlId]['imageUri'] = $imagesUri[$imageUrl];
-                    $hashToUri[$ymlItems[$ymlId]['imageHash']] = $imagesUri[$imageUrl];
+                    $cache = new ImageCache();
+                    $cache->setAttributes([
+                            'hash' => $ymlItems[$ymlId]['imageHash'],
+                            'uri' => $imagesUri[$imageUrl],
+                            'url' => $imageUrl,
+                        ]);
+                    $cache->save(false);
                 }
             }
         }
@@ -211,7 +210,6 @@ class UpdateCarouselsCommand extends ConsoleCommand
                         'carouselId' => $carousel->id,
                     ]);
             if (!empty($itemAttributes['imageHash'])) {
-                $item->imageHash = $itemAttributes['imageHash'];
                 $item->imageUri = $itemAttributes['imageUri'];
             }
 
