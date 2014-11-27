@@ -145,6 +145,10 @@ class AdminClientsController extends CommonAdminController
     {
         parent::beforeEdit($model);
 
+        if ($model->isNewRecord) {
+            $model->ownerId = Yii::app()->user->id;
+        }
+
         $admin = Yii::app()->user->checkAccess('admin');
 
         if (!$admin && !$model->isNewRecord && $model->ownerId != Yii::app()->user->getId()) {

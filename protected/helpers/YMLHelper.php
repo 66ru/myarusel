@@ -264,8 +264,8 @@ class YMLHelper
                 $offer[$r->name] = trim($r->readString());
             }
         }
-        if (empty($offer['id']) && !empty($offer['picture'])) {
-            $offer['id'] = md5($offer['picture']);
+        if (empty($offer['id']) && !empty($offer['name'])) {
+            $offer['id'] = md5($offer['name']);
         }
 
         return $offer;

@@ -34,7 +34,7 @@ class Item extends CActiveRecord
             array('title', 'length', 'max' => 255, 'allowEmpty' => false),
             array('url', 'url', 'allowEmpty' => false),
             array('price, imageUri', 'length', 'max' => 100, 'allowEmpty' => false),
-            array('ymlId', 'length', 'max' => 20, 'allowEmpty' => false),
+            array('ymlId', 'length', 'max' => 32, 'allowEmpty' => false), // 32 due missing id => md5(name) {see: YMLHelper::gatherOfferProperties}
             array('status', 'in', 'range' => [self::STATUS_HIDDEN, self::STATUS_VISIBLE], 'allowEmpty' => false),
             array('carouselId', 'in', 'allowEmpty' => false, 'range' => EHtml::cachedListData(Carousel::model())),
         );

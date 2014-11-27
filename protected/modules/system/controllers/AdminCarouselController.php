@@ -268,6 +268,10 @@ class AdminCarouselController extends CommonAdminController
     {
         parent::beforeEdit($model);
 
+        if ($model->isNewRecord) {
+            $model->status = Carousel::STATUS_ACTIVE;
+        }
+
         $admin = Yii::app()->user->checkAccess('admin');
 
         if (!$admin && !$model->isNewRecord && $model->ownerId != Yii::app()->user->getId()) {
