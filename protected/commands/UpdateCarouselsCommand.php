@@ -4,7 +4,7 @@ use m8rge\AlternativeMail;
 use m8rge\CurlHelper;
 use m8rge\CurlException;
 
-class UpdateCarouselsCommand extends ConsoleCommand
+class UpdateCarouselsCommand extends GlobalConsoleCommand
 {
     const ITEMS_LIMIT = 300;
 
