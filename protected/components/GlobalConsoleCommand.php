@@ -25,6 +25,14 @@ abstract class GlobalConsoleCommand extends CConsoleCommand
     public $longRunningTimeout = 3600; // 1h
 
     /**
+     * If any running task $lastActivity value older than $changeOwnerTimeout,
+     * this lock will be released, so
+     * this task will be acquired by any of active nodes.
+     * @var int seconds
+     */
+    public $changeOwnerTimeout = 7200; // 2h
+
+    /**
      * @var CronLock
      */
     protected $lock;
@@ -33,6 +41,7 @@ abstract class GlobalConsoleCommand extends CConsoleCommand
     {
         parent::init();
 
+        $this->refreshActivity();
         $this->onBeforeAction = array($this, 'checkInstance');
         $this->onAfterAction = array($this, 'cleanUp');
     }
@@ -44,6 +53,22 @@ abstract class GlobalConsoleCommand extends CConsoleCommand
                 'class' => 'application.components.ConsoleLoggingBehavior',
             ]
         ];
+    }
+
+    public function refreshActivity()
+    {
+        try {
+            $criteria = new CDbCriteria();
+            $criteria->addColumnCondition(array('hostname' => gethostname()));
+            CronLock::model()->updateAll(
+                array(
+                    'lastActivity' => new CDbExpression('NOW()'),
+                ),
+                $criteria
+            );
+        } catch (CDbException $e) {
+            throw new GlobalCommandException('failed update lastActivity', 0, $e);
+        }
     }
 
     /**
@@ -130,7 +155,7 @@ abstract class GlobalConsoleCommand extends CConsoleCommand
             $expiredTasks = CronLock::model()->findAll(
                 'lastActivity <= NOW() - INTERVAL :changeOwnerTimeout SECOND',
                 array(
-                    ':changeOwnerTimeout' => $this->longRunningTimeout,
+                    ':changeOwnerTimeout' => $this->changeOwnerTimeout,
                 )
             );
         } catch (CDbException $e) {
