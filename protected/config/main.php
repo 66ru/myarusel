@@ -20,7 +20,7 @@ if ($params['useSentry']) {
     $logRoutes[] = array(
         'class'=>'vendor.m8rge.yii-sentry-log.RSentryLog',
         'levels'=>'error, warning',
-        'except' => 'exception.*',
+        'except' => 'exception.*,system.db.*',
         'dsn' => $params['sentryDSN'],
     );
     $components['RSentryException'] = array(
