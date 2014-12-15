@@ -74,6 +74,10 @@ return array(
             'assetManager' => array(
                 'linkAssets' => true,
             ),
+            'session' => array(
+                'class' => 'CDbHttpSession',
+                'connectionID' => 'db',
+            ),
             'db' => array(
                 'connectionString' => 'mysql:host=' . $params['dbHost'] . ';dbname=' . $params['dbName'],
                 'emulatePrepare' => true,
