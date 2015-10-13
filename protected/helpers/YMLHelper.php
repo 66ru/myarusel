@@ -214,7 +214,8 @@ class YMLHelper
                 }
 
                 if ($viewType == Carousel::VIEW_GROUP_BY_CATEGORIES) {
-                    $title = $categories[ $offer['categoryId'] ]['name'];
+                    $category = self::getParentCategory($categories[ $offer['categoryId'] ], $categories);
+                    $title =  $category['name'];
                 } else {
                     if ($offerType == 'vendor.model') {
                         $title = (!empty($offer['typePrefix']) ? $offer['typePrefix'] . ' ' : '') . $offer['vendor'] . ' ' . $offer['model'];
@@ -270,4 +271,20 @@ class YMLHelper
 
         return $offer;
     }
+
+    private static function getParentCategory ($category, $categories)
+    {
+        $res = $category;
+        $i = 1;
+            while ($i) {
+            if ($i<100 && isset($res['parentId']) && isset($categories[$res['parentId']]) ) {
+                $res = $categories[$res['parentId']];
+                $i++;
+            }
+            else {
+                $i = false;
+            }
+        }
+        return $res;
+    } 
 }
