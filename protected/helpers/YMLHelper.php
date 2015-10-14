@@ -133,7 +133,7 @@ class YMLHelper
         $r = self::loadXmlFile($ymlFile);
         $r->readUntil('shop')->readUntil('offers')->readAll(
             'offer',
-            function () use ($r, $viewType, $fetchCategoryIds, &$fetchingItemsInCategories, &$itemsCount) {
+            function () use ($r, $viewType, $fetchCategoryIds, &$fetchingItemsInCategories, &$itemsCount, $categories, $categoryIds) {
                 $itemsCount++;
                 $offer = self::gatherOfferProperties($r);
                 if (empty($offer['id']) || empty($offer['picture']) || empty($offer['url'])) {
@@ -146,7 +146,9 @@ class YMLHelper
                         $fetchingItemsInCategories[ null ][ $offer['id'] ] = true;
                     } else {
                         // price only needed in this case
-                        $fetchingItemsInCategories[ $offer['categoryId'] ][ $offer['id'] ] = $itemPrice;
+                        $i = 1;
+                        $_category = self::getChosenCategory($categories[$offer['categoryId']], $categoryIds, $categories);
+                        $fetchingItemsInCategories[ $_category['id'] ][ $offer['id'] ] = $itemPrice;
                     }
                 }
             }
@@ -197,7 +199,7 @@ class YMLHelper
         $r = self::loadXmlFile($ymlFile);
         $r->readUntil('shop')->readUntil('offers')->readAll(
             'offer',
-            function () use ($r, $viewType, $categories, $itemsWithCategoryImage, $fetchingItems, &$itemsArray, &$categoryImages) {
+            function () use ($r, $viewType, $categories, $itemsWithCategoryImage, $fetchingItems, &$itemsArray, &$categoryImages, $categoryIds) {
                 $offerType = $r->getAttribute('type');
                 $offer = self::gatherOfferProperties($r);
                 if (!empty($offer['id']) && array_key_exists($offer['id'], $itemsWithCategoryImage)) {
@@ -214,8 +216,8 @@ class YMLHelper
                 }
 
                 if ($viewType == Carousel::VIEW_GROUP_BY_CATEGORIES) {
-                    $category = self::getParentCategory($categories[ $offer['categoryId'] ], $categories);
-                    $title =  $category['name'];
+                    $_category = self::getChosenCategory($categories[$offer['categoryId']], $categoryIds, $categories);
+                    $title =  $_category['name'];
                 } else {
                     if ($offerType == 'vendor.model') {
                         $title = (!empty($offer['typePrefix']) ? $offer['typePrefix'] . ' ' : '') . $offer['vendor'] . ' ' . $offer['model'];
@@ -236,7 +238,8 @@ class YMLHelper
 
         if ($viewType == Carousel::VIEW_GROUP_BY_CATEGORIES) {
             foreach ($itemsArray as &$item) {
-                $item['picture'] = $categoryImages[$item['categoryId']];
+                $_category = self::getChosenCategory($categories[$item['categoryId']], $categoryIds, $categories);
+                $item['picture'] = $categoryImages[$_category['id']];
                 unset($item['categoryId']);
             }
             unset($item);
@@ -272,19 +275,18 @@ class YMLHelper
         return $offer;
     }
 
-    private static function getParentCategory ($category, $categories)
+    public static function getChosenCategory ($category, $categoryIds, $categories)
     {
-        $res = $category;
         $i = 1;
-            while ($i) {
-            if ($i<100 && isset($res['parentId']) && isset($categories[$res['parentId']]) ) {
-                $res = $categories[$res['parentId']];
-                $i++;
+        while ($i < 100) {
+            if (!in_array($category['id'], $categoryIds) && isset($category['parentId'])) {
+                $category = $categories[$category['parentId']];
             }
             else {
-                $i = false;
+                $i = 100;
             }
+            $i++;
         }
-        return $res;
+        return $category;
     } 
 }
